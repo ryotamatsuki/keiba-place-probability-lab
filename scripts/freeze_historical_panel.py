@@ -279,7 +279,10 @@ def classify_and_standardize_races(
     )
 
     surface_conflict = (
-        official_surface.notna() & source_surface.notna() & official_surface.ne(source_surface)
+        official_surface.notna()
+        & source_surface.notna()
+        & official_surface.ne(source_surface)
+        & ~joined.race_kind.eq("obstacle")
     )
     distance_conflict = (
         official_distance.notna()
