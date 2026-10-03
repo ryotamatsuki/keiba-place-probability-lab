@@ -39,7 +39,7 @@ jobs:
           THROUGH="${{ inputs.through }}"
           RECHECK_DAYS="${{ inputs.recheck_days }}"
           MAX_WORKERS="${{ inputs.max_workers }}"
-          [ -n "$THROUGH" ] || THROUGH="2026-10-03"
+          [ -n "$THROUGH" ] || THROUGH="2026-01-05"
           [ -n "$RECHECK_DAYS" ] || RECHECK_DAYS="14"
           [ -n "$MAX_WORKERS" ] || MAX_WORKERS="6"
           python scripts/update_live_history.py \
