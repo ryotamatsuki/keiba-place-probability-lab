@@ -1,8 +1,9 @@
-from pathlib import Path
 import csv
 from collections import Counter
-import pandas as pd
+from pathlib import Path
+
 import kagglehub
+import pandas as pd
 
 DATASET="noriyukifurufuru/japan-horse-racing-2010-2025"
 out=Path("docs/HISTORICAL_SOURCE_VALUE_SUMMARY.md")
@@ -36,8 +37,8 @@ with result_path.open("r",encoding="utf-8-sig",newline="") as f:
         valid_rows+=1
         unique_race_ids.add(row[idx["race_id"]])
         unique_horse_ids.add(row[idx["horse_id"]])
-        for c in counters:
-            counters[c][row[idx[c]] or "<EMPTY>"] += 1
+        for c, counter in counters.items():
+            counter[row[idx[c]] or "<EMPTY>"] += 1
 
 lines=["# Historical Source Value Summary","","## parser diagnostics","",
        f"- header fields: {expected}",
