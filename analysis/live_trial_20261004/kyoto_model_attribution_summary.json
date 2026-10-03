@@ -1,0 +1,346 @@
+{
+  "model_id": "turf_R3_2001_2600",
+  "prior_mean": 0.2406366101014158,
+  "blocks": [
+    "near",
+    "regime",
+    "course_distance"
+  ],
+  "parity_max_abs_error": 2.980232238769531e-07,
+  "horse_4": {
+    "horse_name": "ヘデントール",
+    "probability": 0.4136156141757965,
+    "log_odds": -0.3490384817123413,
+    "bias_log_odds": -1.1529518365859985,
+    "top_positive": [
+      {
+        "feature": "numeric__recent3_graded_count",
+        "contribution": 0.43422624468803406
+      },
+      {
+        "feature": "numeric__rel_career_top3_vs_others",
+        "contribution": 0.3347964882850647
+      },
+      {
+        "feature": "numeric__rel_recent3_time_vs_others",
+        "contribution": 0.19731201231479645
+      },
+      {
+        "feature": "numeric__rel_recent3_finish_vs_others",
+        "contribution": 0.18269439041614532
+      },
+      {
+        "feature": "numeric__recent3_open_plus_count",
+        "contribution": 0.0810599997639656
+      },
+      {
+        "feature": "numeric__draw_pct",
+        "contribution": 0.07224171608686447
+      },
+      {
+        "feature": "numeric__recent3_relative_time_mean",
+        "contribution": 0.05950779467821121
+      },
+      {
+        "feature": "numeric__recent4_early_pos_pct_mean",
+        "contribution": 0.04955168440937996
+      },
+      {
+        "feature": "numeric__turf_top3_shrunk",
+        "contribution": 0.03193334490060806
+      },
+      {
+        "feature": "numeric__course_distance_relative",
+        "contribution": 0.02148493193089962
+      },
+      {
+        "feature": "numeric__same_course_top3_shrunk",
+        "contribution": 0.0214129276573658
+      },
+      {
+        "feature": "numeric__rel_same_course_top3_vs_others",
+        "contribution": 0.01969863288104534
+      }
+    ],
+    "top_negative": [
+      {
+        "feature": "numeric__field_size",
+        "contribution": -0.4963993430137634
+      },
+      {
+        "feature": "categorical__race_class_Open",
+        "contribution": -0.09496986865997314
+      },
+      {
+        "feature": "numeric__distance_change_from_prev_m",
+        "contribution": -0.0831722766160965
+      },
+      {
+        "feature": "numeric__log_days_since_prev",
+        "contribution": -0.08299227803945541
+      },
+      {
+        "feature": "numeric__near_relative",
+        "contribution": -0.03678411245346069
+      },
+      {
+        "feature": "numeric__career_top3_shrunk",
+        "contribution": -0.028435999527573586
+      },
+      {
+        "feature": "numeric__log_career_starts",
+        "contribution": -0.016052553430199623
+      },
+      {
+        "feature": "numeric__distance_m",
+        "contribution": -0.010659835301339626
+      },
+      {
+        "feature": "numeric__regime_relative",
+        "contribution": -0.005180620588362217
+      },
+      {
+        "feature": "numeric__rel_same_distance_top3_vs_others",
+        "contribution": -0.003856558119878173
+      },
+      {
+        "feature": "numeric__log_same_course_starts",
+        "contribution": -0.003748134011402726
+      },
+      {
+        "feature": "categorical__race_class_Class2",
+        "contribution": -0.0023690101224929094
+      }
+    ]
+  },
+  "horse_12": {
+    "horse_name": "エコロディノス",
+    "probability": 0.20861369371414185,
+    "log_odds": -1.3333020210266113,
+    "bias_log_odds": -1.1529518365859985,
+    "top_positive": [
+      {
+        "feature": "numeric__recent3_graded_count",
+        "contribution": 0.3568401634693146
+      },
+      {
+        "feature": "numeric__rel_career_top3_vs_others",
+        "contribution": 0.3432663381099701
+      },
+      {
+        "feature": "numeric__rel_same_course_top3_vs_others",
+        "contribution": 0.23778846859931946
+      },
+      {
+        "feature": "numeric__recent3_open_plus_count",
+        "contribution": 0.07087533921003342
+      },
+      {
+        "feature": "numeric__regime_relative",
+        "contribution": 0.06382961571216583
+      },
+      {
+        "feature": "numeric__turf_top3_shrunk",
+        "contribution": 0.06287883967161179
+      },
+      {
+        "feature": "numeric__near_relative",
+        "contribution": 0.05883149802684784
+      },
+      {
+        "feature": "numeric__age",
+        "contribution": 0.054715171456336975
+      },
+      {
+        "feature": "numeric__log_days_since_prev",
+        "contribution": 0.051785897463560104
+      },
+      {
+        "feature": "numeric__recent3_top3_count",
+        "contribution": 0.03417250141501427
+      },
+      {
+        "feature": "numeric__regime_log_starts",
+        "contribution": 0.03158145397901535
+      },
+      {
+        "feature": "numeric__course_distance_relative",
+        "contribution": 0.029927922412753105
+      }
+    ],
+    "top_negative": [
+      {
+        "feature": "numeric__field_size",
+        "contribution": -0.5416432023048401
+      },
+      {
+        "feature": "numeric__rel_recent3_finish_vs_others",
+        "contribution": -0.43976661562919617
+      },
+      {
+        "feature": "numeric__rel_recent3_time_vs_others",
+        "contribution": -0.2844098210334778
+      },
+      {
+        "feature": "numeric__recent4_early_pos_pct_mean",
+        "contribution": -0.12866050004959106
+      },
+      {
+        "feature": "categorical__race_class_Open",
+        "contribution": -0.09885188192129135
+      },
+      {
+        "feature": "numeric__recent3_relative_time_mean",
+        "contribution": -0.0931776762008667
+      },
+      {
+        "feature": "numeric__draw_pct",
+        "contribution": -0.049974195659160614
+      },
+      {
+        "feature": "numeric__career_top3_shrunk",
+        "contribution": -0.03815149888396263
+      },
+      {
+        "feature": "numeric__regime_top3_shrunk",
+        "contribution": -0.027411676943302155
+      },
+      {
+        "feature": "numeric__recent3_finish_pct_mean",
+        "contribution": -0.026468049734830856
+      },
+      {
+        "feature": "numeric__distance_m",
+        "contribution": -0.013864695094525814
+      },
+      {
+        "feature": "numeric__log_same_distance_starts",
+        "contribution": -0.010141374543309212
+      }
+    ]
+  },
+  "largest_pairwise_differences": [
+    {
+      "feature": "numeric__rel_recent3_finish_vs_others",
+      "hedentall_contribution": 0.18269439041614532,
+      "ecolo_contribution": -0.43976661562919617,
+      "hedentall_minus_ecolo_log_odds": 0.6224610209465027
+    },
+    {
+      "feature": "numeric__rel_recent3_time_vs_others",
+      "hedentall_contribution": 0.19731201231479645,
+      "ecolo_contribution": -0.2844098210334778,
+      "hedentall_minus_ecolo_log_odds": 0.48172181844711304
+    },
+    {
+      "feature": "numeric__rel_same_course_top3_vs_others",
+      "hedentall_contribution": 0.01969863288104534,
+      "ecolo_contribution": 0.23778846859931946,
+      "hedentall_minus_ecolo_log_odds": -0.21808983385562897
+    },
+    {
+      "feature": "numeric__recent4_early_pos_pct_mean",
+      "hedentall_contribution": 0.04955168440937996,
+      "ecolo_contribution": -0.12866050004959106,
+      "hedentall_minus_ecolo_log_odds": 0.17821218073368073
+    },
+    {
+      "feature": "numeric__recent3_relative_time_mean",
+      "hedentall_contribution": 0.05950779467821121,
+      "ecolo_contribution": -0.0931776762008667,
+      "hedentall_minus_ecolo_log_odds": 0.15268546342849731
+    },
+    {
+      "feature": "numeric__log_days_since_prev",
+      "hedentall_contribution": -0.08299227803945541,
+      "ecolo_contribution": 0.051785897463560104,
+      "hedentall_minus_ecolo_log_odds": -0.13477817177772522
+    },
+    {
+      "feature": "numeric__draw_pct",
+      "hedentall_contribution": 0.07224171608686447,
+      "ecolo_contribution": -0.049974195659160614,
+      "hedentall_minus_ecolo_log_odds": 0.12221591174602509
+    },
+    {
+      "feature": "numeric__distance_change_from_prev_m",
+      "hedentall_contribution": -0.0831722766160965,
+      "ecolo_contribution": 0.013161931186914444,
+      "hedentall_minus_ecolo_log_odds": -0.09633420407772064
+    },
+    {
+      "feature": "numeric__near_relative",
+      "hedentall_contribution": -0.03678411245346069,
+      "ecolo_contribution": 0.05883149802684784,
+      "hedentall_minus_ecolo_log_odds": -0.09561561048030853
+    },
+    {
+      "feature": "numeric__recent3_graded_count",
+      "hedentall_contribution": 0.43422624468803406,
+      "ecolo_contribution": 0.3568401634693146,
+      "hedentall_minus_ecolo_log_odds": 0.07738608121871948
+    },
+    {
+      "feature": "numeric__regime_relative",
+      "hedentall_contribution": -0.005180620588362217,
+      "ecolo_contribution": 0.06382961571216583,
+      "hedentall_minus_ecolo_log_odds": -0.06901023536920547
+    },
+    {
+      "feature": "numeric__age",
+      "hedentall_contribution": 0.008412537164986134,
+      "ecolo_contribution": 0.054715171456336975,
+      "hedentall_minus_ecolo_log_odds": -0.046302635222673416
+    },
+    {
+      "feature": "numeric__field_size",
+      "hedentall_contribution": -0.4963993430137634,
+      "ecolo_contribution": -0.5416432023048401,
+      "hedentall_minus_ecolo_log_odds": 0.04524385929107666
+    },
+    {
+      "feature": "numeric__regime_top3_shrunk",
+      "hedentall_contribution": 0.01117036584764719,
+      "ecolo_contribution": -0.027411676943302155,
+      "hedentall_minus_ecolo_log_odds": 0.03858204185962677
+    },
+    {
+      "feature": "numeric__recent3_finish_pct_mean",
+      "hedentall_contribution": 0.006924816407263279,
+      "ecolo_contribution": -0.026468049734830856,
+      "hedentall_minus_ecolo_log_odds": 0.03339286521077156
+    },
+    {
+      "feature": "numeric__turf_top3_shrunk",
+      "hedentall_contribution": 0.03193334490060806,
+      "ecolo_contribution": 0.06287883967161179,
+      "hedentall_minus_ecolo_log_odds": -0.030945494771003723
+    },
+    {
+      "feature": "numeric__log_career_starts",
+      "hedentall_contribution": -0.016052553430199623,
+      "ecolo_contribution": 0.014273444190621376,
+      "hedentall_minus_ecolo_log_odds": -0.030325997620821
+    },
+    {
+      "feature": "numeric__log_turf_starts",
+      "hedentall_contribution": 0.0014092217897996306,
+      "ecolo_contribution": 0.025709213688969612,
+      "hedentall_minus_ecolo_log_odds": -0.024299992248415947
+    },
+    {
+      "feature": "numeric__recent3_top3_count",
+      "hedentall_contribution": 0.01144474372267723,
+      "ecolo_contribution": 0.03417250141501427,
+      "hedentall_minus_ecolo_log_odds": -0.022727757692337036
+    },
+    {
+      "feature": "numeric__log_same_distance_starts",
+      "hedentall_contribution": 0.011592650786042213,
+      "ecolo_contribution": -0.010141374543309212,
+      "hedentall_minus_ecolo_log_odds": 0.021734025329351425
+    }
+  ],
+  "probability_gap": 0.20500192046165466,
+  "log_odds_gap": 0.98426353931427
+}
