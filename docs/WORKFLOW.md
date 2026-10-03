@@ -5,6 +5,7 @@
 - [x] Phase Aの目的変数を P(top3) に固定
 - [x] Data Policy作成
 - [x] 評価指標固定
+- [x] future winner rule v2固定（race-macro Brier + paired date-clustered one-SE incumbent gate）
 - [x] 既存OSS候補の棚卸し
 - [x] 最初のレース用pre-analysisログ作成
 - [x] 長期目標を「順位分布モデル → 馬券種横断確率」に拡張
@@ -167,10 +168,20 @@ Timing caveat: this remains retrospective because Stage 6 was not committed befo
 
 ## Stage 8 — Accumulation / walk-forward
 
-- [ ] 複数レースを蓄積
-- [ ] walk-forward評価
+- [x] future model-selection protocol v2をfreeze
+- [x] winner metricをrace-macro Brierに固定
+- [x] log lossをsecondary diagnostic / tie-breakerに固定
+- [x] ROC-AUC / ECE / hit rate / ROIをwinner criterionから除外
+- [x] market-onlyをensemble selectionのmandatory default/referenceに固定
+- [x] 2025をv2のuntouched testとして再利用しないことを固定
+- [ ] candidate model registry / hyperparameter gridsをpre-register
+- [ ] chronological out-of-fold candidate predictionsを生成
+- [ ] paired date-clustered one-SE gateでStage 4 successorを選定
+- [ ] time-matched market snapshotが得られるまではmorning-odds blendをhistorical final oddsで再最適化しない
+- [ ] 複数liveレースを発走前lockで蓄積
+- [ ] live walk-forward評価
 - [ ] calibrationをサンプル外で検証
-- [ ] market-only / model-only / blendedを比較
+- [ ] market-only / model-only / blendedをpaired proper scoresで比較
 
 ## Stage 9 — Rank-distribution prototype
 
