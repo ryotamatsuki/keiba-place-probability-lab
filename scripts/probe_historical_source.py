@@ -24,7 +24,7 @@ def fetch_kaggle_metadata() -> dict:
     try:
         with urlopen(req, timeout=60) as r:
             return json.load(r)
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         return {"_metadata_error": repr(exc)}
 
 
@@ -38,7 +38,7 @@ def detect_csv(path: Path) -> tuple[str, str]:
                 df = pd.read_csv(path, encoding=enc, sep=sep, nrows=5, low_memory=False)
                 if len(df.columns) >= 2:
                     return enc, sep
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001
                 last_exc = exc
     raise RuntimeError(f"could not parse {path}: {last_exc!r}")
 
@@ -74,7 +74,7 @@ def inspect_file(path: Path, root: Path) -> dict:
             item["columns"] = " | ".join(pf.schema.names)
         elif suffix == ".json":
             item["columns"] = "(json metadata)"
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         item["error"] = repr(exc)
     return item
 
