@@ -1,0 +1,21 @@
+{
+  "timezone": "Asia/Tokyo",
+  "status": "automation_creation_confirmed",
+  "executions": [
+    {
+      "at": "2026-10-04T15:16:00+09:00",
+      "action": "Kyoto preflight; invoke capture at 15:19; formal window 15:20–15:21"
+    },
+    {
+      "at": "2026-10-04T15:31:00+09:00",
+      "action": "Tokyo preflight; invoke capture at 15:34; formal window 15:35–15:36"
+    },
+    {
+      "at": "2026-10-04T17:16:00+09:00",
+      "action": "Official result reconciliation for both targets"
+    }
+  ],
+  "formal_locks_completed": 0,
+  "future_execution_success_not_guaranteed": true,
+  "unavailable_or_late_inputs": "record failed/pending; never backfill"
+}
