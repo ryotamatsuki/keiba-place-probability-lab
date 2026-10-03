@@ -69,8 +69,28 @@ PDF_NAME_RE = re.compile(
     rf"^(?P<year>\d{{4}})-(?P<meeting>\d+)(?P<slug>{VENUE_SLUG_RE})(?P<day>\d+)\.pdf$",
     re.I,
 )
-DATE_RE = re.compile(r"(?P<month>\d{1,2})月(?P<day>\d{1,2})日")
-RACE_HEADING_RE = re.compile(r"第\s*(?P<race>\d{1,2})\s*競走")
+OLD_VENUE_ALIASES = {
+    "sap": "sapporo",
+    "hako": "hakodate",
+    "fuku": "fukushima",
+    "niiga": "niigata",
+    "tokyo": "tokyo",
+    "naka": "nakayama",
+    "chu": "chukyo",
+    "kyo": "kyoto",
+    "han": "hanshin",
+    "koku": "kokura",
+}
+OLD_PDF_NAME_RE = re.compile(
+    r"^(?P<meeting>\d+)(?P<slug>sap|hako|fuku|niiga|tokyo|naka|chu|kyo|han|koku)\.pdf$",
+    re.I,
+)
+VENUE_JP_RE = "|".join(re.escape(v[1]) for v in VENUES.values())
+FULL_RACE_HEADER_RE = re.compile(
+    rf"(?P<month>\d{{1,2}})月(?P<calday>\d{{1,2}})日.{{0,180}}?"
+    rf"\((?P<year>\d{{4}})年(?P<meeting>\d+)(?P<venue>{VENUE_JP_RE})\)"
+    rf"第(?P<meetday>\d+)日第(?P<race>\d{{1,2}})競走"
+)
 
 NONSTARTER_RANKS = {"", "取", "除"}
 OBSTACLE_RE = re.compile(
@@ -171,114 +191,164 @@ def get_text(url: str, *, attempts: int = 4) -> str:
 
 
 def annual_pdf_links(year: int) -> list[dict]:
+    """Return official result-PDF links for both legacy and modern JRA pages."""
     page = JRA_REPORT.format(year=year)
     soup = BeautifulSoup(get_text(page), "html.parser")
     found: list[dict] = []
     for a in soup.find_all("a", href=True):
         href = str(a["href"])
         name = Path(href).name
-        m = PDF_NAME_RE.match(name)
-        if not m or int(m.group("year")) != year:
+
+        modern = PDF_NAME_RE.match(name)
+        if modern and int(modern.group("year")) == year:
+            slug = modern.group("slug").lower()
+            venue_code, venue_jp = VENUES[slug]
+            found.append(
+                {
+                    "year": year,
+                    "meeting_no": int(modern.group("meeting")),
+                    "slug": slug,
+                    "venue_code": venue_code,
+                    "venue": venue_jp,
+                    "url": urljoin(page, href),
+                }
+            )
             continue
-        slug = m.group("slug").lower()
-        venue_code, venue_jp = VENUES[slug]
-        found.append(
-            {
-                "year": year,
-                "meeting_no": int(m.group("meeting")),
-                "day_no": int(m.group("day")),
-                "slug": slug,
-                "venue_code": venue_code,
-                "venue": venue_jp,
-                "url": urljoin(page, href),
-            }
-        )
+
+        legacy = OLD_PDF_NAME_RE.match(name)
+        if legacy:
+            slug = OLD_VENUE_ALIASES[legacy.group("slug").lower()]
+            venue_code, venue_jp = VENUES[slug]
+            found.append(
+                {
+                    "year": year,
+                    "meeting_no": int(legacy.group("meeting")),
+                    "slug": slug,
+                    "venue_code": venue_code,
+                    "venue": venue_jp,
+                    "url": urljoin(page, href),
+                }
+            )
+
     unique = {x["url"]: x for x in found}
     if not unique:
         raise RuntimeError(f"no JRA result PDFs found for {year}")
     return sorted(
         unique.values(),
-        key=lambda x: (x["venue_code"], x["meeting_no"], x["day_no"]),
+        key=lambda x: (x["venue_code"], x["meeting_no"], x["url"]),
     )
 
 
-def parse_daily_pdf(info: dict) -> DayRecord:
+def parse_result_pdf(info: dict) -> list[dict]:
+    """Extract race-day/date/race-number facts from one official JRA PDF."""
     data = get_bytes(info["url"])
     pdf_hash = hashlib.sha256(data).hexdigest()
     doc = fitz.open(stream=data, filetype="pdf")
     if len(doc) < 1:
         raise RuntimeError(f"empty PDF: {info['url']}")
 
-    first = unicodedata.normalize("NFKC", doc[0].get_text("text"))
-    compact_first = re.sub(r"\s+", "", first)
-    dm = DATE_RE.search(compact_first)
-    if not dm:
-        raise RuntimeError(f"could not extract date from {info['url']}")
-    month = int(dm.group("month"))
-    day = int(dm.group("day"))
-    actual = pd.Timestamp(year=info["year"], month=month, day=day).date().isoformat()
-
-    all_races: set[int] = set()
+    compact_parts: list[str] = []
     for page in doc:
         text = unicodedata.normalize("NFKC", page.get_text("text"))
-        all_races.update(int(m.group("race")) for m in RACE_HEADING_RE.finditer(text))
+        compact_parts.append(re.sub(r"\s+", "", text))
     doc.close()
+    compact = "".join(compact_parts)
 
-    races = sorted(r for r in all_races if 1 <= r <= 12)
-    if not races:
-        raise RuntimeError(f"no race headings extracted from {info['url']}")
+    extracted: list[dict] = []
+    for match in FULL_RACE_HEADER_RE.finditer(compact):
+        year = int(match.group("year"))
+        meeting = int(match.group("meeting"))
+        venue = match.group("venue")
+        meetday = int(match.group("meetday"))
+        race_no = int(match.group("race"))
+        if (
+            year != info["year"]
+            or meeting != info["meeting_no"]
+            or venue != info["venue"]
+            or not 1 <= race_no <= 12
+        ):
+            continue
+        month = int(match.group("month"))
+        calday = int(match.group("calday"))
+        actual = pd.Timestamp(year=year, month=month, day=calday).date().isoformat()
+        key = f"{year}{info['venue_code']}{meeting:02d}{meetday:02d}"
+        extracted.append(
+            {
+                "race_day_key": key,
+                "year": year,
+                "venue_code": info["venue_code"],
+                "venue": venue,
+                "meeting_no": meeting,
+                "day_no": meetday,
+                "actual_date": actual,
+                "race_number": race_no,
+                "pdf_sha256": pdf_hash,
+                "pdf_url": info["url"],
+            }
+        )
 
-    expected_header = f"{info['year']}年{info['meeting_no']}{info['venue']}"
-    header_verified = (
-        expected_header in compact_first
-        and f"第{info['day_no']}日" in compact_first
-    )
-
-    key = (
-        f"{info['year']}{info['venue_code']}"
-        f"{info['meeting_no']:02d}{info['day_no']:02d}"
-    )
-    return DayRecord(
-        race_day_key=key,
-        year=info["year"],
-        venue_code=info["venue_code"],
-        venue=info["venue"],
-        meeting_no=info["meeting_no"],
-        day_no=info["day_no"],
-        actual_date=actual,
-        official_race_numbers=";".join(str(x) for x in races),
-        official_race_count=len(races),
-        pdf_sha256=pdf_hash,
-        pdf_url=info["url"],
-        header_verified=header_verified,
-    )
+    if not extracted:
+        raise RuntimeError(f"no full race headers extracted from {info['url']}")
+    return extracted
 
 
 def build_official_date_map() -> pd.DataFrame:
     tasks: list[dict] = []
     for year in range(START_YEAR, END_YEAR + 1):
-        tasks.extend(annual_pdf_links(year))
+        links = annual_pdf_links(year)
+        print(f"JRA report PDFs {year}: {len(links)}")
+        tasks.extend(links)
 
-    print(f"JRA daily PDFs discovered: {len(tasks)}")
-    records: list[DayRecord] = []
+    print(f"JRA result PDFs discovered: {len(tasks)}")
+    race_records: list[dict] = []
     workers = int(os.getenv("JRA_PDF_WORKERS", "12"))
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        futures = {pool.submit(parse_daily_pdf, task): task for task in tasks}
+        futures = {pool.submit(parse_result_pdf, task): task for task in tasks}
         done = 0
         for future in as_completed(futures):
-            records.append(future.result())
+            race_records.extend(future.result())
             done += 1
             if done % 100 == 0 or done == len(tasks):
-                print(f"JRA PDF dates parsed: {done}/{len(tasks)}")
+                print(f"JRA result PDFs parsed: {done}/{len(tasks)}")
 
-    df = pd.DataFrame(asdict(x) for x in records)
+    races = pd.DataFrame(race_records)
+    race_ids = (
+        races["race_day_key"]
+        + races["race_number"].astype(int).astype(str).str.zfill(2)
+    )
+    if race_ids.duplicated().any():
+        dup = race_ids[race_ids.duplicated(False)].tolist()
+        raise RuntimeError(f"duplicate official race IDs extracted: {dup[:20]}")
+
+    day_rows: list[DayRecord] = []
+    for key, group in races.groupby("race_day_key", sort=False):
+        dates = group["actual_date"].drop_duplicates().tolist()
+        if len(dates) != 1:
+            raise RuntimeError(f"multiple actual dates for {key}: {dates}")
+        first = group.iloc[0]
+        nums = sorted(group["race_number"].astype(int).unique().tolist())
+        urls = sorted(group["pdf_url"].drop_duplicates().tolist())
+        hashes = sorted(group["pdf_sha256"].drop_duplicates().tolist())
+        day_rows.append(
+            DayRecord(
+                race_day_key=key,
+                year=int(first["year"]),
+                venue_code=str(first["venue_code"]),
+                venue=str(first["venue"]),
+                meeting_no=int(first["meeting_no"]),
+                day_no=int(first["day_no"]),
+                actual_date=str(dates[0]),
+                official_race_numbers=";".join(str(x) for x in nums),
+                official_race_count=len(nums),
+                pdf_sha256=";".join(hashes),
+                pdf_url=";".join(urls),
+                header_verified=True,
+            )
+        )
+
+    df = pd.DataFrame(asdict(x) for x in day_rows)
     if df["race_day_key"].duplicated().any():
-        dup = df.loc[df["race_day_key"].duplicated(False), "race_day_key"].tolist()
-        raise RuntimeError(f"duplicate official race-day keys: {dup[:20]}")
-    if not df["header_verified"].all():
-        bad = df.loc[~df["header_verified"], ["race_day_key", "pdf_url"]]
-        raise RuntimeError(f"JRA PDF header verification failed:\n{bad.head(20)}")
-
+        raise RuntimeError("duplicate official race-day keys after aggregation")
     df["actual_date"] = pd.to_datetime(df["actual_date"])
     return df.sort_values(
         ["actual_date", "venue_code", "meeting_no", "day_no"]
