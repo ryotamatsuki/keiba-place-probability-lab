@@ -138,7 +138,16 @@ def add_relative_ability_features(
     if len(out) != len(eligible_norm):
         raise ValueError("Relative-feature merge changed eligible row count")
 
-    return out, pd.DataFrame(coverage_rows)
+    coverage = pd.DataFrame(coverage_rows)
+    eligible_nonmissing = {
+        feature: int(out[feature].notna().sum()) for feature in RELATIVE_FEATURES
+    }
+    coverage["eligible_rows"] = len(out)
+    coverage["eligible_nonmissing"] = coverage["feature"].map(eligible_nonmissing)
+    coverage["eligible_coverage"] = (
+        coverage["eligible_nonmissing"] / coverage["eligible_rows"]
+    )
+    return out, coverage
 
 
 def make_xgb01_relative_pipeline() -> Pipeline:
