@@ -16,14 +16,13 @@ import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Iterable
+from collections.abc import Iterable
 
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
 from .live_public import (
-    VENUES,
     _identity,
     _sex_age,
     _weight,
