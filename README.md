@@ -78,9 +78,10 @@ tests/      # 最小限の自動テスト
 
 ## Current status
 
-**Stage 1 complete / Stage 2 market baseline in progress**
+**Stage 3 complete / Stage 4 non-market baseline next**
 
-短期ターゲットは `P(top3)`。長期アーキテクチャは順位分布モデルです。
+Stage 2で市場だけのP(top3)ベースラインを固定し、Stage 3で市場情報を遮断した
+form / course / distance / handicap / pace特徴量をfreezeしました。
 
 初期候補として10番ヒシアイラが会話上で挙がっていますが、これはモデル結論ではありません。
 全頭分析では先入観として固定せず、18頭を同一手順で評価します。
