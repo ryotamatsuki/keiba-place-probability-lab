@@ -728,17 +728,53 @@ def main() -> None:
         "2010-01-01", "2025-12-31"
     ).all():
         raise ValueError("Mapped date outside target interval")
-    if date_mapping.duplicated(["actual_date", "racecourse", "race_number"]).any():
-        raise ValueError("Duplicate actual_date/racecourse/race_number")
+    duplicate_calendar_races = date_mapping.duplicated(
+        ["actual_date", "racecourse", "race_number"], keep=False
+    )
+    if duplicate_calendar_races.any():
+        bad = date_mapping.loc[
+            duplicate_calendar_races,
+            ["race_id", "actual_date", "racecourse", "race_number"],
+        ]
+        bad.to_csv(DOCS / "HISTORICAL_DUPLICATE_CALENDAR_RACES.csv", index=False)
+        raise ValueError(
+            "Duplicate actual_date/racecourse/race_number: {}".format(
+                bad.to_dict("records")[:30]
+            )
+        )
     map_keys = ["year", "racecourse", "meeting_number", "meeting_day"]
-    if date_mapping.groupby(map_keys).actual_date.nunique().gt(1).any():
-        raise ValueError("Non-unique meeting-day date mapping")
+    multi_date_days = (
+        date_mapping.groupby(map_keys, dropna=False).actual_date.nunique()
+    )
+    multi_date_days = multi_date_days[multi_date_days.gt(1)]
+    allowed_continuation_key = (2020, "中山", 3, 2)
+    unexpected_multi_date_days = [
+        tuple(key) for key in multi_date_days.index if tuple(key) != allowed_continuation_key
+    ]
+    if unexpected_multi_date_days:
+        raise ValueError(
+            "Non-unique meeting-day date mapping outside verified continuation race: {}".format(
+                unexpected_multi_date_days[:20]
+            )
+        )
+    continuation_dates = set(
+        date_mapping.loc[
+            date_mapping.race_id.str.startswith("2020060302"), "actual_date"
+        ].astype(str)
+    )
+    if continuation_dates != {"2020-03-29", "2020-03-31"}:
+        raise ValueError(
+            "Verified 2020 Nakayama continuation dates changed: {}".format(
+                sorted(continuation_dates)
+            )
+        )
 
     # Hard annual reconciliation: compare realized JRA race IDs in the primary
     # source with race IDs explicitly recovered from official JRA result PDFs.
     # This is stricter than a 12-race-card capacity check and fails closed when
     # official text extraction is incomplete.
     official_ids = set(conditions.race_id.astype(str)) if not conditions.empty else set()
+    official_ids.update(OFFICIAL_RACE_METADATA_OVERRIDES)
     source_ids = set(date_mapping.race_id.astype(str))
     source_only = sorted(source_ids - official_ids)
     official_only = sorted(official_ids - source_ids)
