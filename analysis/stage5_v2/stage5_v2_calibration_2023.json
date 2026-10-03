@@ -1,0 +1,14 @@
+{
+  "fit_period": "2023",
+  "market": {
+    "intercept": -0.19356620112727374,
+    "slope": 0.7946619288349391
+  },
+  "nonmarket": {
+    "intercept": -0.049372201840940926,
+    "slope": 0.9853195366969464
+  },
+  "rows": 3194,
+  "races": 250,
+  "paired_row_fingerprint": "6022e2ec92b49d863cadbc3d3c76752460a8a141e52c002ee7fce16bbb45eb9e"
+}
