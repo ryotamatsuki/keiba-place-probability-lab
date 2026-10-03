@@ -242,7 +242,7 @@ def standardize(
     races: pd.DataFrame,
     results: pd.DataFrame,
     date_map: pd.DataFrame,
-) -> tuple[pd.DataFrame, dict]:
+) -> tuple[pd.DataFrame, dict, pd.DataFrame, pd.DataFrame]:
     races = races.copy()
     races["race_id"] = races["race_id"].astype("string").str.strip()
     date_map = date_map.copy()
@@ -337,6 +337,72 @@ def standardize(
     winner_rows = merged.loc[merged["finish_position"].eq(1)]
     winner_last3f = winner_rows.groupby("race_id")["last_3f_num"].min()
     obstacle_ids = set(winner_last3f.loc[winner_last3f.lt(20.0)].index.astype(str))
+
+    race_audit = (
+        merged.sort_values(["race_date", "race_id", "horse_no"])
+        .drop_duplicates("race_id")
+        [
+            [
+                "race_id",
+                "race_date",
+                "venue",
+                "race_name",
+                "course_type",
+                "distance",
+                "surface",
+            ]
+        ]
+        .copy()
+    )
+    race_audit["year"] = pd.to_datetime(race_audit["race_date"]).dt.year
+    race_audit["winner_last3f"] = race_audit["race_id"].map(winner_last3f)
+    race_audit["niigata_1000_restored"] = race_audit["race_id"].isin(recovered_niigata_ids)
+    race_audit["obstacle_excluded"] = race_audit["race_id"].isin(obstacle_ids)
+    race_audit["missing_flat_metadata"] = ~race_audit["surface"].isin(["turf", "dirt"])
+    race_audit["included_flat"] = (
+        race_audit["surface"].isin(["turf", "dirt"])
+        & ~race_audit["obstacle_excluded"]
+    )
+    race_audit["exclusion_reason"] = np.select(
+        [
+            race_audit["obstacle_excluded"],
+            race_audit["missing_flat_metadata"],
+        ],
+        [
+            "obstacle_winner_last3f_lt20",
+            "missing_surface_metadata",
+        ],
+        default="included_flat",
+    )
+
+    exclusion_year = (
+        race_audit.groupby("year")
+        .agg(
+            jra_races=("race_id", "nunique"),
+            niigata_1000_restored=("niigata_1000_restored", "sum"),
+            obstacle_excluded=("obstacle_excluded", "sum"),
+            missing_surface_metadata=("missing_flat_metadata", "sum"),
+            flat_races=("included_flat", "sum"),
+        )
+        .reset_index()
+    )
+
+    excluded_detail = race_audit.loc[
+        ~race_audit["included_flat"],
+        [
+            "race_id",
+            "race_date",
+            "year",
+            "venue",
+            "race_name",
+            "course_type",
+            "distance",
+            "winner_last3f",
+            "niigata_1000_restored",
+            "exclusion_reason",
+        ],
+    ].copy()
+
     merged = merged.loc[
         merged["surface"].isin(["turf", "dirt"]) & ~merged["race_id"].isin(obstacle_ids)
     ].copy()
@@ -403,7 +469,7 @@ def standardize(
         "standardized_rows": len(std),
         "standardized_races": int(std["race_id"].nunique()),
     }
-    return std, diagnostics
+    return std, diagnostics, exclusion_year, excluded_detail
 
 
 def sha256_file(path: Path) -> str:
@@ -450,7 +516,9 @@ def main() -> None:
 
     results = load_jra_results(result_path, jra_ids)
     date_map, date_diag = build_actual_date_map(secondary_root, helper_root)
-    standardized, std_diag = standardize(races, results, date_map)
+    standardized, std_diag, exclusion_year, excluded_detail = standardize(
+        races, results, date_map
+    )
 
     panel = build_historical_panel(standardized)
     assert_strict_history(panel)
@@ -562,6 +630,14 @@ def main() -> None:
     YEAR_COUNTS_PATH.parent.mkdir(parents=True, exist_ok=True)
     year_counts.to_csv(YEAR_COUNTS_PATH, index=False)
 
+    exclusion_path = Path("docs/HISTORICAL_EXCLUSION_DIAGNOSTICS.csv")
+    exclusion_year.to_csv(exclusion_path, index=False)
+
+    excluded_detail_path = Path("docs/HISTORICAL_EXCLUDED_RACES_2016_2025.csv")
+    excluded_detail.loc[
+        excluded_detail["year"].between(2016, 2025)
+    ].to_csv(excluded_detail_path, index=False)
+
     benchmark_2016_2025 = int(
         standardized.loc[
             standardized["race_date"].dt.year.between(2016, 2025),
@@ -570,6 +646,14 @@ def main() -> None:
     )
     benchmark_target = 33_290
     benchmark_match = benchmark_2016_2025 == benchmark_target
+
+    obstacle_2016_2025 = int(
+        exclusion_year.loc[
+            exclusion_year["year"].between(2016, 2025),
+            "obstacle_excluded",
+        ].sum()
+    )
+    obstacle_benchmark_2016_2025 = 1_256
 
     missingness = cohort.isna().mean().sort_values(ascending=False)
     material_missing = missingness.loc[missingness.gt(0)]
@@ -622,6 +706,8 @@ def main() -> None:
             "flat_races_2016_2025": benchmark_2016_2025,
             "flat_race_benchmark_2016_2025": benchmark_target,
             "benchmark_match": benchmark_match,
+            "obstacle_races_2016_2025": obstacle_2016_2025,
+            "obstacle_benchmark_2016_2025": obstacle_benchmark_2016_2025,
             **date_diag,
             **std_diag,
         },
@@ -670,6 +756,9 @@ def main() -> None:
         f"- 2016-2025 flat races: {benchmark_2016_2025}",
         f"- independent benchmark: {benchmark_target}",
         f"- benchmark exact match: {benchmark_match}",
+        f"- 2016-2025 obstacle races excluded: {obstacle_2016_2025}",
+        f"- independent obstacle benchmark: {obstacle_benchmark_2016_2025}",
+        "- detailed exclusions: docs/HISTORICAL_EXCLUDED_RACES_2016_2025.csv",
         "",
         "## Phase A cohort",
         "",
