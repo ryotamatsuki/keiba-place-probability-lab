@@ -1,6 +1,9 @@
 name: Build 2026 live history
 
 on:
+  push:
+    branches: [live-history-2026-db]
+    paths: [.github/workflows/live-history-2026.yml]
   workflow_dispatch:
     inputs:
       through:
