@@ -15,7 +15,6 @@ import hashlib
 import re
 import unicodedata
 from collections import defaultdict
-from io import BytesIO
 from urllib.parse import unquote, urljoin
 
 import numpy as np
