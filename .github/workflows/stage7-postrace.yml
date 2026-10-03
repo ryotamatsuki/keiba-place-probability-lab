@@ -5,6 +5,11 @@ on:
   pull_request:
     paths:
       - "analysis/2026-10-03_kyoto11_opal/official_outcome.csv"
+      - "analysis/2026-10-03_kyoto11_opal/POSTRACE_EVALUATION.md"
+      - "analysis/2026-10-03_kyoto11_opal/postrace_metrics.csv"
+      - "analysis/2026-10-03_kyoto11_opal/stage7_evaluation_manifest.json"
+      - "README.md"
+      - "docs/WORKFLOW.md"
       - "analysis/2026-10-03_kyoto11_opal/probability_estimates.csv"
       - "src/keiba_place_lab/postrace.py"
       - "scripts/run_stage7_evaluation.py"
