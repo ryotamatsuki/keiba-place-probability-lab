@@ -1,5 +1,7 @@
 # Stage 3.6 — Historical Training Panel Design
 
+Status: FROZEN / QA PASS (historical-v1.1)
+
 ## Objective
 
 Create one row per **horse × race**, with every predictor reconstructed from races strictly earlier
@@ -41,13 +43,17 @@ Minimum required concepts:
 - horse identity;
 - horse number and field size;
 - sex / age / assigned weight;
-- racecourse / surface / distance / course layout / class / handicap flag;
+- racecourse / surface / distance / turn direction / class;
 - official finishing position;
 - race time in seconds;
 - first usable corner position;
 - open-plus and graded-race indicators.
 
 The builder intentionally does not require target-race odds, popularity or payout.
+
+`course_layout` and `handicap_indicator` are retained as audit fields when official
+evidence is recoverable, but are not required historical-v1.1 predictors. Measured coverage is
+12.761569% and 56.349127% respectively, so both are excluded rather than default-filled.
 
 ## Leakage-safe feature construction
 
@@ -151,7 +157,8 @@ Before Stage 4 model fitting, Stage 3.6 must report:
 - missingness by canonical feature;
 - top3 prevalence by split;
 - distribution of field size;
-- race-count reconciliation against an official or independently verified reference where feasible.
+- exact annual race-id reconciliation against the official JRA inventory;
+- explicit audit of the 2025 year-end JRADB supplement and 2020 continuation-racing exception.
 
 ## Artifacts
 
@@ -165,6 +172,10 @@ Public repository:
 
 Local / not committed by default:
 
-- raw historical datasets;
-- standardized row-level source table;
-- full historical feature panel.
+- raw Kaggle CSVs and JRA PDFs/HTML;
+- standardized row-level source table.
+
+GitHub Actions artifact:
+
+- full historical feature panel `jra_flat_historical_panel_v1.parquet`;
+- frozen train / validation / test and predeclared cohort partitions.
