@@ -79,19 +79,23 @@ tests/      # 自動テスト
 
 ## Current status
 
-**Stage 3.6 historical training panel — IN PROGRESS**
+**Stage 3.6 historical training panel — COMPLETE / QA PASS**
 
-Stage 3.5で現在の18頭のCanonical Feature Spec v1を実データ化した後、
-「18頭だけで人手の重みを置く」のではなく、過去JRAレースから同じ特徴量を
-as-of-dateで再構成して学習する方針に切り替えました。
+2010-2025のJRA履歴をactual-date基準で再構成し、公式JRA inventoryと55,268レースを
+年次ごとに完全照合しました。Kaggle v1に未収録だった2025年末48レースは公式JRADB
+結果ページから補完し、障害2,048レースを除いたflat 53,220レース / 753,387走 /
+81,900頭のleakage-safe履歴パネルをfreezeしています。
 
-Stage 3.6では、履歴パネルのデータ契約、権利・出典ゲート、leakage-safe builder、
-時系列split、QAテストまで実装済みです。次は実際の2010-2025データをローカル取得・標準化し、
-2016-2022 train / 2023-2024 validation / 2025 untouched testをmaterializeします。
+固定splitは2010-2015 warmup / 2016-2022 train / 2023-2024 validation /
+2025 untouched testです。chronology、race×horse重複、same-race contamination、
+market列、future-year、未解決日付、JRA malformed selected rowはいずれも0です。
 
-Stage 4はこのQAが通るまでモデルfitを開始しません。
+Freeze artifactは `jra_flat_historical_panel_v1.parquet`
+(SHA256 `cee9ae9a099f521f12b1bcdd371c25a3d7b9ba3555fbcf5a46f2c9098f59a33d`)。
+`course_layout` と `handicap_indicator` は公式データcoverage不足のためhistorical-v1.1
+model inputから除外し、監査列としてのみ保持します。
 
-初期候補として10番ヒシアイラが会話上で挙がっていますが、これはモデル結論ではありません。
+Stage 4はunblockedですが、まだモデルfitには進んでいません。
 
 ## License
 
