@@ -69,30 +69,31 @@ P(rank_i = 1), P(rank_i = 2), ..., P(rank_i = N)
 analysis/   # レース単位の事前分析・予測・事後評価
 data/       # 出典マニフェストと再配布可能な派生データ
 docs/       # 方法論、データ利用方針、評価手順、既存OSSレビュー
+scripts/    # ローカル取得・履歴パネル構築CLI
 src/        # 再現可能な分析コード
 templates/  # 予測・意思決定ログのテンプレート
-tests/      # 最小限の自動テスト
+tests/      # 自動テスト
 ```
 
 最初のケースは `2026-10-03 京都11R オパールS` とし、18頭をゼロベースで比較します。
 
 ## Current status
 
-**Stage 3.5 complete / Stage 4 non-market baseline ready**
+**Stage 3.6 historical training panel — IN PROGRESS**
 
-Stage 2で市場だけのP(top3)ベースラインを固定しました。Stage 3の初期特徴量はその後、
-JRA-VANの運用仕様、2026年のJRA leakage-aware temporal-validation研究、ranking/SHAP研究、
-および現在の18頭データの冗長性・欠損監査で再評価しました。
+Stage 3.5で現在の18頭のCanonical Feature Spec v1を実データ化した後、
+「18頭だけで人手の重みを置く」のではなく、過去JRAレースから同じ特徴量を
+as-of-dateで再構成して学習する方針に切り替えました。
 
-Canonical Stage 4 inputは `docs/FEATURE_SELECTION_AUDIT.md` と
-`docs/FEATURE_REGISTRY_V1.csv` に固定し、18頭分を
-`analysis/2026-10-03_kyoto11_opal/canonical_nonmarket_features_v1.csv`
-として実データ化しました。初期Stage 3の `nonmarket_features.csv` は監査用スナップショットとして保持します。
+Stage 3.6では、履歴パネルのデータ契約、権利・出典ゲート、leakage-safe builder、
+時系列split、QAテストまで実装済みです。次は実際の2010-2025データをローカル取得・標準化し、
+2016-2022 train / 2023-2024 validation / 2025 untouched testをmaterializeします。
+
+Stage 4はこのQAが通るまでモデルfitを開始しません。
 
 初期候補として10番ヒシアイラが会話上で挙がっていますが、これはモデル結論ではありません。
-全頭分析では先入観として固定せず、18頭を同一手順で評価します。
 
 ## License
 
-現時点ではライセンスを付与していません。公開リポジトリであること自体は、
-第三者への再利用許諾を意味しません。OSSライセンスは依存関係・データ利用条件を確認後に決定します。
+現時点ではリポジトリ全体にOSSライセンスを付与していません。
+外部履歴データは各配布元のライセンスを別途確認し、raw row-level dataはデフォルトでgit管理外に置きます。
