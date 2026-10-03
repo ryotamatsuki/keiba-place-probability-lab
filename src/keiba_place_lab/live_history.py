@@ -340,8 +340,8 @@ def verify_full_field(
     if int(starters.shape[0]) != int(result_entries.field_size.iloc[0]):
         raise ValueError("Actual starter count mismatch")
     return {
-        "declared_entries": int(len(merged)),
-        "actual_starters": int(len(starters)),
+        "declared_entries": len(merged),
+        "actual_starters": len(starters),
         "declared_field_size": declared,
         "scratched": int((merged.finish_status == "scratched").sum()),
         "excluded": int((merged.finish_status == "excluded").sum()),
@@ -457,8 +457,8 @@ def publish_snapshot(
             "missing_race_ids": missing,
             "expected_race_days": int(expected_flat.race_date.nunique()),
             "confirmed_race_days": int(starters.race_date.nunique()),
-            "rows": int(len(starters)),
-            "entry_rows": int(len(entries)),
+            "rows": len(starters),
+            "entry_rows": len(entries),
             "history_sha256": history_sha,
             "entry_audit_sha256": entries_sha,
             "race_ledger_sha256": ledger_sha,
@@ -586,7 +586,7 @@ def update_live_history(
                     collected_entries[rid] = e
                     race_qas[rid] = qa
                     fetch_records.extend(recs)
-                except Exception as exc:  # preserve prior snapshot on any failure
+                except Exception as exc:  # noqa: BLE001 - batch must record any per-race failure
                     failures[str(row.race_id)] = f"{type(exc).__name__}: {exc}"
     if failures:
         failure_path = Path(root) / "last_failure.json"
@@ -644,8 +644,8 @@ def update_live_history(
                 "race_id": rid,
                 "provider_id": rid[2:],
                 "race_date": pd.to_datetime(h.race_date).iloc[0].date().isoformat(),
-                "declared_entries": int(len(e)),
-                "actual_starters": int(len(h)),
+                "declared_entries": len(e),
+                "actual_starters": len(h),
                 "declared_field_size": int(h.declared_field_size.iloc[0]),
                 "scratched": int(e.entry_status.eq("scratched").sum()),
                 "excluded": int(e.entry_status.eq("excluded").sum()),
