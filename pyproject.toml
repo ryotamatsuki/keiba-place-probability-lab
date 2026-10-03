@@ -25,6 +25,7 @@ historical = [
   "beautifulsoup4>=4.12",
   "pymupdf>=1.26",
   "pyarrow>=18",
+  "tabulate>=0.9",
 ]
 
 [tool.setuptools.packages.find]

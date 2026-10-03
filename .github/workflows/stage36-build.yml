@@ -1,13 +1,6 @@
 name: Stage 3.6 build historical training panel
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/stage36-build.yml"
-      - "scripts/materialize_historical_training_panel.py"
-      - "src/keiba_place_lab/historical_panel.py"
-      - "tests/test_historical_panel.py"
   workflow_dispatch:
 
 permissions:

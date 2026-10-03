@@ -84,7 +84,8 @@ def build_historical_panel(rows: pd.DataFrame) -> pd.DataFrame:
     x["finish_pct_current"] = (x["finish_position"] - 1) / (x["field_size"] - 1)
     x.loc[x["finish_position"].isna(), "finish_pct_current"] = np.nan
 
-    winner_time = x.groupby("race_id", sort=False)["race_time_seconds"].transform("min")
+    winner_times = x["race_time_seconds"].where(x["finish_position"].eq(1))
+    winner_time = winner_times.groupby(x["race_id"], sort=False).transform("min")
     x["relative_time_loss_current"] = (x["race_time_seconds"] - winner_time) / winner_time
     invalid_time = x["race_time_seconds"].isna() | winner_time.isna() | winner_time.le(0)
     x.loc[invalid_time, "relative_time_loss_current"] = np.nan
@@ -156,6 +157,7 @@ def build_historical_panel(rows: pd.DataFrame) -> pd.DataFrame:
         "recent4_early_pos_pct_mean"
     ].transform(_front_share)
 
+    assert_strict_history(x)
     return x
 
 

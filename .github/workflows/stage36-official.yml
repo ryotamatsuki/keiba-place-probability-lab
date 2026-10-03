@@ -28,7 +28,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: data/historical_raw/official_fact_cache
-          key: jra-official-v1-${{ matrix.year }}
+          key: jra-official-v3-${{ matrix.year }}
       - run: python -u scripts/extract_official_jra.py --year ${{ matrix.year }} --workers 2
       - uses: actions/upload-artifact@v4
         if: always()
