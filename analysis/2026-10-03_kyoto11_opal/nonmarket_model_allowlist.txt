@@ -1,22 +1,45 @@
-frame
-sex_age
-handicap_kg
-weight_delta_vs_last_kg
-jbis_speed_index
-recent3_jbis_speed_mean
+# Canonical Stage 4 non-market allowlist — Feature Spec v1
+# Frozen after FEATURE_SELECTION_AUDIT.md. Market variables are forbidden.
+#
+# REQUIRED HORSE-LEVEL CORE
+draw_pct
+sex
+age
+assigned_weight_kg
+assigned_weight_delta_from_prev_kg
+days_since_prev
+distance_change_from_prev_m
+surface_changed_from_prev
+career_starts
+career_top3
+turf_starts
+turf_top3
+same_distance_starts
+same_distance_top3
+same_course_starts
+same_course_top3
+recent3_finish_pct_mean
 recent3_top3_count
-overall_place_rate
-turf_place_rate
-kyoto_turf_place_rate
-turf1200_place_rate
-kyoto1200_best_sec
-kyoto1200_vs_track_record_sec
-other_turf1200_best_sec
-recent4_finish_mean
-recent4_top3_count
-recent4_turf_count
-recent4_turf1200_count
-recent4_open_plus_count
-recent4_graded_count
+recent3_open_plus_count
+recent3_graded_count
 recent4_early_pos_pct_mean
-recent4_early_pos_pct_median
+
+# NORMALIZED SPEED BLOCK — required if materializable rights-clean
+recent3_relative_time_mean
+recent3_relative_last3f_mean
+
+# RACE-LEVEL CONTEXT
+front_forward_share
+field_size
+racecourse
+surface
+distance_m
+course_layout
+race_class
+handicap_indicator
+
+# NOT CORE:
+# jbis_speed_index / recent3_jbis_speed_mean -> sensitivity model only
+# jockey/trainer/pedigree/workout -> future ablation blocks
+# same-day body weight/going/weather -> late-update model only
+# all market odds/popularity -> forbidden until Stage 5
