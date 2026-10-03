@@ -29,6 +29,13 @@ from materialize_historical_training_dataset import (
     sha256_file,
 )
 
+from stage36_official_supplement import (
+    fetch_official_2025_supplement,
+    harmonize_supplement_horse_ids,
+    reconcile_official_inventory,
+    supplemental_date_mapping,
+)
+
 from keiba_place_lab.historical_panel import (
     assert_strict_history,
     assign_temporal_split,
@@ -769,63 +776,140 @@ def main() -> None:
             )
         )
 
-    # Hard annual reconciliation: compare realized JRA race IDs in the primary
-    # source with race IDs explicitly recovered from official JRA result PDFs.
-    # This is stricter than a 12-race-card capacity check and fails closed when
-    # official text extraction is incomplete.
-    official_ids = set(conditions.race_id.astype(str)) if not conditions.empty else set()
-    official_ids.update(OFFICIAL_RACE_METADATA_OVERRIDES)
+    # Hard annual reconciliation. PDF condition parsing is best-effort, so
+    # race existence is reconciled independently: exact race markers are used
+    # where machine-readable, and parser-gap days must match the number of
+    # official race headers in the daily result PDF.
     source_ids = set(date_mapping.race_id.astype(str))
-    source_only = sorted(source_ids - official_ids)
-    official_only = sorted(official_ids - source_ids)
+    official_ids, inventory_audit = reconcile_official_inventory(
+        days,
+        conditions,
+        source_ids,
+        set(OFFICIAL_RACE_METADATA_OVERRIDES),
+    )
+    inventory_audit.to_csv(
+        DOCS / "HISTORICAL_JRA_PDF_INVENTORY_VERIFICATION.csv",
+        index=False,
+    )
+
+    primary_missing = sorted(official_ids - source_ids)
+    unverified_source = sorted(source_ids - official_ids)
+    if unverified_source:
+        raise ValueError(
+            "Primary source contains JRA race ids not verified by official inventory: "
+            "{} {}".format(len(unverified_source), unverified_source[:40])
+        )
+
+    # Kaggle v1 stops before the four final 2025 JRA cards. Fill exactly those
+    # official races from JRADB result pages; any gap outside this frozen scope
+    # fails closed inside fetch_official_2025_supplement().
+    supplement_races, supplement_rows_raw, supplement_manifest = (
+        fetch_official_2025_supplement(set(primary_missing))
+    )
+    supplement_manifest.to_csv(
+        DOCS / "HISTORICAL_OFFICIAL_SUPPLEMENT_2025.csv",
+        index=False,
+    )
+    supplement_ids = set(supplement_races.race_id.astype(str))
+    final_ids = source_ids | supplement_ids
+    final_source_only = sorted(final_ids - official_ids)
+    final_official_only = sorted(official_ids - final_ids)
+    if final_source_only or final_official_only:
+        raise ValueError(
+            "Final official/source JRA race-id reconciliation failed: "
+            "source_only={} official_only={}; examples={} / {}".format(
+                len(final_source_only),
+                len(final_official_only),
+                final_source_only[:40],
+                final_official_only[:40],
+            )
+        )
+
+    supplement_map = supplemental_date_mapping(supplement_races)
+    if len(supplement_map):
+        overlap = set(date_mapping.race_id.astype(str)) & set(
+            supplement_map.race_id.astype(str)
+        )
+        if overlap:
+            raise ValueError(
+                "Supplement overlaps primary race map: {}".format(sorted(overlap)[:20])
+            )
+        date_mapping = pd.concat(
+            [date_mapping, supplement_map],
+            ignore_index=True,
+            sort=False,
+        ).sort_values("race_id").reset_index(drop=True)
+        date_mapping.to_csv(date_map_path, index=False)
+
+    # Re-run final date-key QA after official supplementation.
+    if date_mapping.race_id.duplicated().any():
+        raise ValueError("Duplicate race_id in supplemented final date mapping")
+    if not pd.to_datetime(date_mapping.actual_date).between(
+        "2010-01-01", "2025-12-31"
+    ).all():
+        raise ValueError("Supplemented date outside target interval")
+    duplicate_calendar_races = date_mapping.duplicated(
+        ["actual_date", "racecourse", "race_number"], keep=False
+    )
+    if duplicate_calendar_races.any():
+        bad = date_mapping.loc[
+            duplicate_calendar_races,
+            ["race_id", "actual_date", "racecourse", "race_number"],
+        ]
+        bad.to_csv(DOCS / "HISTORICAL_DUPLICATE_CALENDAR_RACES.csv", index=False)
+        raise ValueError(
+            "Duplicate supplemented actual_date/racecourse/race_number: {}".format(
+                bad.to_dict("records")[:30]
+            )
+        )
+
     recon_detail = pd.DataFrame(
         [
             *[
-                {"race_id": rid, "year": int(rid[:4]), "status": "source_only"}
-                for rid in source_only
-            ],
-            *[
-                {"race_id": rid, "year": int(rid[:4]), "status": "official_only"}
-                for rid in official_only
+                {
+                    "race_id": rid,
+                    "year": int(rid[:4]),
+                    "status": "official_supplemented_from_jradb",
+                }
+                for rid in primary_missing
             ],
         ],
         columns=["race_id", "year", "status"],
     )
-    recon_detail.to_csv(DOCS / "HISTORICAL_JRA_RACE_ID_RECONCILIATION.csv", index=False)
+    recon_detail.to_csv(
+        DOCS / "HISTORICAL_JRA_RACE_ID_RECONCILIATION.csv",
+        index=False,
+    )
     recon_years = []
     for year in YEARS:
-        src = {rid for rid in source_ids if rid.startswith(str(year))}
-        off = {rid for rid in official_ids if rid.startswith(str(year))}
+        primary = {rid for rid in source_ids if rid.startswith(str(year))}
+        supplement = {rid for rid in supplement_ids if rid.startswith(str(year))}
+        final = primary | supplement
+        official = {rid for rid in official_ids if rid.startswith(str(year))}
         recon_years.append(
             {
                 "year": year,
-                "source_JRA_races": len(src),
-                "official_JRA_races": len(off),
-                "source_only": len(src - off),
-                "official_only": len(off - src),
-                "exact_match": src == off,
+                "primary_source_JRA_races": len(primary),
+                "official_supplement_races": len(supplement),
+                "final_JRA_races": len(final),
+                "official_JRA_races": len(official),
+                "primary_missing_vs_official": len(official - primary),
+                "final_source_only": len(final - official),
+                "final_official_only": len(official - final),
+                "exact_match": final == official,
             }
         )
     pd.DataFrame(recon_years).to_csv(
-        DOCS / "HISTORICAL_JRA_ANNUAL_RECONCILIATION.csv", index=False
+        DOCS / "HISTORICAL_JRA_ANNUAL_RECONCILIATION.csv",
+        index=False,
     )
-    if source_only or official_only:
-        raise ValueError(
-            "Official/source JRA race-id mismatch: source_only={} official_only={}; "
-            "examples source_only={} official_only={}".format(
-                len(source_only),
-                len(official_only),
-                source_only[:40],
-                official_only[:40],
-            )
-        )
 
     day_recon_rows: list[dict] = []
-    source_by_day = date_mapping.groupby(date_mapping.race_id.str[:10]).race_number.apply(
+    final_by_day = date_mapping.groupby(date_mapping.race_id.str[:10]).race_number.apply(
         lambda values: sorted(int(x) for x in values)
     )
     for row in days.itertuples(index=False):
-        nums = source_by_day.get(str(row.race_day_key), [])
+        nums = final_by_day.get(str(row.race_day_key), [])
         missing = [number for number in range(1, 13) if number not in nums]
         day_recon_rows.append(
             {
@@ -835,28 +919,74 @@ def main() -> None:
                 "meeting_number": int(row.meeting_number),
                 "meeting_day": int(row.meeting_day),
                 "actual_date": row.actual_date,
-                "source_race_count": len(nums),
-                "source_race_numbers": ";".join(str(x) for x in nums),
+                "final_race_count": len(nums),
+                "final_race_numbers": ";".join(str(x) for x in nums),
                 "unfilled_1_to_12_slots": ";".join(str(x) for x in missing),
                 "official_source_url": row.official_source_url,
             }
         )
-    day_recon = pd.DataFrame(day_recon_rows)
-    day_recon.to_csv(DOCS / "HISTORICAL_JRA_DAY_RECONCILIATION.csv", index=False)
+    pd.DataFrame(day_recon_rows).to_csv(
+        DOCS / "HISTORICAL_JRA_DAY_RECONCILIATION.csv",
+        index=False,
+    )
 
-    source_day_keys = set(date_mapping.race_id.str[:10])
+    final_day_keys = set(date_mapping.race_id.str[:10])
     official_day_keys = set(days.race_day_key.astype(str))
-    extra_source_days = source_day_keys - official_day_keys
-    if extra_source_days:
+    extra_final_days = final_day_keys - official_day_keys
+    if extra_final_days:
         raise ValueError(
-            "Source race days absent from official archive: {}".format(
-                sorted(extra_source_days)[:20]
+            "Final race days absent from official archive: {}".format(
+                sorted(extra_final_days)[:20]
             )
         )
 
-    rows, result_diag = standardized_results(results_path, flat, all_jra_ids)
+    source_rows, result_diag = standardized_results(results_path, flat, all_jra_ids)
     if result_diag["malformed_all"] != raw_result_diag["malformed_all"]:
         raise ValueError("Malformed-row audit changed between independent passes")
+
+    supplement_flat = supplement_races.loc[
+        supplement_races.race_kind_final.eq("flat")
+    ].copy()
+    supplement_rows_raw = supplement_rows_raw.loc[
+        supplement_rows_raw.race_id.isin(set(supplement_flat.race_id))
+    ].copy()
+    supplement_rows, supplement_horse_diag = harmonize_supplement_horse_ids(
+        supplement_rows_raw,
+        source_rows,
+    )
+    rows = pd.concat(
+        [source_rows, supplement_rows],
+        ignore_index=True,
+        sort=False,
+    ).sort_values(["race_date", "race_id", "horse_no"]).reset_index(drop=True)
+    if rows.duplicated(["race_id", "horse_id"]).any():
+        raise ValueError("Duplicate race/horse rows after official supplementation")
+
+    flat = pd.concat(
+        [flat, supplement_flat],
+        ignore_index=True,
+        sort=False,
+    )
+    race_diag.update(
+        {
+            "primary_source_JRA_races": len(source_ids),
+            "official_supplement_races": len(supplement_ids),
+            "source_JRA_races": len(final_ids),
+            "flat_races": int(flat.race_id.nunique()),
+            "obstacle_races": int(
+                race_diag["obstacle_races"]
+                + supplement_races.race_kind_final.eq("obstacle").sum()
+            ),
+        }
+    )
+    result_diag.update(
+        {
+            "official_supplement_races": len(supplement_ids),
+            "official_supplement_flat_races": int(len(supplement_flat)),
+            "official_supplement_starter_rows": int(len(supplement_rows)),
+            **supplement_horse_diag,
+        }
+    )
 
     rows.to_parquet(
         OUT / "standardized_jra_flat_source_v1.parquet",
