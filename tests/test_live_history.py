@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-import json
-
 import pandas as pd
 import pytest
 
 from keiba_place_lab.live_history import (
-    SCHEMA_VERSION,
     _status_from_rank,
     parse_monthly_schedule,
     parse_race_list,
