@@ -79,25 +79,34 @@ tests/      # 自動テスト
 
 ## Current status
 
-**Stage 3.6 historical training panel — COMPLETE / QA PASS**
+**Stage 4 non-market P(top3) baseline — COMPLETE / QA PASS**
 
-2010-2025のJRA履歴をactual-date基準で再構成し、公式JRA inventoryと55,268レースを
-年次ごとに完全照合しました。Kaggle v1に未収録だった2025年末48レースは公式JRADB
-結果ページから補完し、障害2,048レースを除いたflat 53,220レース / 753,387走 /
-81,900頭のleakage-safe履歴パネルをfreezeしています。
+Stage 3.6のleakage-safe historical panelを使い、market情報を一切入力しない透明な
+L2 logistic baselineをfitしました。2016-2022をtrain、2023-2024をvalidationとして
+predeclared cohortと正則化を選択し、選択された仕様は `turf_1200` / `C=0.1` です。
 
-固定splitは2010-2015 warmup / 2016-2022 train / 2023-2024 validation /
-2025 untouched testです。chronology、race×horse重複、same-race contamination、
-market列、future-year、未解決日付、JRA malformed selected rowはいずれも0です。
+2025 held-out test（芝1200m、248 races / 3,100 eligible runner rows）は
+Brier `0.150537`、log loss `0.467970`、10-bin ECE `0.016938`。
+2025 outcomeはtarget-model fitには使用していません。
 
-Freeze artifactは `jra_flat_historical_panel_v1.parquet`
-(SHA256 `cee9ae9a099f521f12b1bcdd371c25a3d7b9ba3555fbcf5a46f2c9098f59a33d`)。
-GitHub Actions materialize run #27 の `stage36-historical-training-panel-v1` artifact
-(ID `11266998371`, archive digest `sha256:014b3e5d554fa24d8db042aaacc338a8a562db6bf93824e2197b84065aec9c85`) に保存しています。
-`course_layout` と `handicap_indicator` は公式データcoverage不足のためhistorical-v1.1
-model inputから除外し、監査列としてのみ保持します。
+2026-10-03 京都11Rの18頭へ同一モデルを適用し、レース内共通logit interceptで
+`sum P(top3)=3` を厳密に満たす非市場確率を生成しました。Stage 4コードは
+odds / popularity / payout / Stage 2 market probability / target outcomeを読み込みません。
 
-Stage 4はunblockedですが、まだモデルfitには進んでいません。
+結果:
+- `analysis/2026-10-03_kyoto11_opal/NONMARKET_BASELINE.md`
+- `analysis/2026-10-03_kyoto11_opal/nonmarket_baseline.csv`
+- reproducible runner: `scripts/run_stage4_nonmarket.py`
+- model helpers: `src/keiba_place_lab/nonmarket.py`
+- tests: `tests/test_nonmarket.py`
+
+Final verified Actions execution: Stage 4 run #10 (run id `37106873451`) SUCCESS.
+Artifact ID `11267173870`, digest
+`sha256:72f395d8a5503cdc8a905053e331904133c33b6b3f9717f75f2ca795120cfcf7`.
+
+Important: Stage 4 was generated after the scheduled target-race start, so it is documented as a
+blind retrospective reconstruction from the frozen pre-race matrix, not as a pre-start prediction lock.
+Stage 5 market comparison / calibration / ensemble has not started.
 
 ## License
 

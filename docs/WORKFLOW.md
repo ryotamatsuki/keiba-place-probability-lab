@@ -82,15 +82,20 @@ Status: COMPLETE / QA PASS — 55,268 official JRA races reconciled; 53,220 flat
 
 ## Stage 4 — P(top3) historical baseline model
 
-Unblocked by Stage 3.6 QA PASS. Stage 4 fitting has not started.
+- [x] fit transparent historical model(s)
+- [x] compare predeclared cohorts on validation only
+- [x] keep 2025 out of model/cohort/regularization selection and target-model fitting
+- [x] evaluate Brier score / log loss / calibration
+- [x] apply selected model to the frozen 2026-10-03 target matrix
+- [x] verify market fields are absent from model inputs
+- [x] enforce exact target-race sum P(top3)=3
+- [x] run leave-one-feature-block-out sensitivity analysis
+- [x] freeze NONMARKET_BASELINE.md and nonmarket_baseline.csv
+- [x] reproduce on GitHub Actions against the frozen Stage 3.6 artifact
 
-- [ ] fit transparent historical model(s)
-- [ ] compare predeclared cohorts on validation only
-- [ ] keep 2025 untouched for final historical test
-- [ ] evaluate Brier score / log loss / calibration
-- [ ] apply selected model to the 2026-10-03 target matrix
-- [ ] verify market fields are absent from model inputs
-- [ ] generate aggregate non-market ranking
+Status: COMPLETE / QA PASS — turf_1200, L2 logistic C=0.1; 2025 Brier 0.150537 / log loss 0.467970 / ECE 0.016938; target 18-runner sum P(top3)=3.0
+
+Timing note: execution occurred after the scheduled target-race start. The Stage 4 output is therefore a blind retrospective reconstruction from the frozen pre-race feature matrix, not a pre-start probability lock.
 
 ## Stage 5 — Calibration / ensemble
 

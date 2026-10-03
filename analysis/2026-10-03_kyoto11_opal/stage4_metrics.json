@@ -1,0 +1,152 @@
+{
+  "status": "PASS",
+  "stage36_panel_sha256": "cee9ae9a099f521f12b1bcdd371c25a3d7b9ba3555fbcf5a46f2c9098f59a33d",
+  "selection": {
+    "training_cohort": "turf_1200",
+    "C": 0.1,
+    "metric_basis": "raw marginal P(top3) on all eligible 2023-2024 turf-1200 rows",
+    "validation_brier": 0.1473024867292686,
+    "validation_log_loss": 0.45821716481263536,
+    "validation_ece_10bin": 0.01765280766136311,
+    "validation_rows": 6313,
+    "validation_races": 495
+  },
+  "test_2025": {
+    "brier": 0.15053658990478405,
+    "log_loss": 0.46797040968233367,
+    "rows": 3100,
+    "races": 248,
+    "ece_10bin": 0.016938191939269754,
+    "metric_basis": "raw marginal P(top3) on all eligible turf-1200 rows"
+  },
+  "race_consistency_diagnostic_2025_complete_races": {
+    "brier": 0.1472788504051283,
+    "log_loss": 0.4607039130877765,
+    "mean_race_sum": 3.0,
+    "max_abs_race_sum_error": 8.881784197001252e-16,
+    "rows": 1965,
+    "races": 135
+  },
+  "production_fit": {
+    "period": "2016-2024",
+    "rows": 29969,
+    "races": 2317,
+    "prior_mean": 0.20451132837265174,
+    "prior_strength": 6.0,
+    "uses_2025_outcomes": false
+  },
+  "target": {
+    "runners": 18,
+    "sum_p_top3": 3.0,
+    "racecourse_after_canonicalization": "京都",
+    "race_class_after_canonicalization": "Open",
+    "market_columns_loaded": false,
+    "target_outcome_loaded": false,
+    "generated_after_scheduled_start": true
+  },
+  "qa_history": {
+    "discarded_run": 1,
+    "reason": "run 1 incorrectly imposed sum P(top3)=3 on historically runner-filtered partial race cohorts",
+    "test_performance_used_for_model_selection": false
+  },
+  "top_positive_coefficients": [
+    [
+      "categorical__race_class_Maiden",
+      0.39064328909702384
+    ],
+    [
+      "numeric__turf_top3_shrunk",
+      0.20148273639185887
+    ],
+    [
+      "categorical__racecourse_福島",
+      0.1841572858699325
+    ],
+    [
+      "categorical__race_class_Class1",
+      0.1680810515553091
+    ],
+    [
+      "numeric__log_turf_starts",
+      0.15480333050114062
+    ],
+    [
+      "numeric__assigned_weight_kg",
+      0.1017251488344341
+    ],
+    [
+      "numeric__recent3_graded_count",
+      0.09946131091694074
+    ],
+    [
+      "numeric__career_top3_shrunk",
+      0.09409791441866971
+    ],
+    [
+      "categorical__racecourse_小倉",
+      0.08003692257938666
+    ],
+    [
+      "categorical__racecourse_新潟",
+      0.06465524811420083
+    ],
+    [
+      "numeric__same_course_top3_shrunk",
+      0.06289982233001798
+    ],
+    [
+      "numeric__recent3_open_plus_count",
+      0.062469679305417754
+    ]
+  ],
+  "top_negative_coefficients": [
+    [
+      "categorical__race_class_Open",
+      -0.583135826801679
+    ],
+    [
+      "numeric__recent3_finish_pct_mean",
+      -0.45636352890797766
+    ],
+    [
+      "numeric__field_size",
+      -0.20494248867485448
+    ],
+    [
+      "numeric__recent3_relative_time_mean",
+      -0.19621468694215397
+    ],
+    [
+      "numeric__log_same_distance_starts",
+      -0.18085640014503276
+    ],
+    [
+      "numeric__log_career_starts",
+      -0.18014117698502183
+    ],
+    [
+      "numeric__recent4_early_pos_pct_mean",
+      -0.15855612528507737
+    ],
+    [
+      "numeric__recent3_top3_count",
+      -0.1385519683233084
+    ],
+    [
+      "numeric__log_days_since_prev",
+      -0.1167363630883026
+    ],
+    [
+      "numeric__front_forward_share",
+      -0.09372500377072773
+    ],
+    [
+      "categorical__sex_G",
+      -0.09145118974156541
+    ],
+    [
+      "categorical__racecourse_札幌",
+      -0.08566725608946359
+    ]
+  ]
+}
