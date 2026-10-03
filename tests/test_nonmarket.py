@@ -3,6 +3,8 @@ import pandas as pd
 import pytest
 
 from keiba_place_lab.nonmarket import (
+    canonicalize_target_context,
+    complete_race_subset,
     enforce_race_top3_sum,
     engineer_features,
     feature_columns,
@@ -54,3 +56,25 @@ def test_feature_block_ablation_is_explicit():
     assert "career_top3_shrunk" in full_numeric
     assert "career_top3_shrunk" not in no_history_numeric
     assert full_cat == no_history_cat
+
+
+def test_target_context_is_canonicalized_to_historical_labels():
+    frame = pd.DataFrame(
+        {"racecourse": ["Kyoto"], "race_class": ["Listed_open"], "age": [4]}
+    )
+    out = canonicalize_target_context(frame)
+    assert out.loc[0, "racecourse"] == "京都"
+    assert out.loc[0, "race_class"] == "Open"
+
+
+def test_complete_race_subset_uses_field_size_not_outcome():
+    frame = pd.DataFrame(
+        {
+            "race_id": ["A", "A", "A", "B", "B"],
+            "field_size": [3, 3, 3, 3, 3],
+            "top3_label": [1, 0, 1, 1, 0],
+        }
+    )
+    out = complete_race_subset(frame)
+    assert out["race_id"].unique().tolist() == ["A"]
+    assert len(out) == 3
