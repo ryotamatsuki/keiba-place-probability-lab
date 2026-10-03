@@ -2,7 +2,7 @@
 
 ## Stage 0 — Governance / freeze
 
-- [x] Phase Aの目的変数を `P(top3)` に固定
+- [x] Phase Aの目的変数を P(top3) に固定
 - [x] Data Policy作成
 - [x] 評価指標固定
 - [x] 既存OSS候補の棚卸し
@@ -17,15 +17,19 @@
 - [x] 欠損項目を明示
 - [x] 権利・再配布ポリシーに従い、生HTML・画像・PAT情報を保存しない
 
-**Status: COMPLETE — 2026-10-03 pre-race**
+Status: COMPLETE — 2026-10-03 pre-race
 
 ## Stage 2 — Market baseline for P(top3)
 
-- [ ] 市場情報からベースラインを構築
-- [ ] 単勝人気を複勝圏確率と混同しない
-- [ ] 複勝オッズが利用可能なら、その利用方法と限界を明記
-- [ ] オッズの時点差を上書きせず、snapshotとして保存
-- [ ] 市場ベースラインの仮定と不確実性を文書化
+- [x] 市場情報からベースラインを構築
+- [x] 単勝人気を複勝圏確率と混同しない
+- [x] 複勝オッズの利用方法と限界を明記
+- [x] オッズの時点差を上書きせず、snapshotとして保存
+- [x] 市場ベースラインの仮定と不確実性を文書化
+- [x] normalized win market + Harville/Plackett-Luceでmarket-only P(top3)を算出
+- [x] 複勝オッズはprobabilityではなくdiagnostic strengthとして分離
+
+Status: COMPLETE — 08:35 JST market snapshot
 
 ## Stage 3 — Form / suitability features
 
@@ -36,6 +40,7 @@
 - [ ] クラス
 - [ ] 斤量
 - [ ] 脚質 / ペース
+- [ ] market情報から独立した特徴量セットをfreeze
 
 ## Stage 4 — P(top3) baseline model
 
@@ -72,7 +77,7 @@
 
 十分なデータが蓄積してから着手。
 
-- [ ] `P(rank_i = r)` を整合的に推定
+- [ ] P(rank_i = r) を整合的に推定
 - [ ] レース内の順位制約を満たすモデルを比較
 - [ ] Plackett-Luce / latent-performance simulation / race-level modelを候補比較
 - [ ] top1 / top3周辺確率がPhase Aモデルと整合するか検証
