@@ -36,11 +36,17 @@ jobs:
         run: python -m pip install -e ".[dev,historical,modeldev]" -c requirements-scope.txt
       - name: Build and verify immutable snapshot
         run: |
+          THROUGH="${{ inputs.through }}"
+          RECHECK_DAYS="${{ inputs.recheck_days }}"
+          MAX_WORKERS="${{ inputs.max_workers }}"
+          [ -n "$THROUGH" ] || THROUGH="2026-10-03"
+          [ -n "$RECHECK_DAYS" ] || RECHECK_DAYS="14"
+          [ -n "$MAX_WORKERS" ] || MAX_WORKERS="6"
           python scripts/update_live_history.py \
             --year 2026 \
-            --through "${{ inputs.through }}" \
-            --recheck-days "${{ inputs.recheck_days }}" \
-            --max-workers "${{ inputs.max_workers }}"
+            --through "$THROUGH" \
+            --recheck-days "$RECHECK_DAYS" \
+            --max-workers "$MAX_WORKERS"
       - name: Show current manifest
         run: |
           python - <<'PY'
