@@ -48,10 +48,17 @@ def find_forbidden_market_columns(columns: Iterable[str]) -> list[str]:
     return bad
 
 
-def _shifted_rolling(series: pd.Series, window: int, op: str) -> pd.Series:
-    shifted = series.shift(1)
-    rolling = shifted.rolling(window, min_periods=1)
-    return getattr(rolling, op)()
+def _prior_rolling(
+    frame: pd.DataFrame,
+    source: str,
+    window: int,
+    op: str,
+) -> pd.Series:
+    """Compute a rolling statistic from strictly prior starts for each horse."""
+    shifted = frame.groupby("horse_id", sort=False)[source].shift(1)
+    rolling = shifted.groupby(frame["horse_id"], sort=False).rolling(window, min_periods=1)
+    result = getattr(rolling, op)().reset_index(level=0, drop=True)
+    return result.reindex(frame.index)
 
 
 def build_historical_panel(rows: pd.DataFrame) -> pd.DataFrame:
@@ -140,9 +147,7 @@ def build_historical_panel(rows: pd.DataFrame) -> pd.DataFrame:
         ("early_pos_pct_current", "recent4_early_pos_pct_mean", 4, "mean"),
     )
     for source, output, window, operation in specs:
-        x[output] = horse[source].transform(
-            lambda s, w=window, op=operation: _shifted_rolling(s, w, op)
-        )
+        x[output] = _prior_rolling(x, source, window, operation)
 
     # Current entry / race context.
     x["draw_pct"] = (x["horse_no"] - 1) / (x["field_size"] - 1)
@@ -186,7 +191,6 @@ def select_phase_a_cohort(
         panel["surface"].astype(str).str.lower().eq(surface.lower())
         & panel["field_size"].ge(min_field_size)
         & panel["career_starts"].ge(min_prior_starts)
-        & panel["finish_position"].between(1, panel["field_size"])
     )
     if min_distance_m is not None:
         mask &= panel["distance_m"].ge(min_distance_m)
