@@ -324,11 +324,10 @@ def main() -> None:
         )
     blend_diag_frame = pd.DataFrame(blend_diagnostics)[
         ["name", "calibration_intercept", "calibration_slope", "ece_10bin"]
-    ]
+    ].rename(columns={"name": "candidate"})
     blend_table = blend_table.merge(
         blend_diag_frame,
-        left_on="candidate",
-        right_on="name",
+        on="candidate",
         how="left",
         validate="one_to_one",
     )
