@@ -194,7 +194,10 @@ Timing caveat: this remains retrospective because Stage 6 was not committed befo
 - [x] recent-trend追加版はpoint-Brier-best（0.148674）だがPhase 3A incumbent 0.148959との差は -0.000285
 - [x] paired date-clustered SE 0.000322の範囲内のためPhase 3A incumbentを維持（trend blockは不採用）
 - [x] 2023/2024とも点推定は同方向に改善したが、固定1-SE gateを満たさないことを記録
-- [ ] Phase 3C interaction blockをpre-registerしてPhase 3A incumbentへ追加比較
+- [x] Phase 3C interaction blockをpre-registerしてPhase 3A incumbentへ追加比較
+- [x] interaction追加版はpoint-Brier-best（0.148768）だがPhase 3A incumbent 0.148959との差は -0.000191
+- [x] paired date-clustered SE 0.000216の範囲内のためPhase 3A incumbentを維持（interaction blockは不採用）
+- [x] Phase 3 development COMPLETE — final Stage 4 successor = XGB01 + full-field relative ability
 - [ ] time-matched market snapshotが得られるまではmorning-odds blendをhistorical final oddsで再最適化しない
 - [ ] 複数liveレースを発走前lockで蓄積
 - [ ] live walk-forward評価
