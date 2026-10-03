@@ -29,6 +29,9 @@ Status: **BLOCKED**
 - 2016-2025 flat races: 33230
 - independent benchmark: 33290
 - benchmark exact match: False
+- 2016-2025 obstacle races excluded: 1256
+- independent obstacle benchmark: 1256
+- detailed exclusions: docs/HISTORICAL_EXCLUDED_RACES_2016_2025.csv
 
 ## Phase A cohort
 
