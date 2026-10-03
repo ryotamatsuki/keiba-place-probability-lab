@@ -1,0 +1,70 @@
+name: Stage 5 calibration and ensemble
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "src/keiba_place_lab/ensemble.py"
+      - "src/keiba_place_lab/historical_market.py"
+      - "scripts/run_stage5_ensemble.py"
+      - "tests/test_ensemble.py"
+      - "analysis/2026-10-03_kyoto11_opal/market_baseline.csv"
+      - "analysis/2026-10-03_kyoto11_opal/nonmarket_baseline.csv"
+      - "analysis/2026-10-03_kyoto11_opal/STAGE5_ENSEMBLE_SPEC_V1.md"
+      - ".github/workflows/stage5-ensemble.yml"
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  calibrate-select-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install project
+        run: python -m pip install -e ".[dev,historical]"
+      - name: Unit tests
+        run: pytest -q tests/test_ensemble.py tests/test_market.py tests/test_nonmarket.py
+      - name: Download frozen Stage 3.6 panel
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Download exact Kaggle v1 source
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import kagglehub
+          root = Path(kagglehub.dataset_download(
+              "noriyukifurufuru/japan-horse-racing-2010-2025/versions/1",
+              output_dir="/tmp/kaggle_v1",
+          ))
+          print(root)
+          print(root / "keiba_results.csv")
+          PY
+      - name: Run Stage 5
+        run: |
+          RESULTS=$(find /tmp/kaggle_v1 -name keiba_results.csv -print -quit)
+          test -n "$RESULTS"
+          python -u scripts/run_stage5_ensemble.py \
+            --historical-dir /tmp/stage36/data/historical_processed/stage36_freeze_v1 \
+            --results-csv "$RESULTS" \
+            --target-market analysis/2026-10-03_kyoto11_opal/market_baseline.csv \
+            --target-nonmarket analysis/2026-10-03_kyoto11_opal/nonmarket_baseline.csv \
+            --output-dir /tmp/stage5-results
+      - name: Upload Stage 5 results
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage5-calibration-ensemble-results
+          path: /tmp/stage5-results/
+          if-no-files-found: error
+          retention-days: 90
