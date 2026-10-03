@@ -285,6 +285,30 @@ def standardize(
     merged["finish_position"] = merged["rank"].map(parse_rank)
     merged["race_time_seconds"] = merged["time"].map(parse_time_seconds)
     merged["early_position"] = merged["passing"].map(parse_first_position)
+
+    # The public source has a known parser gap for some Niigata straight-1000m
+    # races: course_type and distance are blank. Recover only when the venue is
+    # Niigata, both fields are blank, and the official winner time is <60 sec.
+    winner_time = (
+        merged.loc[merged["finish_position"].eq(1)]
+        .groupby("race_id")["race_time_seconds"]
+        .min()
+    )
+    missing_niigata = merged.loc[
+        merged["venue"].eq("新潟")
+        & merged["course_type"].isna()
+        & merged["distance"].isna(),
+        "race_id",
+    ].unique()
+    recovered_niigata_ids = {
+        str(race_id)
+        for race_id in missing_niigata
+        if race_id in winner_time.index and winner_time.loc[race_id] < 60.0
+    }
+    recover_mask = merged["race_id"].isin(recovered_niigata_ids)
+    merged.loc[recover_mask, "course_type"] = "芝"
+    merged.loc[recover_mask, "distance"] = 1000
+    merged.loc[recover_mask, "turn"] = "直"
     merged["last_3f_num"] = pd.to_numeric(merged["last_3f"], errors="coerce")
     merged["assigned_weight_kg"] = pd.to_numeric(merged["weight"], errors="coerce")
 
@@ -375,6 +399,7 @@ def standardize(
 
     diagnostics = {
         "starter_rows_before_flat_filter": len(results) - int(nonstarter.sum()),
+        "niigata_1000_races_restored": len(recovered_niigata_ids),
         "obstacle_races_excluded": len(obstacle_ids),
         "invalid_core_rows_excluded": invalid_core_rows,
         "standardized_rows": len(std),
