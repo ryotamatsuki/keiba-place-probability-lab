@@ -122,15 +122,18 @@ def main() -> None:
     metric_rows = []
     for model_name, probability_col in models.items():
         result = evaluate_race(joined, probability_col)
+        forecast_ranks = (
+            "all_tied_1-18"
+            if model_name == "uniform_3_over_18"
+            else format_ranks(result.actual_top3_forecast_ranks)
+        )
         metric_rows.append(
             {
                 "model": model_name,
                 "brier": result.brier,
                 "log_loss": result.log_loss,
                 "actual_top3_probability_mass": result.actual_top3_probability_mass,
-                "actual_top3_forecast_ranks": format_ranks(
-                    result.actual_top3_forecast_ranks
-                ),
+                "actual_top3_forecast_ranks": forecast_ranks,
             }
         )
     metrics = pd.DataFrame(metric_rows).sort_values(
