@@ -138,9 +138,32 @@ genuine pre-race lock. For the next live target, execute the identical procedure
 
 ## Stage 7 — Post-race evaluation
 
-- [ ] 着順を別データとして追加
-- [ ] Brier / log loss等を更新
-- [ ] 予測失敗を「結果論」ではなく事前仮説との差として分析
+2026-10-03 Kyoto 11R status: **RETROSPECTIVE PIPELINE TEST COMPLETE / QA PASS**.
+
+- [x] JRA公式着順を予測ファイルとは別のoutcomeデータとして追加
+- [x] immutable Stage 6 lock SHA256を検証してから突合
+- [x] 18頭すべてにtop3 labelを付与
+- [x] Stage 2 raw market / Stage 4 non-market / Stage 5 ensemble / Stage 6 lockを同一18頭で評価
+- [x] Brier / log loss / actual-top3 probability massを記録
+- [x] 実際のtop3が予測順位の何位だったかを記録
+- [x] uniform 3/18 baselineと比較
+- [x] 結果論の因果説明を避け、事前のmarket/non-market乖離と確率誤差だけで失敗分析
+- [x] official outcome / metrics / evaluation report / manifest / code / testsをfreeze
+- [x] GitHub Actionsで再現
+
+Official top 3: 6 リリージョワ / 18 ディアナザール / 8 レッドエヴァンス.
+
+One-race metrics:
+- Stage 2 market 08:35: Brier `0.107207`, log loss `0.335163`, actual-top3 mass `0.898750`
+- Stage 5/6: Brier `0.111097`, log loss `0.350378`, actual-top3 mass `0.829376`
+- Stage 4: Brier `0.113597`, log loss `0.355176`, actual-top3 mass `0.823468`
+- uniform: Brier `0.138889`, log loss `0.450561`
+
+Conclusion: all actual top-3 runners were inside the Stage 5/6 forecast top six, but the
+95/5 ensemble did not beat the frozen 08:35 raw market in this single race. This does not
+reverse the 2025 aggregate test, and the 2025 aggregate result does not imply improvement here.
+
+Timing caveat: this remains retrospective because Stage 6 was not committed before scheduled start.
 
 ## Stage 8 — Accumulation / walk-forward
 
