@@ -60,9 +60,9 @@ def test_prepare_target_infers_declared_field_when_no_scratch():
 
 
 def test_prepare_target_requires_declared_field_after_scratch():
-    frame = _target()
+    frame = _target(9)
     frame = frame.loc[frame["horse_no"] != 4].copy()
-    frame["field_size"] = 7
+    frame["field_size"] = 8
     with pytest.raises(ValueError, match="declared_field_size is required"):
         prepare_target_context(
             frame,
@@ -72,18 +72,18 @@ def test_prepare_target_requires_declared_field_after_scratch():
 
 
 def test_prepare_target_preserves_declared_draw_after_scratch():
-    frame = _target()
+    frame = _target(9)
     frame = frame.loc[frame["horse_no"] != 4].copy()
-    frame["field_size"] = 7
-    frame["declared_field_size"] = 8
+    frame["field_size"] = 8
+    frame["declared_field_size"] = 9
     active, eligible = prepare_target_context(
         frame,
         race_id="TARGET",
         race_date="2026-10-03",
     )
-    assert len(active) == 7
-    assert len(eligible) == 7
-    assert active["declared_field_size"].eq(8).all()
+    assert len(active) == 8
+    assert len(eligible) == 8
+    assert active["declared_field_size"].eq(9).all()
 
 
 def test_prepare_target_rejects_sum_three_scope_extrapolation_inputs():
