@@ -174,9 +174,15 @@ Timing caveat: this remains retrospective because Stage 6 was not committed befo
 - [x] ROC-AUC / ECE / hit rate / ROIをwinner criterionから除外
 - [x] market-onlyをensemble selectionのmandatory default/referenceに固定
 - [x] 2025をv2のuntouched testとして再利用しないことを固定
-- [ ] candidate model registry / hyperparameter gridsをpre-register
-- [ ] chronological out-of-fold candidate predictionsを生成
+- [x] Stage 4 successor Phase 1をpre-register
+- [x] incumbent Logisticを2023/2024 outer walk-forwardで再構築・診断
+- [x] Phase 1 common OOF: 495 races / 6,313 rows; race-macro Brier 0.153096
+- [x] field-size baseline比 Brier skill 10.68%; 2023/2024 performance stabilityを確認
+- [x] Phase 1 subgroup diagnosticsをfreeze（Class3 / career 11-20 / Kokura等は低skill仮説）
+- [ ] Phase 2 challenger registry / hyperparameter gridsを最終freeze
+- [ ] Phase 2 inner chronological tuning + outer 2023/2024 candidate predictionsを生成
 - [ ] paired date-clustered one-SE gateでStage 4 successorを選定
+- [ ] Phase 3 relative-ability / recent-trend / interaction feature blocksをpre-registerして個別比較
 - [ ] time-matched market snapshotが得られるまではmorning-odds blendをhistorical final oddsで再最適化しない
 - [ ] 複数liveレースを発走前lockで蓄積
 - [ ] live walk-forward評価
