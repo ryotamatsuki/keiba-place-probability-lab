@@ -1,0 +1,78 @@
+{
+  "status": "PASS",
+  "stage": "scope_expansion_stage1_audit",
+  "historical_panel_sha256": "cee9ae9a099f521f12b1bcdd371c25a3d7b9ba3555fbcf5a46f2c9098f59a33d",
+  "scope": {
+    "surface": "turf",
+    "distance_min_m": 1000,
+    "distance_max_m": 2600,
+    "min_field_size": 8,
+    "min_prior_starts": 3,
+    "primary_excludes_straight_course": true
+  },
+  "full_band": {
+    "starter_rows": 367443,
+    "races": 26404,
+    "race_dates": 1729
+  },
+  "eligible_primary": {
+    "rows": 239015,
+    "races": 21586,
+    "race_dates": 1715
+  },
+  "eligible_straight_separate": {
+    "rows": 4801,
+    "races": 337,
+    "non_round_distance_rows": 143,
+    "non_round_distance_races": 10,
+    "data_quality_note": "Non-round source distances occur only in the separately excluded straight-course subset; primary A/B/C scope has none."
+  },
+  "evaluation_1200_2023_2024": {
+    "rows": 6313,
+    "races": 495,
+    "fingerprint_sha256": "a72fa10cc9adcd1ceee4c5b5eacd0dfdcdfc33fc984bf0b7866ec70b617bfd85",
+    "matches_existing": true
+  },
+  "full_context": {
+    "rows": 306880,
+    "races": 21586,
+    "all_races_complete": true
+  },
+  "candidates": [
+    {
+      "candidate": "A_current_1200",
+      "min_distance_m": 1200,
+      "max_distance_m": 1200,
+      "eligible_rows_2016_2022": 23656,
+      "races_2016_2022": 1822,
+      "eligible_rows_2016_2023": 26850,
+      "races_2016_2023": 2072,
+      "eligible_rows_all_2010_2025": 52948,
+      "races_all_2010_2025": 4191
+    },
+    {
+      "candidate": "B_turf_sprint_1000_1400",
+      "min_distance_m": 1000,
+      "max_distance_m": 1400,
+      "eligible_rows_2016_2022": 35179,
+      "races_2016_2022": 2800,
+      "eligible_rows_2016_2023": 39994,
+      "races_2016_2023": 3192,
+      "eligible_rows_all_2010_2025": 79364,
+      "races_all_2010_2025": 6462
+    },
+    {
+      "candidate": "C_turf_global_1000_2600",
+      "min_distance_m": 1000,
+      "max_distance_m": 2600,
+      "eligible_rows_2016_2022": 104673,
+      "races_2016_2022": 9469,
+      "eligible_rows_2016_2023": 119366,
+      "races_2016_2023": 10815,
+      "eligible_rows_all_2010_2025": 239015,
+      "races_all_2010_2025": 21586
+    }
+  ],
+  "uses_2025_for_abc_comparison": false,
+  "market_fields_loaded": false
+}
