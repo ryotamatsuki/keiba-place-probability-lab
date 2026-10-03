@@ -16,11 +16,10 @@ import unicodedata
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-import pymupdf
 import pandas as pd
+import pymupdf
 from materialize_historical_training_dataset import (
     VENUE_JP_RE,
-    VENUE_JP_TO_CODE,
     annual_pdf_links,
     get_bytes,
 )
@@ -85,7 +84,10 @@ def parse_race_days(info: dict, compact: str) -> list[dict]:
                 candidates.append(date)
         unique = list(dict.fromkeys(candidates))
         if not unique:
-            raise ValueError(f"No valid calendar date in official daily PDF: {info['url']}")
+            override = OFFICIAL_DATE_OVERRIDES.get(info["url"])
+            if override is None:
+                raise ValueError(f"No valid calendar date in official daily PDF: {info['url']}")
+            unique = [override]
         # A daily result PDF should describe one calendar day. Restrict ambiguity
         # by using dates attached to parsed race markers when available.
         marker_days: list[str] = []
@@ -200,12 +202,18 @@ def extract_pdf(info: dict, cache: Path) -> tuple[list[dict], list[dict]]:
     )
     for i, m in enumerate(matches):
         year = int(info["year"])
-        if "year" in m.re.groupindex and m.groupdict().get("year"):
-            if int(m["year"]) != year:
-                continue
-        if "era" in m.re.groupindex and m.groupdict().get("era"):
-            if int(m["era"]) not in {year - 1988, year - 2018}:
-                continue
+        if (
+            "year" in m.re.groupindex
+            and m.groupdict().get("year")
+            and int(m["year"]) != year
+        ):
+            continue
+        if (
+            "era" in m.re.groupindex
+            and m.groupdict().get("era")
+            and int(m["era"]) not in {year - 1988, year - 2018}
+        ):
+            continue
         if int(m["meeting"]) != int(info["meeting_no"]) or m["venue"] != info["venue"]:
             continue
         meetday = int(m["meetday"])
@@ -293,8 +301,8 @@ def main() -> None:
 
     print(
         {
-            "official_days": int(len(days)),
-            "condition_races": int(len(conditions)),
+            "official_days": len(days),
+            "condition_races": len(conditions),
             "condition_race_kinds": conditions.race_kind.value_counts(dropna=False).to_dict()
             if "race_kind" in conditions
             else {},
