@@ -30,6 +30,40 @@ def test_daily_date_parser_rejects_serial_contaminated_invalid_date():
     assert rows[0]["actual_date"] == "2014-01-31"
 
 
+def test_daily_date_parser_prefers_two_digit_november_over_overlap_alias():
+    info = {
+        "year": 2017,
+        "venue_code": "08",
+        "venue": "京都",
+        "meeting_no": 5,
+        "day_no": 8,
+        "url": "https://example.invalid/2017-5kyoto8.pdf",
+        "legacy": False,
+    }
+    rows = parse_race_days(
+        info,
+        "08084 11月26日晴良(29京都5)第8日第4競走",
+    )
+    assert rows[0]["actual_date"] == "2017-11-26"
+
+
+def test_daily_date_parser_prefers_two_digit_december_over_overlap_alias():
+    info = {
+        "year": 2010,
+        "venue_code": "09",
+        "venue": "阪神",
+        "meeting_no": 5,
+        "day_no": 8,
+        "url": "https://example.invalid/2010-5hanshin8.pdf",
+        "legacy": False,
+    }
+    rows = parse_race_days(
+        info,
+        "09084 12月26日晴良(22阪神5)第8日第12競走",
+    )
+    assert rows[0]["actual_date"] == "2010-12-26"
+
+
 def test_official_obstacle_even_when_surface_is_turf():
     c = parse_conditions("2,880サラブレッド系障害4歳以上(芝・右外→内)未勝利;負担重量は、定量")
     assert c["race_kind"] == "obstacle"
