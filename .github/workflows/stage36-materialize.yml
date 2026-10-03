@@ -5,6 +5,8 @@ on:
     paths:
       - data/derived/jra_official_*.csv
       - scripts/freeze_historical_panel.py
+      - scripts/stage36_official_supplement.py
+      - tests/test_historical_source.py
       - .github/workflows/stage36-materialize.yml
       - src/keiba_place_lab/historical_panel.py
   workflow_dispatch:
