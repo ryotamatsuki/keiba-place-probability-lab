@@ -6,18 +6,28 @@ import pandas as pd
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from extract_official_jra import LEGACY_HEADER, MODERN_HEADER, parse_conditions
+from extract_official_jra import parse_conditions, parse_race_days
 from materialize_historical_training_dataset import parse_rank
 from test_historical_panel import _synthetic_rows
 
 from keiba_place_lab.historical_panel import build_historical_panel
 
 
-def test_month_cannot_absorb_official_serial():
-    modern = MODERN_HEADER.search("000031月5日晴良(2025年1中山)第1日第3競走")
-    legacy = LEGACY_HEADER.search("000111月5日晴良(22中山1)第1日第11競走")
-    assert modern["month"] == "1"
-    assert legacy["month"] == "1"
+def test_daily_date_parser_rejects_serial_contaminated_invalid_date():
+    info = {
+        "year": 2014,
+        "venue_code": "05",
+        "venue": "東京",
+        "meeting_no": 1,
+        "day_no": 2,
+        "url": "https://example.invalid/2014-1tokyo2.pdf",
+        "legacy": False,
+    }
+    rows = parse_race_days(
+        info,
+        "0030211月31日晴良(26東京1)第2日第9競走",
+    )
+    assert rows[0]["actual_date"] == "2014-01-31"
 
 
 def test_official_obstacle_even_when_surface_is_turf():
