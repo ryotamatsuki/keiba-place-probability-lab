@@ -190,8 +190,11 @@ Timing caveat: this remains retrospective because Stage 6 was not committed befo
 - [x] race-macro Brier 0.148959 vs Phase 2 XGB01 0.151494; delta -0.002535
 - [x] Phase 2 incumbentはpaired date-clustered 1-SE gate外（delta / SE = 2.87）
 - [x] Phase 3Aでは全スターター文脈を使うleave-one-out相対特徴5本を採用
-- [ ] Phase 3B recent-trend blockをpre-registerしてPhase 3A incumbentへ追加比較
-- [ ] Phase 3C interaction blockをpre-registerして累積incumbentへ追加比較
+- [x] Phase 3B recent-trend blockをpre-registerしてPhase 3A incumbentへ追加比較
+- [x] recent-trend追加版はpoint-Brier-best（0.148674）だがPhase 3A incumbent 0.148959との差は -0.000285
+- [x] paired date-clustered SE 0.000322の範囲内のためPhase 3A incumbentを維持（trend blockは不採用）
+- [x] 2023/2024とも点推定は同方向に改善したが、固定1-SE gateを満たさないことを記録
+- [ ] Phase 3C interaction blockをpre-registerしてPhase 3A incumbentへ追加比較
 - [ ] time-matched market snapshotが得られるまではmorning-odds blendをhistorical final oddsで再最適化しない
 - [ ] 複数liveレースを発走前lockで蓄積
 - [ ] live walk-forward評価
