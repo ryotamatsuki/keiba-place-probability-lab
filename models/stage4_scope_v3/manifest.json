@@ -1,0 +1,174 @@
+{
+  "routing": {
+    "version": "stage4_scope_v3",
+    "stage5_canonical": "market-only",
+    "train_years": [
+      2016,
+      2025
+    ],
+    "surfaces": {
+      "turf": {
+        "routes": [
+          {
+            "min_distance_m": 1000,
+            "max_distance_m": 1400,
+            "model": "G0",
+            "blocks": [],
+            "model_id": "turf_G0"
+          },
+          {
+            "min_distance_m": 1401,
+            "max_distance_m": 2000,
+            "model": "G0",
+            "blocks": [],
+            "model_id": "turf_G0"
+          },
+          {
+            "min_distance_m": 2001,
+            "max_distance_m": 2600,
+            "model": "R3",
+            "blocks": [
+              "near",
+              "regime",
+              "course_distance"
+            ],
+            "model_id": "turf_R3_2001_2600"
+          }
+        ],
+        "decision_sha256": "e0bb4c5aeef032d5aceec644adb3dffcee366cd57898fa8128efa50f83b0964c",
+        "1200_override": {
+          "scope": [
+            1000,
+            1400
+          ],
+          "blocks": [
+            "regime"
+          ],
+          "model_id": "turf_1200_override"
+        }
+      },
+      "dirt": {
+        "routes": [
+          {
+            "min_distance_m": 1000,
+            "max_distance_m": 1400,
+            "model": "G0",
+            "blocks": [],
+            "model_id": "dirt_G0"
+          },
+          {
+            "min_distance_m": 1401,
+            "max_distance_m": 2000,
+            "model": "G0",
+            "blocks": [],
+            "model_id": "dirt_G0"
+          },
+          {
+            "min_distance_m": 2001,
+            "max_distance_m": 2600,
+            "model": "G0",
+            "blocks": [],
+            "model_id": "dirt_G0"
+          }
+        ],
+        "decision_sha256": "dba86d8b7297c9425a549ef643643f12f0579eacbce8a44d2d4ecd9f6ad73218"
+      }
+    }
+  },
+  "source_sha256": "8af28c7818e333e8c19ed9c90685c2e076e0258a78ac5106e8f737dfa6c92cd8",
+  "code_commit": "c13bd22b44999ca3cdd0d3b427f87d363f7ccdb7",
+  "spec_sha256": "21d13c42753a34795a9056faeb3dc93b1997cc49c252b79f0fd4c6b19f1b82cd",
+  "models": {
+    "turf_G0": {
+      "surface": "turf",
+      "scope": [
+        1000,
+        2600
+      ],
+      "blocks": [],
+      "prior_mean": 0.2220072404657089,
+      "train_rows": 148333,
+      "train_races": 13471,
+      "train_min_date": "2016-01-05",
+      "train_max_date": "2025-12-28"
+    },
+    "turf_R3_2001_2600": {
+      "surface": "turf",
+      "scope": [
+        2001,
+        2600
+      ],
+      "blocks": [
+        "near",
+        "regime",
+        "course_distance"
+      ],
+      "prior_mean": 0.2406366101014158,
+      "train_rows": 19918,
+      "train_races": 1753,
+      "train_min_date": "2016-01-09",
+      "train_max_date": "2025-12-28"
+    },
+    "turf_1200_override": {
+      "surface": "turf",
+      "scope": [
+        1000,
+        1400
+      ],
+      "blocks": [
+        "regime"
+      ],
+      "prior_mean": 0.20580255911888565,
+      "train_rows": 49392,
+      "train_races": 3960,
+      "train_min_date": "2016-01-09",
+      "train_max_date": "2025-12-28"
+    },
+    "dirt_G0": {
+      "surface": "dirt",
+      "scope": [
+        1000,
+        2600
+      ],
+      "blocks": [],
+      "prior_mean": 0.22007959928993814,
+      "train_rows": 176886,
+      "train_races": 15508,
+      "train_min_date": "2016-01-05",
+      "train_max_date": "2025-12-28"
+    }
+  },
+  "versions": {
+    "numpy": "2.4.6",
+    "pandas": "3.0.6",
+    "sklearn": "1.9.1",
+    "xgboost": "3.2.0"
+  },
+  "bundle_sha256": "2135442ac31e6489bd209ca338694455b3b887569392f045b5228fc58c59321b",
+  "serialization_qa": {
+    "turf_G0": {
+      "rows": 32,
+      "max_abs_error": 0.0
+    },
+    "turf_R3_2001_2600": {
+      "rows": 32,
+      "max_abs_error": 0.0
+    },
+    "turf_1200_override": {
+      "rows": 32,
+      "max_abs_error": 0.0
+    },
+    "dirt_G0": {
+      "rows": 32,
+      "max_abs_error": 0.0
+    }
+  },
+  "code_sha256": {
+    "src/keiba_place_lab/scope_features.py": "475cb6b6b42874fa7ae6b447ba499641f0f0f9bb968aa696677ee0aab7c82d61",
+    "src/keiba_place_lab/stage4_production_v3.py": "5ea20b1a51ef6de83e1493d77760ae28816fb4d5c544d8c4f66a54ad444dc179",
+    "src/keiba_place_lab/stage4_successor_phase3a.py": "97f9580760993813045dcbc62498e625fa9c3048b2bd2e0d12ec326f8a49b43c",
+    "src/keiba_place_lab/nonmarket.py": "711b90d64f670d7ca12d8303b26fa4686e81f6831960302e42f0ccd3eafaa4b9",
+    "scripts/run_stage4_scope_v3.py": "26196a7605324c78f4069ecb4366e3ca98605d474a7be100473e180134a01c7d"
+  },
+  "original_panel_sha256": "cee9ae9a099f521f12b1bcdd371c25a3d7b9ba3555fbcf5a46f2c9098f59a33d"
+}

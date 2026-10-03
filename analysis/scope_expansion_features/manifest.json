@@ -1,0 +1,24 @@
+{
+  "source_sha256": "cee9ae9a099f521f12b1bcdd371c25a3d7b9ba3555fbcf5a46f2c9098f59a33d",
+  "spec_sha256": "21d13c42753a34795a9056faeb3dc93b1997cc49c252b79f0fd4c6b19f1b82cd",
+  "source_commit": "18d9b210aacccc7ce44b9af6affef60536eb4ec1",
+  "code_sha256": {
+    "scripts/run_scope_expansion_completion.py": "f13a32eca80069f2235e265f31b0ec3f2d340ea771c7a2c2b0ccf953275b013a",
+    "src/keiba_place_lab/scope_features.py": "475cb6b6b42874fa7ae6b447ba499641f0f0f9bb968aa696677ee0aab7c82d61"
+  },
+  "versions": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "numpy": "2.4.6",
+    "pandas": "3.0.6",
+    "sklearn": "1.9.1",
+    "xgboost": "3.2.0"
+  },
+  "rows": 6313,
+  "races": 495,
+  "dates": 195,
+  "evaluation_years": [
+    2023,
+    2024
+  ],
+  "prediction_sha256": "e55fb68e888911e0085ffe783e2e8047d772d2a84e0a9030331945595949d449"
+}
