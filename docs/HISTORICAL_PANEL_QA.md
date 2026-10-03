@@ -21,11 +21,12 @@ Status: **BLOCKED**
 
 ## Standardized flat panel
 
-- flat races: 52770
-- starter rows: 746029
+- flat races: 53172
+- starter rows: 752668
+- Niigata straight-1000m races restored from blank course metadata: 402
 - obstacle races excluded by documented winner-last3F<20 rule: 2028
 - invalid core rows excluded: 0
-- 2016-2025 flat races: 32992
+- 2016-2025 flat races: 33230
 - independent benchmark: 33290
 - benchmark exact match: False
 
@@ -34,15 +35,15 @@ Status: **BLOCKED**
 - surface: turf
 - field size: >= 8 starters
 - previous starts: >= 3
-- runner rows: 239680
-- races: 21646
+- runner rows: 245651
+- races: 22054
 
 | split      |   runner_rows |   races |   top3_prevalence |
 |:-----------|--------------:|--------:|------------------:|
-| warmup     |         90878 |    8143 |          0.215058 |
-| train      |        105088 |    9502 |          0.221776 |
-| validation |         29099 |    2663 |          0.223066 |
-| test       |         14615 |    1338 |          0.222785 |
+| warmup     |         93219 |    8305 |          0.214248 |
+| train      |        107688 |    9677 |          0.220879 |
+| validation |         29795 |    2711 |          0.222151 |
+| test       |         14949 |    1361 |          0.221955 |
 
 ## Leakage / structural checks
 
@@ -55,12 +56,12 @@ Status: **BLOCKED**
 ## Missingness in Phase A artifact
 
 ~~~text
-race_class         0.379594
-finish_position    0.002257
+race_class         0.379921
+finish_position    0.002223
 ~~~
 
 ## Blockers
 
-- 2016-2025 flat race count 32992 != benchmark 33290
+- 2016-2025 flat race count 33230 != benchmark 33290
 
 Stage 4 model fitting is unblocked only when Status is PASS.
