@@ -37,6 +37,10 @@ DATE_CANDIDATE = re.compile(
     r"(?=(?P<month>1[0-2]|[1-9])月(?P<calday>3[01]|[12]\d|[1-9])日)"
 )
 
+OFFICIAL_DATE_OVERRIDES = {
+    "https://www.jra.go.jp/datafile/seiseki/report/2020/2020-1niigata1.pdf": "2020-05-09",
+}
+
 
 def compact_pdf_text(data: bytes) -> str:
     with pymupdf.open(stream=data, filetype="pdf") as doc:
