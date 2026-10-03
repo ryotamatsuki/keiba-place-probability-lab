@@ -46,6 +46,13 @@ OFFICIAL_RACE_COUNT_OVERRIDES = {
     "2020080305": 12,
 }
 
+OFFICIAL_DAY_SOURCE_OVERRIDES = {
+    "2020060302": (
+        "https://www.jra.go.jp/keiba/calendar2020/2020/3/0329.html",
+        "https://www.jra.go.jp/keiba/calendar2020/2020/3/0331.html",
+    ),
+}
+
 RESULT_CNAME_RE = re.compile(
     r"pw01sde\d{2}"
     r"(?P<venue>\d{2})(?P<year>\d{4})(?P<meeting>\d{2})"
@@ -159,8 +166,6 @@ def reconcile_official_inventory(
     audit: list[dict] = []
 
     for day_key in problem_days:
-        if day_key not in day_lookup:
-            raise ValueError(f"Source race day absent from official day index: {day_key}")
         source_day = source_by_day[day_key]
         official_exact_day = exact_by_day.get(day_key, set())
         if not official_exact_day.issubset(source_day):
@@ -168,6 +173,35 @@ def reconcile_official_inventory(
                 f"Official exact race markers disagree with source day {day_key}: "
                 f"{sorted(official_exact_day - source_day)}"
             )
+
+        if day_key not in day_lookup:
+            expected = len(source_day)
+            override = OFFICIAL_RACE_COUNT_OVERRIDES.get(day_key)
+            sources = OFFICIAL_DAY_SOURCE_OVERRIDES.get(day_key)
+            if override != expected or sources is None:
+                raise ValueError(
+                    f"Source race day absent from official day index: {day_key}"
+                )
+            inventory.update(source_day)
+            audit.append(
+                {
+                    "race_day_key": day_key,
+                    "year": int(day_key[:4]),
+                    "actual_date": "2020-03-29/2020-03-31",
+                    "racecourse": "中山",
+                    "source_race_count": expected,
+                    "exact_marker_count": len(official_exact_day),
+                    "raw_header_count": 0,
+                    "compact_header_count": 0,
+                    "raw_race_label_count": 0,
+                    "compact_race_label_count": 0,
+                    "official_summary_race_count": 0,
+                    "count_override": override,
+                    "verification_method": "official_continuation_racing_exception",
+                    "official_source_url": ";".join(sources),
+                }
+            )
+            continue
 
         row = day_lookup[day_key]
         source_numbers = sorted(int(rid[-2:]) for rid in source_day)
