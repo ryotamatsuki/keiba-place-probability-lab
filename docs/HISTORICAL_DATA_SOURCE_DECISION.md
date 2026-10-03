@@ -1,7 +1,7 @@
 # Historical Data Source Decision — Stage 3.6
 
 Date: 2026-10-03 JST
-Status: FROZEN V1 — exact primary source/version/license verified; official-date reconstruction required
+Status: FROZEN V1 / COMPLETE — exact source, official reconciliation and supplement verified
 
 ## Decision
 
@@ -17,15 +17,27 @@ Primary source:
 - required files: `keiba_races.csv`, `keiba_results.csv`, `keiba_payouts.csv`
 - raw files: local/CI only; never committed
 
-Authoritative verification source:
+Authoritative verification sources:
 
 - JRA annual/daily result PDFs for 2010-2025:
   `https://www.jra.go.jp/datafile/seiseki/report/`
+- official JRADB result pages for the 48 final-2025 races absent from Kaggle v1
+- official JRA calendar pages for the 2020 Nakayama continuation-racing exception
 
 Secondary dataset `takamotoki/jra-horse-racing-dataset` remains reference-only and is not
 needed to construct the frozen v1 panel.
 
 No netkeiba scraper is added to this repository.
+
+
+## Primary-source coverage and official supplement
+
+Kaggle v1 contains 55,220 JRA race IDs for 2010-2025. The independently reconstructed official
+inventory contains 55,268 realized race IDs. The difference is exactly 48 races: the Nakayama and
+Hanshin cards on 2025-12-27 and 2025-12-28. Those 48 are fetched from official JRADB result pages
+and fingerprinted individually; 46 are flat races and 2 are obstacle races. The final combined
+inventory matches the official inventory exactly in every year (final_source_only=0,
+final_official_only=0).
 
 ## Why the Kaggle race date is not trusted
 
@@ -44,7 +56,7 @@ races of 3rd Nakayama meeting day 2 were held on 2020-03-29 and races 3-12 were 
 
 The v1 adapter deliberately does not treat every PDF-extracted token as equally reliable.
 
-- `actual_date`: official JRA PDF, required and authoritative.
+- `actual_date`: official JRA PDF/JRADB/calendar evidence, required and authoritative.
 - flat/obstacle race kind: official JRA race markers/conditions are authoritative, with only
   explicitly verified race-level metadata overrides where PDF text extraction loses the marker.
 - distance/class: primary row source remains the canonical value for v1 after conflict auditing.
@@ -67,10 +79,10 @@ The freeze script queries Kaggle metadata at build time and requires both:
 A metadata change is a hard stop requiring a new source review. SHA-256 fingerprints of all three
 downloaded source files are recorded in the Stage 3.6 QA/freeze outputs.
 
-Raw historical files and official PDFs remain outside git. The public repository contains code,
-schemas, aggregate QA, reconciliation tables, fingerprints and documentation. The complete
-processed row-level panel is distributed as a GitHub Actions artifact for the freeze run rather
-than committed to git.
+Raw historical files and official PDF/HTML bodies remain outside git. The public repository
+contains code, schemas, aggregate QA, reconciliation tables, source-page fingerprints and
+documentation. The complete processed row-level panel is distributed as a GitHub Actions artifact
+for the freeze run rather than committed to git.
 
 ## Result-file integrity gate
 
