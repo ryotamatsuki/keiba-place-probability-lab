@@ -1,0 +1,24 @@
+name: Probe JRA PDF text
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/probe-jra-pdf.yml"
+      - "scripts/probe_jra_pdf_text.py"
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install pymupdf
+      - run: python scripts/probe_jra_pdf_text.py
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/JRA_SAMPLE_PDF_TEXT.txt
+          git commit -m "data: inspect JRA report PDF text [skip ci]" || true
+          git push
