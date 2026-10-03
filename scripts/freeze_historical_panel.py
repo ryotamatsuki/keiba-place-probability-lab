@@ -1,5 +1,7 @@
 """Materialize and fail-closed QA the frozen 2010-2025 JRA historical panel."""
 
+# ruff: noqa: UP032, RUF046
+
 from __future__ import annotations
 
 import csv
