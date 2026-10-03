@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-import numpy as np
 import pandas as pd
-
 
 REQUIRED_LOCK_COLUMNS = [
     "horse_no",
@@ -42,7 +40,7 @@ def validate_lock_frame(frame: pd.DataFrame) -> None:
         values = pd.to_numeric(frame[col], errors="coerce")
         if values.isna().any() or ((values < 0) | (values > 1)).any():
             raise ValueError(f"Invalid probabilities in {col}")
-    if not np.isclose(frame["p_ensemble"].sum(), 3.0, atol=1e-9):
+    if abs(float(frame["p_ensemble"].sum()) - 3.0) > 1e-9:
         raise ValueError("Stage 6 ensemble probabilities must sum to 3")
     if (frame["uncertainty_low"] > frame["p_ensemble"]).any():
         raise ValueError("uncertainty_low exceeds ensemble probability")
