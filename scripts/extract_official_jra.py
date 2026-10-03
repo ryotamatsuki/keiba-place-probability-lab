@@ -147,8 +147,10 @@ def _verified_compact_header_dates(info: dict, compact: str) -> list[str]:
             race_no = int(marker["race"])
             if not 1 <= race_no <= 12:
                 continue
-            if int(match["serial"][-2:]) != race_no:
-                continue
+            # The five-digit value is a meeting-level management sequence
+            # (e.g. 25013 can be race 1 on day 2), not an in-day race number.
+            # Venue/meeting/day/race marker agreement is the authoritative
+            # adjacency check; do not infer semantics from the serial suffix.
             out.append(date)
             break
     return out
@@ -193,12 +195,12 @@ def parse_race_days(
         # recovery logic below.
         override = OFFICIAL_DATE_OVERRIDES.get(info["url"])
         if raw_text is not None:
-            unique = list(dict.fromkeys(header_candidates))
+            compact_header_candidates = _verified_compact_header_dates(
+                info, compact
+            )
+            unique = list(dict.fromkeys(compact_header_candidates))
             if not unique:
-                compact_header_candidates = _verified_compact_header_dates(
-                    info, compact
-                )
-                unique = list(dict.fromkeys(compact_header_candidates))
+                unique = list(dict.fromkeys(header_candidates))
             if not unique:
                 if override is None:
                     raise ValueError(
