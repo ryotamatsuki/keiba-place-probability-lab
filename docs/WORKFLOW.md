@@ -44,7 +44,20 @@ Status: COMPLETE — 08:35 JST market snapshot
 - [x] model-input allowlistを固定
 - [x] missingnessを0と混同しない
 
-Status: COMPLETE — 09:00 JST feature freeze
+Status: REVISED — initial snapshot retained, canonical Feature Spec v1 frozen after evidence audit
+
+## Stage 3.5 — Canonical feature materialization
+
+- [x] JRA-VAN operational feature design reviewed
+- [x] recent JRA leakage-aware temporal-validation evidence reviewed
+- [x] ranking/SHAP literature reviewed
+- [x] redundancy and missingness audit run on current 18-runner snapshot
+- [x] canonical Feature Spec v1 frozen
+- [ ] materialize all required v1 fields for 18 runners
+- [ ] mark any unavailable required field explicitly
+- [ ] verify zero market fields in canonical matrix
+
+Status: FEATURE SELECTION FROZEN / MATERIALIZATION REQUIRED BEFORE STAGE 4
 
 ## Stage 4 — P(top3) baseline model
 
