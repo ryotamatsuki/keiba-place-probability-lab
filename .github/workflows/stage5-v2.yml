@@ -1,0 +1,85 @@
+name: Stage 5 v2 market ensemble
+
+on:
+  push:
+    branches: [stage5-v2-market-ensemble]
+    paths:
+      - docs/STAGE5_V2_SPEC.md
+      - scripts/run_stage5_v2.py
+      - src/keiba_place_lab/ensemble_v2.py
+      - tests/test_ensemble_v2.py
+      - .github/workflows/stage5-v2.yml
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: stage5-v2
+  cancel-in-progress: true
+
+jobs:
+  select-historical-domain-blend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install project
+        run: python -m pip install -e ".[dev,historical,modeldev]"
+      - name: Unit tests
+        run: |
+          ruff check .
+          pytest -q tests/test_ensemble.py tests/test_ensemble_v2.py tests/test_model_selection.py tests/test_stage4_successor_phase3a.py
+      - name: Download frozen Stage 3.6 panel
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Download exact Kaggle v1 source
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import kagglehub
+          root = Path(kagglehub.dataset_download(
+              "noriyukifurufuru/japan-horse-racing-2010-2025/versions/1",
+              output_dir="/tmp/kaggle_v1",
+          ))
+          print(root)
+          print(root / "keiba_results.csv")
+          PY
+      - name: Run Stage 5 v2
+        run: |
+          RESULTS=$(find /tmp/kaggle_v1 -name keiba_results.csv -print -quit)
+          test -n "$RESULTS"
+          python -u scripts/run_stage5_v2.py \
+            --historical-dir /tmp/stage36/data/historical_processed/stage36_freeze_v1 \
+            --results-csv "$RESULTS" \
+            --phase3a-oof analysis/stage4_successor_phase3a/phase3a_outer_predictions.csv \
+            --target-market analysis/2026-10-03_kyoto11_opal/market_baseline.csv \
+            --target-nonmarket analysis/2026-10-03_kyoto11_opal/stage4_successor_v2/stage4_successor_v2.csv \
+            --output-dir analysis/stage5_v2
+      - name: Upload Stage 5 v2 results
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage5-v2-results
+          path: analysis/stage5_v2/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Commit Stage 5 v2 results
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/stage5_v2/
+          if ! git diff --cached --quiet; then
+            git commit -m 'analysis: record Stage 5 v2 historical ensemble'
+            git pull --rebase origin stage5-v2-market-ensemble
+            git push origin HEAD:stage5-v2-market-ensemble
+          fi
