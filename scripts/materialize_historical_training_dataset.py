@@ -351,7 +351,10 @@ def parse_result_pdf(info: dict) -> list[dict]:
     # for the date map; race-level exact reconciliation is reserved for PDFs
     # whose full race headings are machine-readable.
     if info.get("day_no") is not None:
-        dm = re.search(r"(?P<month>\d{1,2})月(?P<calday>\d{1,2})日", compact)
+        dm = re.search(
+            r"(?P<month>1[0-2]|[1-9])月(?P<calday>3[01]|[12]\d|[1-9])日",
+            compact,
+        )
         if not dm:
             raise RuntimeError(
                 f"could not extract calendar date from daily PDF {info['url']}"
