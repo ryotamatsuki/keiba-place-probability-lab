@@ -1,0 +1,24 @@
+name: Probe JRA report links
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/probe-jra-links.yml"
+      - "scripts/probe_jra_report_links.py"
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python scripts/probe_jra_report_links.py
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/JRA_2025_PDF_LINK_SAMPLES.txt
+          git commit -m "data: probe JRA report PDF links [skip ci]" || true
+          git push
