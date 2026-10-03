@@ -64,12 +64,12 @@ def main() -> None:
                 with p.open("r", encoding="utf-8-sig", newline="") as f:
                     row = next(csv.reader(f))
                 cols = " | ".join(row[:20]).replace("|", "\\|")
-            except Exception:
+            except Exception:  # noqa: BLE001
                 try:
                     with p.open("r", encoding="cp932", newline="") as f:
                         row = next(csv.reader(f))
                     cols = " | ".join(row[:20]).replace("|", "\\|")
-                except Exception as exc:
+                except Exception as exc:  # noqa: BLE001
                     cols = repr(exc).replace("|", "\\|")
         lines.append(f"| {rel} | {p.stat().st_size} | {cols} |")
 
