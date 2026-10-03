@@ -53,11 +53,13 @@ Status: REVISED — initial snapshot retained, canonical Feature Spec v1 frozen 
 - [x] ranking/SHAP literature reviewed
 - [x] redundancy and missingness audit run on current 18-runner snapshot
 - [x] canonical Feature Spec v1 frozen
-- [ ] materialize all required v1 fields for 18 runners
-- [ ] mark any unavailable required field explicitly
-- [ ] verify zero market fields in canonical matrix
+- [x] materialize all required v1 fields for 18 runners
+- [x] mark any unavailable required field explicitly
+- [x] verify zero market fields in canonical matrix
+- [x] relative final-3F block explicitly excluded for current v1 rather than raw-time substitution
+- [x] canonical matrix validated: 18 rows / 0 missing / 0 market-column matches
 
-Status: FEATURE SELECTION FROZEN / MATERIALIZATION REQUIRED BEFORE STAGE 4
+Status: COMPLETE — Stage 4 UNBLOCKED
 
 ## Stage 4 — P(top3) baseline model
 
