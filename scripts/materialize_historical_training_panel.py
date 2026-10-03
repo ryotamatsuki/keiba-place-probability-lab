@@ -287,17 +287,15 @@ def standardize(
     merged["early_position"] = merged["passing"].map(parse_first_position)
 
     # The public source has a known parser gap for some Niigata straight-1000m
-    # races: course_type and distance are blank. Recover only when the venue is
-    # Niigata, both fields are blank, and the official winner time is <60 sec.
+    # races. Recover only when course_type is blank, venue is Niigata, and the
+    # official winner time is <60 sec. Distance is then fixed to 1000m.
     winner_time = (
         merged.loc[merged["finish_position"].eq(1)]
         .groupby("race_id")["race_time_seconds"]
         .min()
     )
     missing_niigata = merged.loc[
-        merged["venue"].eq("新潟")
-        & merged["course_type"].isna()
-        & merged["distance"].isna(),
+        merged["venue"].eq("新潟") & merged["course_type"].isna(),
         "race_id",
     ].unique()
     recovered_niigata_ids = {
@@ -660,6 +658,10 @@ def main() -> None:
         "",
         f"- flat races: {std_diag['standardized_races']}",
         f"- starter rows: {std_diag['standardized_rows']}",
+        (
+            "- Niigata straight-1000m races restored from blank course metadata: "
+            f"{std_diag['niigata_1000_races_restored']}"
+        ),
         (
             "- obstacle races excluded by documented winner-last3F<20 rule: "
             f"{std_diag['obstacle_races_excluded']}"
