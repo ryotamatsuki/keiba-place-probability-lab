@@ -223,10 +223,10 @@ def select_with_incumbent_one_se(
 ) -> tuple[SelectionDecision, pd.DataFrame]:
     """Select by race-macro Brier with a paired one-SE incumbent-retention gate.
 
-    The point-Brier-best candidate is the reference. The incumbent is retained only
-    when it is within one paired clustered SE of that candidate on both Brier and
-    log loss. If there is no incumbent, or the incumbent fails either gate, the
-    point-Brier-best candidate wins.
+    The point-Brier-best candidate is the reference. The incumbent is retained when
+    its race-macro Brier is within one paired clustered SE of that candidate.
+    Log loss is reported as a mandatory secondary diagnostic but does not override
+    the primary Brier decision. Exact Brier ties are ordered by log loss.
     """
     if not predictions:
         raise ValueError("predictions must contain at least one candidate")
@@ -289,19 +289,19 @@ def select_with_incumbent_one_se(
     retained = False
     if incumbent is not None:
         row = table.loc[table["name"] == incumbent].iloc[0]
-        retained = bool(row["within_one_se_brier"] and row["within_one_se_log_loss"])
+        retained = bool(row["within_one_se_brier"])
 
     if retained:
         winner = incumbent
         reason = (
-            "incumbent retained: within paired date-clustered one-SE of the "
-            "point-Brier-best on both Brier and log loss"
+            "incumbent retained: race-macro Brier is within one paired "
+            "date-clustered SE of the point-Brier-best"
         )
     else:
         winner = best
         reason = (
             "point-Brier-best selected: no incumbent was supplied or the incumbent "
-            "failed the paired one-SE Brier/log-loss retention gate"
+            "fell outside the paired one-SE Brier retention band"
         )
 
     decision = SelectionDecision(
