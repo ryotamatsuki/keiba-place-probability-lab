@@ -12,11 +12,13 @@ import pandas as pd
 
 from keiba_place_lab.nonmarket import (
     ALL_BLOCKS,
+    calibration_table,
     canonicalize_target_context,
     complete_race_subset,
     enforce_race_top3_sum,
     evaluate,
     evaluate_binary,
+    expected_calibration_error,
     fit_model,
     predict_raw_probability,
     validate_market_free,
@@ -144,6 +146,20 @@ def main() -> None:
         )
     sensitivity = pd.DataFrame(sensitivity_rows).sort_values("validation_brier")
 
+    # Calibration is diagnostic only and cannot change the frozen selection.
+    selected_validation_model, selected_validation_prior = fit_model(
+        selected_train,
+        c_value=selected_c,
+        prior_strength=PRIOR_STRENGTH,
+    )
+    _, selected_validation_probability, _ = predict_adjusted(
+        selected_validation_model, validation_eval, selected_validation_prior
+    )
+    validation_calibration = calibration_table(
+        validation_eval, selected_validation_probability, bins=10
+    )
+    validation_ece = expected_calibration_error(validation_calibration)
+
     # Freeze the selected specification, then refit on 2016-2024 only.
     fit_2016_2024 = pd.concat(
         [selected_train, validation_cache[selected_cohort]], ignore_index=True
@@ -160,6 +176,8 @@ def main() -> None:
         final_model, test_eval, final_prior_mean
     )
     test_metrics = evaluate_binary(test_eval, test_raw_probability)
+    test_calibration = calibration_table(test_eval, test_raw_probability, bins=10)
+    test_ece = expected_calibration_error(test_calibration)
 
     # Separate race-consistency diagnostic on races where every starter remains in
     # the eligibility-filtered panel. This filter uses field_size, never outcomes.
@@ -206,6 +224,10 @@ def main() -> None:
 
     grid.to_csv(args.output_dir / "validation_grid.csv", index=False)
     sensitivity.to_csv(args.output_dir / "sensitivity.csv", index=False)
+    validation_calibration.to_csv(
+        args.output_dir / "validation_calibration.csv", index=False
+    )
+    test_calibration.to_csv(args.output_dir / "test_2025_calibration.csv", index=False)
     result.to_csv(args.output_dir / "nonmarket_baseline.csv", index=False, float_format="%.9f")
 
     metrics = {
@@ -217,11 +239,13 @@ def main() -> None:
             "metric_basis": "raw marginal P(top3) on all eligible 2023-2024 turf-1200 rows",
             "validation_brier": float(selected["brier"]),
             "validation_log_loss": float(selected["log_loss"]),
+            "validation_ece_10bin": validation_ece,
             "validation_rows": int(selected["rows"]),
             "validation_races": int(selected["races"]),
         },
         "test_2025": {
             **test_metrics.__dict__,
+            "ece_10bin": test_ece,
             "metric_basis": "raw marginal P(top3) on all eligible turf-1200 rows",
         },
         "race_consistency_diagnostic_2025_complete_races": test_complete_metrics.__dict__,
@@ -273,6 +297,7 @@ def main() -> None:
         f"- validation set for every candidate: 2023-2024 turf 1200m ({int(selected['races']):,} races / {int(selected['rows']):,} rows)",
         f"- validation marginal Brier: `{float(selected['brier']):.6f}`",
         f"- validation marginal log loss: `{float(selected['log_loss']):.6f}`",
+        f"- validation 10-bin ECE: `{validation_ece:.6f}`",
         f"- empirical-Bayes prior: fitting-sample top3 prevalence, strength `{PRIOR_STRENGTH:g}`",
         "- missing values: fitting-sample numeric median + indicators; categorical `UNKNOWN`",
         "- historical validation/test metric: raw marginal P(top3), because Phase-A filters runner rows",
@@ -298,7 +323,15 @@ def main() -> None:
         f"- rows: {test_metrics.rows:,}",
         f"- marginal Brier: `{test_metrics.brier:.6f}`",
         f"- marginal log loss: `{test_metrics.log_loss:.6f}`",
+        f"- 10-bin ECE: `{test_ece:.6f}`",
         "- 2025 outcomes used in target fit: **no**",
+        "",
+        "### 2025 reliability bins",
+        "",
+        fmt_table(
+            test_calibration,
+            ["bin", "rows", "mean_predicted", "observed_top3_rate", "calibration_gap"],
+        ),
         "",
         "Race-sum QA is evaluated separately only on 2025 races where every starter survives the",
         "pre-race eligibility filter:",
