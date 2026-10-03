@@ -35,8 +35,7 @@ continuity.
 Log loss is always reported. It is a strictly proper scoring rule and more strongly penalizes
 catastrophic overconfidence than Brier.
 
-For v2 it is **not** independently optimized. It is used as the secondary safety gate in the
-paired incumbent one-standard-error selection rule.
+For v2 it is **not** independently optimized. It is used as the secondary diagnostic and deterministic tie-breaker.
 
 ### Calibration — mandatory diagnostic
 
@@ -62,9 +61,10 @@ Do not select the numerically smallest Brier score without accounting for valida
 1. Identify the candidate with the lowest race-macro Brier (`Brier-best`).
 2. Compute paired per-race loss differences between the incumbent and `Brier-best`.
 3. Estimate the standard error with race date as the cluster.
-4. Retain the incumbent when it is within one paired clustered SE of `Brier-best` on both
-   Brier and log loss.
-5. Otherwise select `Brier-best`.
+4. Retain the incumbent when its race-macro Brier is within one paired clustered SE of
+   `Brier-best`.
+5. Otherwise select `Brier-best`. Log loss remains mandatory for diagnosis and exact-Brier
+   tie-breaking, but it does not override the primary Brier decision.
 
 This is a one-SE model-selection regularizer, not a significance test.
 
