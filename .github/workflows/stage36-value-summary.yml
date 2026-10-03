@@ -1,0 +1,35 @@
+name: Stage 3.6 source value summary
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/stage36-value-summary.yml"
+      - "scripts/summarize_primary_source.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  summary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --upgrade kagglehub pandas
+      - run: python scripts/summarize_primary_source.py
+      - name: Commit summary
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/HISTORICAL_SOURCE_VALUE_SUMMARY.md
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "data: record Stage 3.6 source value summary [skip ci]"
+            git push
+          fi
