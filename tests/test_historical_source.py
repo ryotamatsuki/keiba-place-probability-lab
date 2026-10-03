@@ -30,6 +30,44 @@ def test_daily_date_parser_rejects_serial_contaminated_invalid_date():
     assert rows[0]["actual_date"] == "2014-01-31"
 
 
+def test_daily_date_parser_uses_five_digit_header_serial_for_january():
+    info = {
+        "year": 2011,
+        "venue_code": "08",
+        "venue": "京都",
+        "meeting_no": 1,
+        "day_no": 1,
+        "url": "https://example.invalid/2011-1kyoto1.pdf",
+        "legacy": False,
+    }
+    raw = "05001 1月5日 晴 良 (23京都1) 第1日 第1競走"
+    rows = parse_race_days(
+        info,
+        "050011月5日晴良(23京都1)第1日第1競走",
+        raw_text=raw,
+    )
+    assert rows[0]["actual_date"] == "2011-01-05"
+
+
+def test_daily_date_parser_uses_five_digit_header_serial_for_november():
+    info = {
+        "year": 2016,
+        "venue_code": "08",
+        "venue": "京都",
+        "meeting_no": 5,
+        "day_no": 1,
+        "url": "https://example.invalid/2016-5kyoto1.pdf",
+        "legacy": False,
+    }
+    raw = "30001 11月5日 晴 良 (28京都5) 第1日 第1競走"
+    rows = parse_race_days(
+        info,
+        "3000111月5日晴良(28京都5)第1日第1競走",
+        raw_text=raw,
+    )
+    assert rows[0]["actual_date"] == "2016-11-05"
+
+
 def test_daily_date_parser_prefers_two_digit_november_over_overlap_alias():
     info = {
         "year": 2017,
