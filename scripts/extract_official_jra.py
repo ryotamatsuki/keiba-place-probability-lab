@@ -47,6 +47,11 @@ OFFICIAL_DATE_OVERRIDES = {
     "https://www.jra.go.jp/datafile/seiseki/report/2020/2020-1niigata1.pdf": "2020-05-09",
     "https://www.jra.go.jp/datafile/seiseki/report/2020/2020-2tokyo5.pdf": "2020-05-09",
     "https://www.jra.go.jp/datafile/seiseki/report/2020/2020-3kyoto5.pdf": "2020-05-09",
+    # 3rd Nakayama meeting day 2 was split by snow: races 1-2 on Mar 29,
+    # races 3-12 in continuation racing on Mar 31. The day-level map anchors
+    # to the first official date; freeze_historical_panel applies race-level
+    # official continuation overrides for races 3-12.
+    "https://www.jra.go.jp/datafile/seiseki/report/2020/2020-3nakayama2.pdf": "2020-03-29",
 }
 
 
@@ -126,23 +131,39 @@ def parse_race_days(
                 date = _valid_date(year, int(m["month"]), int(m["calday"]))
                 if date is not None:
                     header_candidates.append(date)
-        candidates = (
-            header_candidates
-            if header_candidates
-            else [date for _, date in _valid_date_candidates(compact, year)]
-        )
-        unique = list(dict.fromkeys(candidates))
-        if not unique:
-            override = OFFICIAL_DATE_OVERRIDES.get(info["url"])
-            if override is None:
-                raise ValueError(f"No valid calendar date in official daily PDF: {info['url']}")
-            unique = [override]
-        # A daily result PDF should describe one calendar day. For unusual
-        # continuation racing a PDF can contain two dates; the race-level
-        # correction is handled separately by the frozen mapping adapter.
-        if header_candidates:
-            chosen = unique[0]
+        # In production extraction raw_text is always available. Do not fall
+        # back to the compact string when a trustworthy header cannot be read:
+        # concatenating a five-digit serial ending in 1/2 with 1月/2月 makes
+        # January/November and February/December intrinsically ambiguous.
+        # Synthetic/unit callers without raw_text may still exercise the compact
+        # recovery logic below.
+        override = OFFICIAL_DATE_OVERRIDES.get(info["url"])
+        if raw_text is not None:
+            unique = list(dict.fromkeys(header_candidates))
+            if not unique:
+                if override is None:
+                    raise ValueError(
+                        "No high-confidence five-digit JRA race-header date in "
+                        f"official daily PDF: {info['url']}"
+                    )
+                unique = [override]
+            if len(unique) > 1:
+                if override is None:
+                    raise ValueError(
+                        f"Multiple official race-header dates in {info['url']}: {unique}"
+                    )
+                chosen = override
+            else:
+                chosen = unique[0]
         else:
+            candidates = [date for _, date in _valid_date_candidates(compact, year)]
+            unique = list(dict.fromkeys(candidates))
+            if not unique:
+                if override is None:
+                    raise ValueError(
+                        f"No valid calendar date in official daily PDF: {info['url']}"
+                    )
+                unique = [override]
             marker_days: list[str] = []
             for marker in [*MODERN_MARKER.finditer(compact), *LEGACY_MARKER.finditer(compact)]:
                 prefix = compact[max(0, marker.start() - 240) : marker.start()]
