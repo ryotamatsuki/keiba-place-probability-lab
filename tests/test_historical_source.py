@@ -49,7 +49,7 @@ def test_daily_date_parser_uses_five_digit_header_serial_for_january():
     assert rows[0]["actual_date"] == "2011-01-05"
 
 
-def test_daily_date_parser_fails_closed_on_ambiguous_raw_header():
+def test_daily_date_parser_uses_fixed_width_serial_for_compact_raw_header():
     info = {
         "year": 2011,
         "venue_code": "08",
@@ -63,12 +63,12 @@ def test_daily_date_parser_fails_closed_on_ambiguous_raw_header():
         "010011月 5日 晴良 (23京都1) 第1日 第1競走",
         "01001\x011月 5日 晴良 (23京都1) 第1日 第1競走",
     ]:
-        with pytest.raises(ValueError, match="high-confidence"):
-            parse_race_days(
-                info,
-                "010011月5日晴良(23京都1)第1日第1競走",
-                raw_text=raw,
-            )
+        rows = parse_race_days(
+            info,
+            "010011月5日晴良(23京都1)第1日第1競走",
+            raw_text=raw,
+        )
+        assert rows[0]["actual_date"] == "2011-01-05"
 
 
 def test_daily_date_parser_uses_five_digit_header_serial_for_november():
