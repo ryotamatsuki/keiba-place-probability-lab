@@ -1,0 +1,37 @@
+name: Explain Kyoto V3 attribution
+
+on:
+  push:
+    branches: [explain-kyoto-v3-attribution]
+    paths:
+      - scripts/explain_kyoto_v3_attribution.py
+      - .github/workflows/explain-kyoto-v3-attribution.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  explain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install exact scope environment
+        run: python -m pip install -e ".[dev,historical,modeldev]" -c requirements-scope.txt
+      - name: Compute exact feature contributions
+        run: python scripts/explain_kyoto_v3_attribution.py
+      - name: Commit attribution outputs
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/live_trial_20261004/kyoto_model_attribution.csv analysis/live_trial_20261004/kyoto_model_attribution_summary.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'analysis: explain Kyoto V3 predictions'
+            git pull --rebase origin explain-kyoto-v3-attribution
+            git push origin HEAD:explain-kyoto-v3-attribution
+          fi
