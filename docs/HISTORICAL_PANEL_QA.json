@@ -16,7 +16,7 @@
   },
   "adapter_version": "jra-historical-adapter-v2",
   "feature_spec_version": "historical-v1.1",
-  "code_commit": "33add480a784ba59682d7367ed6aa5d7a90a8e66",
+  "code_commit": "1f6f25def8076cd4a20302bc31ce878a451b9b34",
   "generation_command": "python -u scripts/freeze_historical_panel.py",
   "date_mapping": {
     "mapped": 55268,
