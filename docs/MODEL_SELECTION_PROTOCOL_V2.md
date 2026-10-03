@@ -29,7 +29,8 @@ expectation by reporting the true probability. Brier is the primary rule here be
 - it remains easy to interpret and compare in paired model experiments.
 
 Log loss remains mandatory because it is also strictly proper and is more sensitive to
-catastrophic overconfidence. It is a guardrail, not a co-equal optimization target.
+catastrophic overconfidence. It is a secondary diagnostic and deterministic tie-breaker, not a
+co-equal optimization target.
 
 Calibration diagnostics are mandatory, but calibration alone is not a winner rule: a nearly
 constant forecast can be well calibrated while having little resolution. ECE is also sensitive to
@@ -119,22 +120,24 @@ preserves the strong covariance created by evaluating all candidates on the same
 
 ### Step C — incumbent retention gate
 
-Retain the incumbent when both conditions hold:
+Retain the incumbent when:
 
 ```text
 mean(Brier_incumbent - Brier_best) <= 1 * paired_clustered_SE_Brier
-and
-mean(LogLoss_incumbent - LogLoss_best) <= 1 * paired_clustered_SE_LogLoss
 ```
 
-In words: a challenger must improve Brier by more than one paired standard error to dislodge the
-incumbent, and the retained incumbent must not be materially worse under log loss.
+In words: a challenger must improve the **primary race-macro Brier** by more than one paired
+standard error to dislodge the incumbent.
 
 This is a model-selection regularizer, not a null-hypothesis significance test. The one-SE rule is
 used to reduce validation-set overfitting and unnecessary model churn.
 
-If the incumbent fails the gate, select `Brier-best`. Exact numerical ties are resolved by lower
-log loss, then a stable lexical candidate ID.
+Log loss remains mandatory and is reported beside Brier, but it does not override a clear Brier
+decision. This avoids silently changing the objective when two strictly proper scoring rules rank
+imperfect models differently.
+
+If the incumbent fails the gate, select `Brier-best`. Exact Brier ties are resolved by lower log
+loss, then a stable lexical candidate ID.
 
 ## 6. Non-market model selection
 
