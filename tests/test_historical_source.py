@@ -71,6 +71,24 @@ def test_daily_date_parser_uses_fixed_width_serial_for_compact_raw_header():
         assert rows[0]["actual_date"] == "2011-01-05"
 
 
+def test_daily_date_parser_recovers_compact_fixed_width_header():
+    info = {
+        "year": 2014,
+        "venue_code": "07",
+        "venue": "中京",
+        "meeting_no": 4,
+        "day_no": 1,
+        "url": "https://example.invalid/2014-4chukyo1.pdf",
+        "legacy": False,
+    }
+    rows = parse_race_days(
+        info,
+        "3500112月6日曇良(26中京4)第1日第1競走",
+        raw_text="machine text without a usable header",
+    )
+    assert rows[0]["actual_date"] == "2014-12-06"
+
+
 def test_daily_date_parser_uses_five_digit_header_serial_for_november():
     info = {
         "year": 2016,
