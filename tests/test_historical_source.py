@@ -8,9 +8,70 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from extract_official_jra import parse_conditions, parse_race_days
 from materialize_historical_training_dataset import parse_rank
+from stage36_official_supplement import (
+    _parse_rank as parse_official_rank,
+    _race_id_from_cname,
+    harmonize_supplement_horse_ids,
+)
 from test_historical_panel import _synthetic_rows
 
 from keiba_place_lab.historical_panel import build_historical_panel
+
+
+def test_official_result_cname_roundtrips_race_id():
+    url = (
+        "https://www.jra.go.jp/JRADB/accessS.html?"
+        "CNAME=pw01sde1006202505070120251227/A2"
+    )
+    assert _race_id_from_cname(url) == "202506050701"
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected_status", "expected_started", "expected_pos"),
+    [
+        ("1", "finished", True, 1.0),
+        ("10", "finished", True, 10.0),
+        ("中止", "dnf", True, np.nan),
+        ("失格", "disqualified", True, np.nan),
+        ("取消", "nonstarter", False, np.nan),
+        ("除外", "nonstarter", False, np.nan),
+    ],
+)
+def test_official_supplement_rank_statuses(
+    raw, expected_status, expected_started, expected_pos
+):
+    pos, status, started = parse_official_rank(raw)
+    assert status == expected_status
+    assert started is expected_started
+    if np.isnan(expected_pos):
+        assert np.isnan(pos)
+    else:
+        assert pos == expected_pos
+
+
+def test_official_supplement_horse_ids_reuse_primary_history():
+    supplement = pd.DataFrame(
+        [
+            {
+                "race_id": "202506050701",
+                "official_horse_id": "2023101860",
+                "horse_name": "テストホース",
+            },
+            {
+                "race_id": "202506050701",
+                "official_horse_id": "2024999999",
+                "horse_name": "新馬名",
+            },
+        ]
+    )
+    primary = pd.DataFrame(
+        [{"horse_name": "テストホース", "horse_id": "source-horse-1"}]
+    )
+    out, diag = harmonize_supplement_horse_ids(supplement, primary)
+    assert out.horse_id.tolist() == ["source-horse-1", "jra:2024999999"]
+    assert diag["supplemental_name_mapped"] == 1
+    assert diag["supplemental_new_horses"] == 1
+    assert diag["supplemental_ambiguous_names"] == 0
 
 
 def test_daily_date_parser_rejects_serial_contaminated_invalid_date():
