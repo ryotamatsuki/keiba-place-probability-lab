@@ -13,4 +13,6 @@ build/
 
 # Local/raw source captures are not committed unless redistribution is explicitly allowed
 data/raw/
+data/historical_raw/
+data/historical_processed/
 secrets/
