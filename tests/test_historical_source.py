@@ -8,8 +8,8 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from extract_official_jra import parse_conditions, parse_race_days
 from materialize_historical_training_dataset import parse_rank
+from stage36_official_supplement import _parse_rank as parse_official_rank
 from stage36_official_supplement import (
-    _parse_rank as parse_official_rank,
     _race_id_from_cname,
     harmonize_supplement_horse_ids,
 )
