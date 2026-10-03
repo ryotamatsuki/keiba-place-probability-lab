@@ -6,8 +6,6 @@ current non-market model is weak before any challenger is executed.
 
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
@@ -76,8 +74,8 @@ def field_size_baseline(frame: pd.DataFrame) -> np.ndarray:
 
 
 def calibration_intercept_slope(
-    y_true: Iterable[int] | np.ndarray,
-    probability: Iterable[float] | np.ndarray,
+    y_true,
+    probability,
 ) -> tuple[float, float]:
     """Estimate logistic calibration intercept and slope.
 
