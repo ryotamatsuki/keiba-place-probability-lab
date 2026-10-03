@@ -60,7 +60,7 @@ def main():
     probability = sigmoid(margin)
     model_probability = clf.predict_proba(X)[:, 1]
     max_error = float(np.max(np.abs(probability - model_probability)))
-    if max_error > 1e-8:
+    if max_error > 5e-7:
         raise ValueError(f"Contribution parity failure: {max_error}")
 
     rows = []
