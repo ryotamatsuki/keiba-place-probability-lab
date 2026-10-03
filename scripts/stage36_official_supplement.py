@@ -65,8 +65,9 @@ PDF_HEADER_RE = re.compile(
     r"(?P<calday>3[01]|[12]\d|[1-9])\s*日"
 )
 COURSE_RE = re.compile(
-    r"コース[:：]\s*(?P<distance>[\d,]+)メートル"
-    r"[（(](?P<surface>芝|ダート)(?:[・･](?P<detail>[^）)]*))?[）)]"
+    r"コース\s*[:：]\s*(?P<distance>[\d,\s]+?)\s*メートル\s*"
+    r"[（(]\s*(?P<surface>芝|ダート)\s*"
+    r"(?:[・･]\s*(?P<detail>[^）)]*?))?\s*[）)]"
 )
 
 
@@ -379,7 +380,7 @@ def _parse_result_page(race_id: str, url: str) -> tuple[dict, list[dict], dict]:
     match = COURSE_RE.search(page_text)
     if not match:
         raise ValueError(f"Official course metadata not found for {race_id}")
-    distance_m = int(match["distance"].replace(",", ""))
+    distance_m = int(re.sub(r"\s+", "", match["distance"]).replace(",", ""))
     surface = {"芝": "turf", "ダート": "dirt"}[match["surface"]]
     detail = match["detail"] or ""
     turn_direction = (
@@ -396,7 +397,7 @@ def _parse_result_page(race_id: str, url: str) -> tuple[dict, list[dict], dict]:
     )
 
     first_table = _find_result_table(soup)
-    pre_table_text = page_text.split(_normalize(first_table.get_text(" ", strip=True))[:20], 1)[0]
+    pre_table_text = page_text.split("着順", 1)[0]
     race_kind = "obstacle" if "障害" in pre_table_text else "flat"
     race_class = _race_class(pre_table_text)
     is_graded = int(bool(re.search(r"G[ⅠⅡⅢ123]", _normalize(pre_table_text))))
