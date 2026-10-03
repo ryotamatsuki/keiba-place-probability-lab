@@ -83,7 +83,7 @@ def test_daily_date_parser_recovers_compact_fixed_width_header():
     }
     rows = parse_race_days(
         info,
-        "3500112月6日曇良(26中京4)第1日第1競走",
+        "9993500112月6日曇良(26中京4)第1日第1競走",
         raw_text="machine text without a usable header",
     )
     assert rows[0]["actual_date"] == "2014-12-06"
