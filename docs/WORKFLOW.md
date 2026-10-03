@@ -120,9 +120,21 @@ Timing note: Stage 5 was executed after the target race's scheduled start. It is
 
 ## Stage 6 — Pre-race lock
 
-- [ ] probability_estimates.csvをコミット
-- [ ] decision_logを記録
-- [ ] 発走後は予測値を変更しない
+2026-10-03 Kyoto 11R status: **RETROSPECTIVE_DRY_RUN COMPLETE / operational QA PASS**.
+
+- [x] `probability_estimates.csv`を18頭分コミット
+- [x] decision log / lock manifest / SHA256 fingerprintsを記録
+- [x] 08:35 market snapshotとStage 5確定commitだけをlock sourceに使用
+- [x] result / later-final odds / payout / popularityをlock処理から遮断
+- [x] rehearsal lock以後は当該確率値を変更しない
+- [ ] scheduled start前にlock commitを作る本来のtiming gate — **this raceでは未達**
+
+Locked source commit: `086f7a2a20e20dc226db6535b4738905e2011f1b`  
+Lock mode: `RETROSPECTIVE_DRY_RUN`  
+Locked probability file SHA256: `eefa16ad709c7568690e3f75a0df22491a31b3cb6aebdeebcf27fab274bc9e66`
+
+Interpretation: the operational procedure is verified, but this must not be described as a
+genuine pre-race lock. For the next live target, execute the identical procedure before start.
 
 ## Stage 7 — Post-race evaluation
 
