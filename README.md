@@ -78,15 +78,16 @@ tests/      # 最小限の自動テスト
 
 ## Current status
 
-**Feature Selection v1 frozen / Stage 3.5 materialization next**
+**Stage 3.5 complete / Stage 4 non-market baseline ready**
 
 Stage 2で市場だけのP(top3)ベースラインを固定しました。Stage 3の初期特徴量はその後、
 JRA-VANの運用仕様、2026年のJRA leakage-aware temporal-validation研究、ranking/SHAP研究、
 および現在の18頭データの冗長性・欠損監査で再評価しました。
 
 Canonical Stage 4 inputは `docs/FEATURE_SELECTION_AUDIT.md` と
-`docs/FEATURE_REGISTRY_V1.csv` に固定済みです。初期Stage 3の `nonmarket_features.csv`
-は監査用スナップショットとして保持し、Stage 4の入力にはそのまま使用しません。
+`docs/FEATURE_REGISTRY_V1.csv` に固定し、18頭分を
+`analysis/2026-10-03_kyoto11_opal/canonical_nonmarket_features_v1.csv`
+として実データ化しました。初期Stage 3の `nonmarket_features.csv` は監査用スナップショットとして保持します。
 
 初期候補として10番ヒシアイラが会話上で挙がっていますが、これはモデル結論ではありません。
 全頭分析では先入観として固定せず、18頭を同一手順で評価します。
