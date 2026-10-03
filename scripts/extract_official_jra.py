@@ -38,7 +38,7 @@ DATE_CANDIDATE = re.compile(
 )
 
 RACE_HEADER_DATE = re.compile(
-    r"(?<!\d)\d{5}\s+"
+    r"(?<!\d)\d{5}[^\d]{0,16}"
     r"(?P<month>1[0-2]|[1-9])\s*月\s*"
     r"(?P<calday>3[01]|[12]\d|[1-9])\s*日"
 )
