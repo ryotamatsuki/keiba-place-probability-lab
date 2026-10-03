@@ -1,0 +1,36 @@
+{
+  "status": "PASS",
+  "mode": "RETROSPECTIVE_PRODUCTION_REHEARSAL",
+  "successor_specification": "XGB01 + full-field relative ability",
+  "historical_panel_sha256": "cee9ae9a099f521f12b1bcdd371c25a3d7b9ba3555fbcf5a46f2c9098f59a33d",
+  "production_fit": {
+    "period": "2016-2025",
+    "fit_date_min": "2016-01-09",
+    "fit_date_max": "2025-12-28",
+    "rows": 33069,
+    "races": 2565,
+    "prior_mean": 0.20560041126130213,
+    "prior_strength": 6.0,
+    "uses_2025_as_training_data": true,
+    "uses_2025_as_untouched_test": false
+  },
+  "target": {
+    "race_id": "2026-10-03_KYOTO_11R",
+    "race_date": "2026-10-03",
+    "active_starters": 18,
+    "eligible_starters": 18,
+    "complete_stage4_coverage": true,
+    "declared_field_size": 18,
+    "active_field_size": 18,
+    "raw_probability_sum": 3.479234352707863,
+    "sum_to_three_adjustment_applied": false,
+    "market_columns_loaded": false,
+    "target_outcome_loaded": false
+  },
+  "scratch_contract": {
+    "relative_peer_set": "active starters at lock",
+    "draw_pct_denominator": "declared_field_size - 1",
+    "horse_numbers_renumbered_after_scratch": false,
+    "post_lock_scratch_mutates_lock": false
+  }
+}

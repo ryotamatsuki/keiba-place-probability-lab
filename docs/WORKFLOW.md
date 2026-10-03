@@ -198,6 +198,13 @@ Timing caveat: this remains retrospective because Stage 6 was not committed befo
 - [x] interaction追加版はpoint-Brier-best（0.148768）だがPhase 3A incumbent 0.148959との差は -0.000191
 - [x] paired date-clustered SE 0.000216の範囲内のためPhase 3A incumbentを維持（interaction blockは不採用）
 - [x] Phase 3 development COMPLETE — final Stage 4 successor = XGB01 + full-field relative ability
+- [x] Stage 4 successor production contract v2をfreeze
+- [x] frozen successorを2016-2025の33,069 eligible rows / 2,565 racesでproduction refit
+- [x] target scoringはraw marginal P(top3)をcanonical出力とし、sum-to-three補正を廃止
+- [x] relative abilityはlock時点のactive全スターターで計算
+- [x] scratch policyをfreeze（horse_no/declared_field_size維持、active field_size/peer集合を更新）
+- [x] 2026-10-03 frozen targetでproduction rehearsal PASS（18/18 eligible、relative features 100% coverage）
+- [ ] Stage 5 v2: out-of-time successor predictions + market-only incumbent + race-macro Brier / paired 1-SE
 - [ ] time-matched market snapshotが得られるまではmorning-odds blendをhistorical final oddsで再最適化しない
 - [ ] 複数liveレースを発走前lockで蓄積
 - [ ] live walk-forward評価
