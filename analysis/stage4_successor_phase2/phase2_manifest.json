@@ -1,0 +1,76 @@
+{
+  "status": "PASS",
+  "phase": "stage4_successor_phase2",
+  "historical_panel_sha256": "cee9ae9a099f521f12b1bcdd371c25a3d7b9ba3555fbcf5a46f2c9098f59a33d",
+  "phase1_evaluation_fingerprint_sha256": "a72fa10cc9adcd1ceee4c5b5eacd0dfdcdfc33fc984bf0b7866ec70b617bfd85",
+  "phase2_evaluation_fingerprint_sha256": "a72fa10cc9adcd1ceee4c5b5eacd0dfdcdfc33fc984bf0b7866ec70b617bfd85",
+  "phase1_incumbent_max_abs_probability_diff": 4.999840541586309e-10,
+  "uses_2025_rows": false,
+  "uses_market_fields": false,
+  "posthoc_calibration": "none",
+  "outer_years": [
+    2023,
+    2024
+  ],
+  "inner_years": {
+    "2023": [
+      2021,
+      2022
+    ],
+    "2024": [
+      2021,
+      2022,
+      2023
+    ]
+  },
+  "evaluation_rows": 6313,
+  "evaluation_races": 495,
+  "winner": "xgboost",
+  "point_brier_best": "xgboost",
+  "incumbent_retained": false,
+  "selection_reason": "point-Brier-best selected: no incumbent was supplied or the incumbent fell outside the paired one-SE Brier retention band",
+  "selected_configs": [
+    {
+      "outer_year": 2023,
+      "family": "random_forest",
+      "config_id": "RF04",
+      "complexity_rank": 4,
+      "params_json": "{\"max_depth\": 8, \"max_features\": \"sqrt\", \"min_samples_leaf\": 20}"
+    },
+    {
+      "outer_year": 2023,
+      "family": "hist_gradient_boosting",
+      "config_id": "HGB01",
+      "complexity_rank": 1,
+      "params_json": "{\"l2_regularization\": 2.0, \"learning_rate\": 0.03, \"max_leaf_nodes\": 15, \"min_samples_leaf\": 50}"
+    },
+    {
+      "outer_year": 2023,
+      "family": "xgboost",
+      "config_id": "XGB01",
+      "complexity_rank": 1,
+      "params_json": "{\"learning_rate\": 0.03, \"max_depth\": 3, \"min_child_weight\": 20, \"reg_lambda\": 5.0}"
+    },
+    {
+      "outer_year": 2024,
+      "family": "random_forest",
+      "config_id": "RF04",
+      "complexity_rank": 4,
+      "params_json": "{\"max_depth\": 8, \"max_features\": \"sqrt\", \"min_samples_leaf\": 20}"
+    },
+    {
+      "outer_year": 2024,
+      "family": "hist_gradient_boosting",
+      "config_id": "HGB01",
+      "complexity_rank": 1,
+      "params_json": "{\"l2_regularization\": 2.0, \"learning_rate\": 0.03, \"max_leaf_nodes\": 15, \"min_samples_leaf\": 50}"
+    },
+    {
+      "outer_year": 2024,
+      "family": "xgboost",
+      "config_id": "XGB01",
+      "complexity_rank": 1,
+      "params_json": "{\"learning_rate\": 0.03, \"max_depth\": 3, \"min_child_weight\": 20, \"reg_lambda\": 5.0}"
+    }
+  ]
+}
