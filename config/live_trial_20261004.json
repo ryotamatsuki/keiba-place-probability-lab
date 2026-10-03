@@ -1,0 +1,9 @@
+{
+  "version": "live_trial_20261004_v1",
+  "history_cutoff": "2026-10-03",
+  "stage5_canonical": "market-only",
+  "targets": [
+    {"race_id": "202608040211", "provider_id": "2608040211", "name": "京都大賞典", "off_at": "2026-10-04T15:30:00+09:00", "surface": "turf", "distance_m": 2400, "racecourse": "京都", "turn_direction": "right", "race_class": "Open"},
+    {"race_id": "202605040211", "provider_id": "2605040211", "name": "毎日王冠", "off_at": "2026-10-04T15:45:00+09:00", "surface": "turf", "distance_m": 1800, "racecourse": "東京", "turn_direction": "left", "race_class": "Open"}
+  ]
+}
