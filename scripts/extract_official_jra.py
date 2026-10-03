@@ -38,7 +38,9 @@ DATE_CANDIDATE = re.compile(
 )
 
 RACE_HEADER_DATE = re.compile(
-    r"(?m)^\s*\d{5}\s+(?P<month>1[0-2]|[1-9])月(?P<calday>3[01]|[12]\d|[1-9])日"
+    r"(?m)^\s*\d{5}\s+"
+    r"(?P<month>1[0-2]|[1-9])\s*月\s*"
+    r"(?P<calday>3[01]|[12]\d|[1-9])\s*日"
 )
 
 OFFICIAL_DATE_OVERRIDES = {
