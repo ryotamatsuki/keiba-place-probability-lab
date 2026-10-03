@@ -40,7 +40,7 @@ def test_daily_date_parser_uses_five_digit_header_serial_for_january():
         "url": "https://example.invalid/2011-1kyoto1.pdf",
         "legacy": False,
     }
-    raw = "05001 1月 5日 晴 良 (23京都1) 第1日 第1競走"
+    raw = "第1回 京都競馬 第1日\n05001 1月 5日 晴 良 (23京都1) 第1日 第1競走"
     rows = parse_race_days(
         info,
         "050011月5日晴良(23京都1)第1日第1競走",
@@ -59,7 +59,7 @@ def test_daily_date_parser_uses_five_digit_header_serial_for_november():
         "url": "https://example.invalid/2016-5kyoto1.pdf",
         "legacy": False,
     }
-    raw = "30001 11月 5日 晴 良 (28京都5) 第1日 第1競走"
+    raw = "第5回 京都競馬 第1日 30001 11月 5日 晴 良 (28京都5) 第1日 第1競走"
     rows = parse_race_days(
         info,
         "3000111月5日晴良(28京都5)第1日第1競走",
