@@ -603,6 +603,56 @@ def main() -> None:
     if date_mapping.groupby(map_keys).actual_date.nunique().gt(1).any():
         raise ValueError("Non-unique meeting-day date mapping")
 
+    # Hard annual reconciliation: compare realized JRA race IDs in the primary
+    # source with race IDs explicitly recovered from official JRA result PDFs.
+    # This is stricter than a 12-race-card capacity check and fails closed when
+    # official text extraction is incomplete.
+    official_ids = set(conditions.race_id.astype(str)) if not conditions.empty else set()
+    source_ids = set(date_mapping.race_id.astype(str))
+    source_only = sorted(source_ids - official_ids)
+    official_only = sorted(official_ids - source_ids)
+    recon_detail = pd.DataFrame(
+        [
+            *[
+                {"race_id": rid, "year": int(rid[:4]), "status": "source_only"}
+                for rid in source_only
+            ],
+            *[
+                {"race_id": rid, "year": int(rid[:4]), "status": "official_only"}
+                for rid in official_only
+            ],
+        ],
+        columns=["race_id", "year", "status"],
+    )
+    recon_detail.to_csv(DOCS / "HISTORICAL_JRA_RACE_ID_RECONCILIATION.csv", index=False)
+    recon_years = []
+    for year in YEARS:
+        src = {rid for rid in source_ids if rid.startswith(str(year))}
+        off = {rid for rid in official_ids if rid.startswith(str(year))}
+        recon_years.append(
+            {
+                "year": year,
+                "source_JRA_races": len(src),
+                "official_JRA_races": len(off),
+                "source_only": len(src - off),
+                "official_only": len(off - src),
+                "exact_match": src == off,
+            }
+        )
+    pd.DataFrame(recon_years).to_csv(
+        DOCS / "HISTORICAL_JRA_ANNUAL_RECONCILIATION.csv", index=False
+    )
+    if source_only or official_only:
+        raise ValueError(
+            "Official/source JRA race-id mismatch: source_only={} official_only={}; "
+            "examples source_only={} official_only={}".format(
+                len(source_only),
+                len(official_only),
+                source_only[:40],
+                official_only[:40],
+            )
+        )
+
     day_recon_rows: list[dict] = []
     source_by_day = date_mapping.groupby(date_mapping.race_id.str[:10]).race_number.apply(
         lambda values: sorted(int(x) for x in values)
