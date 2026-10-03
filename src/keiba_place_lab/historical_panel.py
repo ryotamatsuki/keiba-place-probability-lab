@@ -87,8 +87,11 @@ def build_historical_panel(rows: pd.DataFrame) -> pd.DataFrame:
         raise ValueError("duplicate race_id × horse_id rows detected")
     if (x["field_size"] < 2).any():
         raise ValueError("field_size must be >= 2")
-    if ((x["horse_no"] < 1) | (x["horse_no"] > x["field_size"])).any():
-        raise ValueError("horse_no must be within field_size")
+    draw_field_size = x["draw_field_size"] if "draw_field_size" in x.columns else x["field_size"]
+    if (draw_field_size < 2).any():
+        raise ValueError("draw_field_size must be >= 2")
+    if ((x["horse_no"] < 1) | (x["horse_no"] > draw_field_size)).any():
+        raise ValueError("horse_no must be within draw_field_size")
 
     # Current-race outcomes. These are labels / historical source values only.
     x["top3_label"] = x["finish_position"].between(1, 3).astype("int8")
@@ -150,7 +153,7 @@ def build_historical_panel(rows: pd.DataFrame) -> pd.DataFrame:
         x[output] = _prior_rolling(x, source, window, operation)
 
     # Current entry / race context.
-    x["draw_pct"] = (x["horse_no"] - 1) / (x["field_size"] - 1)
+    x["draw_pct"] = (x["horse_no"] - 1) / (draw_field_size - 1)
 
     def _front_share(series: pd.Series) -> float:
         observed = series.dropna()
