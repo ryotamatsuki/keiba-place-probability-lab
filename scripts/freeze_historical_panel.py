@@ -924,6 +924,36 @@ def main() -> None:
                 "official_source_url": row.official_source_url,
             }
         )
+    continuation_day_keys = {
+        race_id[:10] for race_id in RACE_DATE_OVERRIDES
+    }
+    for day_key in sorted(continuation_day_keys - set(days.race_day_key.astype(str))):
+        exception_rows = date_mapping.loc[
+            date_mapping.race_id.str[:10].eq(day_key)
+        ].copy()
+        if exception_rows.empty:
+            continue
+        nums = sorted(exception_rows.race_number.astype(int).unique().tolist())
+        day_recon_rows.append(
+            {
+                "year": int(day_key[:4]),
+                "race_day_key": day_key,
+                "racecourse": str(exception_rows.racecourse.iloc[0]),
+                "meeting_number": int(exception_rows.meeting_number.iloc[0]),
+                "meeting_day": int(exception_rows.meeting_day.iloc[0]),
+                "actual_date": ";".join(
+                    sorted(exception_rows.actual_date.astype(str).unique())
+                ),
+                "final_race_count": len(nums),
+                "final_race_numbers": ";".join(str(x) for x in nums),
+                "unfilled_1_to_12_slots": ";".join(
+                    str(x) for x in range(1, 13) if x not in nums
+                ),
+                "official_source_url": ";".join(
+                    sorted(exception_rows.official_source_url.astype(str).unique())
+                ),
+            }
+        )
     pd.DataFrame(day_recon_rows).to_csv(
         DOCS / "HISTORICAL_JRA_DAY_RECONCILIATION.csv",
         index=False,
@@ -931,7 +961,9 @@ def main() -> None:
 
     final_day_keys = set(date_mapping.race_id.str[:10])
     official_day_keys = set(days.race_day_key.astype(str))
-    extra_final_days = final_day_keys - official_day_keys
+    extra_final_days = (
+        final_day_keys - official_day_keys - continuation_day_keys
+    )
     if extra_final_days:
         raise ValueError(
             "Final race days absent from official archive: {}".format(
