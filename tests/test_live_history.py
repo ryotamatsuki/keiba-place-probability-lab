@@ -99,5 +99,33 @@ def test_full_field_verification_rejects_missing_entry():
             "declared_field_size": [2],
         }
     )
-    with pytest.raises(ValueError, match="identity sets differ"):
+    with pytest.raises(ValueError, match="absent from declared roster"):
         verify_full_field(result, roster)
+
+
+def test_full_field_verification_allows_result_to_omit_scratched_horse():
+    result = pd.DataFrame(
+        {
+            "horse_no": [1, 2],
+            "horse_id": ["a", "b"],
+            "horse_name": ["A", "B"],
+            "finish_status": ["finished", "dnf"],
+            "is_starter": [True, True],
+            "field_size": [2, 2],
+            "declared_field_size": [2, 2],
+        }
+    )
+    roster = pd.DataFrame(
+        {
+            "horse_no": [1, 2, 3],
+            "horse_id": ["a", "b", "c"],
+            "horse_name": ["A", "B", "C"],
+            "entry_status": ["active", "active", "scratched"],
+            "is_starter": [True, True, False],
+            "declared_field_size": [3, 3, 3],
+        }
+    )
+    qa = verify_full_field(result, roster)
+    assert qa["declared_field_size"] == 3
+    assert qa["actual_starters"] == 2
+    assert qa["scratched"] == 1
