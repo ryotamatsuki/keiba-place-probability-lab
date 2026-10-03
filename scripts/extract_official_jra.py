@@ -61,6 +61,32 @@ def _valid_date(year: int, month: int, day: int) -> str | None:
         return None
 
 
+def _valid_date_candidates(text: str, year: int) -> list[tuple[int, str]]:
+    """Return valid date candidates while removing 11/12-month substring aliases.
+
+    DATE_CANDIDATE intentionally overlaps so a true 1/31 can still be recovered
+    from OCR/text such as "...211月31日" where an invalid 11/31 appears first.
+    But for a valid "11月26日" the overlapping "1月26日" is an alias, not a
+    second date. Likewise "12月26日" must not yield "2月26日".
+    """
+    raw: list[tuple[int, int, int, str]] = []
+    for m in DATE_CANDIDATE.finditer(text):
+        month = int(m["month"])
+        day = int(m["calday"])
+        date = _valid_date(year, month, day)
+        if date is not None:
+            raw.append((m.start(), month, day, date))
+    out: list[tuple[int, str]] = []
+    for pos, month, day, date in raw:
+        shadowed = any(
+            prev_pos == pos - 1 and prev_month in {11, 12} and prev_day == day
+            for prev_pos, prev_month, prev_day, _ in raw
+        )
+        if not shadowed:
+            out.append((pos, date))
+    return out
+
+
 def parse_race_days(info: dict, compact: str) -> list[dict]:
     """Recover official (meeting, day) -> calendar date facts."""
     year = int(info["year"])
@@ -83,11 +109,7 @@ def parse_race_days(info: dict, compact: str) -> list[dict]:
         # Modern annual pages provide one PDF per meeting day. PDF text sometimes
         # concatenates a serial immediately before "1月31日" (e.g. "...211月31日").
         # Use overlapping candidates and reject impossible calendar dates.
-        candidates: list[str] = []
-        for m in DATE_CANDIDATE.finditer(compact):
-            date = _valid_date(year, int(m["month"]), int(m["calday"]))
-            if date is not None:
-                candidates.append(date)
+        candidates = [date for _, date in _valid_date_candidates(compact, year)]
         unique = list(dict.fromkeys(candidates))
         if not unique:
             override = OFFICIAL_DATE_OVERRIDES.get(info["url"])
@@ -99,13 +121,9 @@ def parse_race_days(info: dict, compact: str) -> list[dict]:
         marker_days: list[str] = []
         for marker in [*MODERN_MARKER.finditer(compact), *LEGACY_MARKER.finditer(compact)]:
             prefix = compact[max(0, marker.start() - 80) : marker.start()]
-            local = []
-            for dm in DATE_CANDIDATE.finditer(prefix):
-                date = _valid_date(year, int(dm["month"]), int(dm["calday"]))
-                if date is not None:
-                    local.append(date)
+            local = _valid_date_candidates(prefix, year)
             if local:
-                marker_days.append(local[-1])
+                marker_days.append(local[-1][1])
         marker_unique = list(dict.fromkeys(marker_days))
         chosen = marker_unique[0] if len(marker_unique) == 1 else unique[0]
         meetday = int(info["day_no"])
