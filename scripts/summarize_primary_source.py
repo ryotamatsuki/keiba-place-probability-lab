@@ -1,5 +1,6 @@
 from pathlib import Path
 import csv
+from collections import Counter
 import pandas as pd
 import kagglehub
 
@@ -12,33 +13,37 @@ if not root.is_dir():
 races=pd.read_csv(root/"keiba_races.csv", encoding="utf-8-sig", low_memory=False)
 
 result_path=root/"keiba_results.csv"
-field_counts={}
+field_counts=Counter()
 bad_examples=[]
+counters={c:Counter() for c in ["rank","sex_age","weight","time","passing","last_3f","horse_weight","odds","popularity"]}
+unique_race_ids=set()
+unique_horse_ids=set()
+valid_rows=0
+
 with result_path.open("r",encoding="utf-8-sig",newline="") as f:
     reader=csv.reader(f)
     header=next(reader)
     expected=len(header)
+    idx={name:i for i,name in enumerate(header)}
     total=0
     for line_no,row in enumerate(reader,start=2):
         total+=1
-        field_counts[len(row)]=field_counts.get(len(row),0)+1
-        if len(row)!=expected and len(bad_examples)<20:
-            bad_examples.append((line_no,len(row),row))
-
-# Parse the clean rows for distributions, skipping malformed rows only in this diagnostic.
-results=pd.read_csv(
-    result_path,
-    encoding="utf-8-sig",
-    low_memory=False,
-    engine="python",
-    on_bad_lines="skip",
-)
+        field_counts[len(row)]+=1
+        if len(row)!=expected:
+            if len(bad_examples)<20:
+                bad_examples.append((line_no,len(row),row))
+            continue
+        valid_rows+=1
+        unique_race_ids.add(row[idx["race_id"]])
+        unique_horse_ids.add(row[idx["horse_id"]])
+        for c in counters:
+            counters[c][row[idx[c]] or "<EMPTY>"] += 1
 
 lines=["# Historical Source Value Summary","","## parser diagnostics","",
        f"- header fields: {expected}",
        f"- raw data rows: {total}",
-       f"- field-count distribution: {field_counts}",
-       f"- pandas rows after malformed-line skip: {len(results)}",
+       f"- valid-width rows: {valid_rows}",
+       f"- field-count distribution: {dict(sorted(field_counts.items()))}",
        "",
        "### malformed examples","",
        "~~~text"]
@@ -49,28 +54,25 @@ lines += ["~~~","","## races"]
 for c in ["date","venue","course_type","turn","weather","track_condition","race_class","race_number"]:
     lines += ["",f"### {c}","", "~~~text"]
     if c in races.columns:
-        vc=races[c].astype("string").fillna("<NA>").value_counts(dropna=False).head(80)
-        lines += [str(vc)]
+        lines += [str(races[c].astype("string").fillna("<NA>").value_counts(dropna=False).head(80))]
     else:
         lines += ["MISSING"]
     lines += ["~~~"]
 
 lines += ["","## results"]
-for c in ["rank","sex_age","weight","time","passing","last_3f","horse_weight","odds","popularity"]:
+for c,ctr in counters.items():
     lines += ["",f"### {c}","", "~~~text"]
-    if c in results.columns:
-        lines += [str(results[c].astype("string").fillna("<NA>").value_counts(dropna=False).head(40))]
-    else:
-        lines += ["MISSING"]
+    for value,count in ctr.most_common(40):
+        lines.append(f"{value!r}: {count}")
     lines += ["~~~"]
 
 lines += ["","## basic ranges","","~~~text",
           f"races rows={len(races)}",
           f"results raw rows={total}",
-          f"results parseable rows={len(results)}",
+          f"results valid-width rows={valid_rows}",
           f"race date min={races['date'].min()} max={races['date'].max()}",
           f"race_id unique races={races['race_id'].nunique()}",
-          f"race_id unique parseable results={results['race_id'].nunique()}",
-          f"horse_id unique parseable={results['horse_id'].nunique()}",
+          f"race_id unique valid results={len(unique_race_ids)}",
+          f"horse_id unique valid={len(unique_horse_ids)}",
           "~~~"]
 out.write_text("\n".join(lines)+"\n", encoding="utf-8")
