@@ -3,8 +3,8 @@ import pandas as pd
 import pytest
 
 from keiba_place_lab.nonmarket import (
-    engineer_features,
     enforce_race_top3_sum,
+    engineer_features,
     feature_columns,
     validate_market_free,
 )
