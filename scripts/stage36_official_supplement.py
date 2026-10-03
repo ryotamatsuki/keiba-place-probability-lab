@@ -102,9 +102,16 @@ def _pdf_header_counts(url: str, actual_date: str) -> dict[str, int]:
         return len(serials)
 
     compact = re.sub(r"\s+", "", "".join(ch for ch in raw if ch.isprintable()))
+    race_label_re = re.compile(r"第\s*(1[0-2]|[1-9])\s*競走")
+
+    def race_label_count(text: str) -> int:
+        return len({int(value) for value in race_label_re.findall(text)})
+
     return {
         "raw_header_count": count(raw),
         "compact_header_count": count(compact),
+        "raw_race_label_count": race_label_count(raw),
+        "compact_race_label_count": race_label_count(compact),
     }
 
 
