@@ -40,7 +40,7 @@ def test_inner_one_se_can_prefer_simpler_config():
     frame = _frame()
     best = np.tile([0.72, 0.72, 0.72, 0.28, 0.28, 0.28], 12)
     nearly_same = best.copy()
-    nearly_same[::6] -= 0.001
+    nearly_same[0] -= 0.01
 
     predictions = {
         "RF01": nearly_same,
