@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -103,7 +103,7 @@ def main() -> None:
         "final_target_odds_loaded": False,
         "payout_loaded": False,
         "popularity_loaded": False,
-        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "generated_at_utc": datetime.now(UTC).isoformat(),
         "fingerprints": fingerprints,
     }
     (args.output_dir / "stage6_lock_manifest.json").write_text(
