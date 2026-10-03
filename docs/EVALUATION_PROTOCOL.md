@@ -30,7 +30,7 @@ the same eligible race/runner rows.
 The runner-micro Brier used in the historical v1 reports is retained as a companion metric for
 continuity.
 
-### Log loss — mandatory guardrail
+### Log loss — mandatory secondary diagnostic / tie-breaker
 
 Log loss is always reported. It is a strictly proper scoring rule and more strongly penalizes
 catastrophic overconfidence than Brier.
