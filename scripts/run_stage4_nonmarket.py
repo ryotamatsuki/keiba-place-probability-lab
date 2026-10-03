@@ -12,8 +12,11 @@ import pandas as pd
 
 from keiba_place_lab.nonmarket import (
     ALL_BLOCKS,
+    canonicalize_target_context,
+    complete_race_subset,
     enforce_race_top3_sum,
     evaluate,
+    evaluate_binary,
     fit_model,
     predict_raw_probability,
     validate_market_free,
@@ -51,8 +54,6 @@ def metric_row(cohort: str, c_value: float, ev) -> dict:
         "C": float(c_value),
         "brier": ev.brier,
         "log_loss": ev.log_loss,
-        "mean_race_sum": ev.mean_race_sum,
-        "max_abs_race_sum_error": ev.max_abs_race_sum_error,
         "rows": ev.rows,
         "races": ev.races,
     }
@@ -83,7 +84,7 @@ def main() -> None:
     args = parser.parse_args()
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    target = pd.read_csv(args.target)
+    target = canonicalize_target_context(pd.read_csv(args.target))
     validate_market_free(target.columns)
     if len(target) != 18 or target["horse_no"].nunique() != 18:
         raise ValueError("Canonical target matrix must contain exactly 18 unique runners")
@@ -106,8 +107,14 @@ def main() -> None:
                 c_value=c_value,
                 prior_strength=PRIOR_STRENGTH,
             )
-            _, _, adjusted = predict_adjusted(model, validation_eval, prior_mean)
-            grid_rows.append(metric_row(cohort, c_value, evaluate(validation_eval, adjusted)))
+            _, raw_probability, _ = predict_adjusted(model, validation_eval, prior_mean)
+            grid_rows.append(
+                metric_row(
+                    cohort,
+                    c_value,
+                    evaluate_binary(validation_eval, raw_probability),
+                )
+            )
 
     grid = pd.DataFrame(grid_rows).sort_values(
         ["brier", "log_loss", "C", "training_cohort"], kind="mergesort"
@@ -125,8 +132,8 @@ def main() -> None:
             prior_strength=PRIOR_STRENGTH,
             excluded_blocks=[excluded],
         )
-        _, _, adjusted = predict_adjusted(model, validation_eval, prior_mean)
-        ev = evaluate(validation_eval, adjusted)
+        _, raw_probability, _ = predict_adjusted(model, validation_eval, prior_mean)
+        ev = evaluate_binary(validation_eval, raw_probability)
         sensitivity_rows.append(
             {
                 "excluded_block": excluded,
@@ -147,9 +154,20 @@ def main() -> None:
         prior_strength=PRIOR_STRENGTH,
     )
 
-    # One-time untouched 2025 historical test evaluation.
-    _, _, test_adjusted = predict_adjusted(final_model, test_eval, final_prior_mean)
-    test_metrics = evaluate(test_eval, test_adjusted)
+    # One-time 2025 historical test evaluation. The Phase-A panel is runner-filtered,
+    # so marginal probabilities are scored on all eligible rows without forcing race sums.
+    _, test_raw_probability, _ = predict_adjusted(
+        final_model, test_eval, final_prior_mean
+    )
+    test_metrics = evaluate_binary(test_eval, test_raw_probability)
+
+    # Separate race-consistency diagnostic on races where every starter remains in
+    # the eligibility-filtered panel. This filter uses field_size, never outcomes.
+    test_complete = complete_race_subset(test_eval)
+    _, _, test_complete_adjusted = predict_adjusted(
+        final_model, test_complete, final_prior_mean
+    )
+    test_complete_metrics = evaluate(test_complete, test_complete_adjusted)
 
     raw_logit, raw_probability, target_adjusted = predict_adjusted(
         final_model, target, final_prior_mean
@@ -196,12 +214,17 @@ def main() -> None:
         "selection": {
             "training_cohort": selected_cohort,
             "C": selected_c,
+            "metric_basis": "raw marginal P(top3) on all eligible 2023-2024 turf-1200 rows",
             "validation_brier": float(selected["brier"]),
             "validation_log_loss": float(selected["log_loss"]),
             "validation_rows": int(selected["rows"]),
             "validation_races": int(selected["races"]),
         },
-        "test_2025": test_metrics.__dict__,
+        "test_2025": {
+            **test_metrics.__dict__,
+            "metric_basis": "raw marginal P(top3) on all eligible turf-1200 rows",
+        },
+        "race_consistency_diagnostic_2025_complete_races": test_complete_metrics.__dict__,
         "production_fit": {
             "period": "2016-2024",
             "rows": len(fit_2016_2024),
@@ -213,9 +236,16 @@ def main() -> None:
         "target": {
             "runners": len(result),
             "sum_p_top3": float(result["p_top3"].sum()),
+            "racecourse_after_canonicalization": str(target["racecourse"].iloc[0]),
+            "race_class_after_canonicalization": str(target["race_class"].iloc[0]),
             "market_columns_loaded": False,
             "target_outcome_loaded": False,
             "generated_after_scheduled_start": True,
+        },
+        "qa_history": {
+            "discarded_run": 1,
+            "reason": "run 1 incorrectly imposed sum P(top3)=3 on historically runner-filtered partial race cohorts",
+            "test_performance_used_for_model_selection": False,
         },
         "top_positive_coefficients": positive,
         "top_negative_coefficients": negative,
@@ -241,14 +271,19 @@ def main() -> None:
         f"- selected training cohort: `{selected_cohort}`",
         f"- selected L2 logistic C: `{selected_c:g}`",
         f"- validation set for every candidate: 2023-2024 turf 1200m ({int(selected['races']):,} races / {int(selected['rows']):,} rows)",
-        f"- validation race-consistent Brier: `{float(selected['brier']):.6f}`",
-        f"- validation log loss: `{float(selected['log_loss']):.6f}`",
+        f"- validation marginal Brier: `{float(selected['brier']):.6f}`",
+        f"- validation marginal log loss: `{float(selected['log_loss']):.6f}`",
         f"- empirical-Bayes prior: fitting-sample top3 prevalence, strength `{PRIOR_STRENGTH:g}`",
         "- missing values: fitting-sample numeric median + indicators; categorical `UNKNOWN`",
-        "- final race transform: common logit intercept with exact `sum P(top3)=3`",
+        "- historical validation/test metric: raw marginal P(top3), because Phase-A filters runner rows",
+        "- target transform: common logit intercept with exact `sum P(top3)=3`",
+        "- target category aliases: `Kyoto -> 京都`, `Listed_open -> Open`",
         "",
         "Candidate models were trained on different predeclared cohorts but evaluated on the same",
         "target-like validation population. 2025 was not used for cohort, feature-block, or C selection.",
+        "Run #1 was discarded at QA because it imposed a three-slot race constraint on partial historical",
+        "race cohorts after the career-start eligibility filter. The correction is structural and does not",
+        "use 2025 performance to choose the model.",
         "",
         "## Validation grid",
         "",
@@ -261,11 +296,19 @@ def main() -> None:
         "",
         f"- races: {test_metrics.races:,}",
         f"- rows: {test_metrics.rows:,}",
-        f"- Brier: `{test_metrics.brier:.6f}`",
-        f"- log loss: `{test_metrics.log_loss:.6f}`",
-        f"- mean race probability sum: `{test_metrics.mean_race_sum:.12f}`",
-        f"- max |race sum - 3|: `{test_metrics.max_abs_race_sum_error:.3e}`",
+        f"- marginal Brier: `{test_metrics.brier:.6f}`",
+        f"- marginal log loss: `{test_metrics.log_loss:.6f}`",
         "- 2025 outcomes used in target fit: **no**",
+        "",
+        "Race-sum QA is evaluated separately only on 2025 races where every starter survives the",
+        "pre-race eligibility filter:",
+        "",
+        f"- complete races: {test_complete_metrics.races:,}",
+        f"- complete-race rows: {test_complete_metrics.rows:,}",
+        f"- adjusted Brier: `{test_complete_metrics.brier:.6f}`",
+        f"- adjusted log loss: `{test_complete_metrics.log_loss:.6f}`",
+        f"- mean race probability sum: `{test_complete_metrics.mean_race_sum:.12f}`",
+        f"- max |race sum - 3|: `{test_complete_metrics.max_abs_race_sum_error:.3e}`",
         "",
         "## Sensitivity — leave one feature block out",
         "",
