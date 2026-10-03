@@ -1,8 +1,8 @@
 """Leakage-safe historical horse-racing panel construction.
 
-The input is a standardized event-row table. Every historical feature is derived
-with an explicit one-race lag before it can be used for a later target row.
-Market/odds variables are not required or consumed.
+Input rows are standardized actual starters. Every historical predictor is
+derived from the current entry or races strictly earlier than the target race.
+Target-race odds / popularity / payout are rejected at the boundary.
 """
 
 from __future__ import annotations
@@ -19,18 +19,18 @@ REQUIRED_COLUMNS = {
     "horse_name",
     "horse_no",
     "field_size",
+    "declared_field_size",
     "sex",
     "age",
     "assigned_weight_kg",
     "distance_m",
     "surface",
     "racecourse",
-    "course_layout",
+    "turn_direction",
     "race_class",
-    "handicap_indicator",
     "finish_position",
-    "race_time_seconds",
     "early_position",
+    "race_time_seconds",
     "is_open_plus",
     "is_graded",
 }
@@ -48,26 +48,14 @@ def find_forbidden_market_columns(columns: Iterable[str]) -> list[str]:
     return bad
 
 
-def _prior_rolling(
-    frame: pd.DataFrame,
-    source: str,
-    window: int,
-    op: str,
-) -> pd.Series:
-    """Compute a rolling statistic from strictly prior starts for each horse."""
-    shifted = frame.groupby("horse_id", sort=False)[source].shift(1)
-    rolling = shifted.groupby(frame["horse_id"], sort=False).rolling(window, min_periods=1)
-    result = getattr(rolling, op)().reset_index(level=0, drop=True)
-    return result.reindex(frame.index)
+def _shifted_rolling(series: pd.Series, window: int, op: str) -> pd.Series:
+    shifted = series.shift(1)
+    rolling = shifted.rolling(window, min_periods=1)
+    return getattr(rolling, op)()
 
 
 def build_historical_panel(rows: pd.DataFrame) -> pd.DataFrame:
-    """Build leakage-safe, horse-by-race historical features.
-
-    The returned table keeps outcome columns for model evaluation, but all
-    feature columns are constructed from current entry information and/or
-    strictly earlier races for that horse.
-    """
+    """Build leakage-safe horse-by-race historical features."""
     missing = REQUIRED_COLUMNS - set(rows.columns)
     if missing:
         raise ValueError(f"missing required columns: {sorted(missing)}")
@@ -87,15 +75,14 @@ def build_historical_panel(rows: pd.DataFrame) -> pd.DataFrame:
         raise ValueError("duplicate race_id × horse_id rows detected")
     if (x["field_size"] < 2).any():
         raise ValueError("field_size must be >= 2")
-    draw_field_size = x["draw_field_size"] if "draw_field_size" in x.columns else x["field_size"]
-    if (draw_field_size < 2).any():
-        raise ValueError("draw_field_size must be >= 2")
-    if ((x["horse_no"] < 1) | (x["horse_no"] > draw_field_size)).any():
-        raise ValueError("horse_no must be within draw_field_size")
+    if (x["declared_field_size"] < x["field_size"]).any():
+        raise ValueError("declared_field_size must be >= actual field_size")
+    if ((x["horse_no"] < 1) | (x["horse_no"] > x["declared_field_size"])).any():
+        raise ValueError("horse_no must be within declared_field_size")
 
-    # Current-race outcomes. These are labels / historical source values only.
     x["top3_label"] = x["finish_position"].between(1, 3).astype("int8")
     x["finish_pct_current"] = (x["finish_position"] - 1) / (x["field_size"] - 1)
+    x.loc[x["finish_position"].isna(), "finish_pct_current"] = np.nan
 
     winner_time = x.groupby("race_id", sort=False)["race_time_seconds"].transform("min")
     x["relative_time_loss_current"] = (x["race_time_seconds"] - winner_time) / winner_time
@@ -103,14 +90,18 @@ def build_historical_panel(rows: pd.DataFrame) -> pd.DataFrame:
     x.loc[invalid_time, "relative_time_loss_current"] = np.nan
 
     x["early_pos_pct_current"] = (x["early_position"] - 1) / (x["field_size"] - 1)
-    x.loc[x["early_position"].isna(), "early_pos_pct_current"] = np.nan
+    invalid_pos = (
+        x["early_position"].isna()
+        | x["early_position"].lt(1)
+        | x["early_position"].gt(x["field_size"])
+    )
+    x.loc[invalid_pos, "early_pos_pct_current"] = np.nan
 
     x["is_turf_current"] = x["surface"].astype(str).str.lower().eq("turf").astype("int8")
     x["turf_top3_current"] = (x["is_turf_current"] * x["top3_label"]).astype("int8")
 
     horse = x.groupby("horse_id", sort=False)
 
-    # Strictly prior cumulative history.
     x["career_starts"] = horse.cumcount()
     x["career_top3"] = horse["top3_label"].cumsum() - x["top3_label"]
     x["turf_starts"] = horse["is_turf_current"].cumsum() - x["is_turf_current"]
@@ -124,7 +115,6 @@ def build_historical_panel(rows: pd.DataFrame) -> pd.DataFrame:
     x["same_course_starts"] = same_course.cumcount()
     x["same_course_top3"] = same_course["top3_label"].cumsum() - x["top3_label"]
 
-    # Change from immediately previous start.
     x["prev_race_date"] = horse["race_date"].shift(1)
     x["days_since_prev"] = (x["race_date"] - x["prev_race_date"]).dt.days
 
@@ -140,7 +130,6 @@ def build_historical_panel(rows: pd.DataFrame) -> pd.DataFrame:
         x["assigned_weight_kg"] - x["prev_assigned_weight_kg"]
     )
 
-    # Recent form. shift(1) is the key leakage barrier.
     specs = (
         ("finish_pct_current", "recent3_finish_pct_mean", 3, "mean"),
         ("top3_label", "recent3_top3_count", 3, "sum"),
@@ -150,10 +139,12 @@ def build_historical_panel(rows: pd.DataFrame) -> pd.DataFrame:
         ("early_pos_pct_current", "recent4_early_pos_pct_mean", 4, "mean"),
     )
     for source, output, window, operation in specs:
-        x[output] = _prior_rolling(x, source, window, operation)
+        x[output] = horse[source].transform(
+            lambda s, w=window, op=operation: _shifted_rolling(s, w, op)
+        )
 
-    # Current entry / race context.
-    x["draw_pct"] = (x["horse_no"] - 1) / (draw_field_size - 1)
+    x["draw_pct"] = (x["horse_no"] - 1) / (x["declared_field_size"] - 1)
+    x.loc[x["declared_field_size"].le(1), "draw_pct"] = 0.0
 
     def _front_share(series: pd.Series) -> float:
         observed = series.dropna()
@@ -189,7 +180,7 @@ def select_phase_a_cohort(
     min_distance_m: int | None = None,
     max_distance_m: int | None = None,
 ) -> pd.DataFrame:
-    """Select a predeclared Phase-A cohort without using model outcomes."""
+    """Select a predeclared Phase-A cohort without consulting outcomes."""
     mask = (
         panel["surface"].astype(str).str.lower().eq(surface.lower())
         & panel["field_size"].ge(min_field_size)
@@ -206,7 +197,7 @@ def select_phase_a_cohort(
 
 
 def assert_strict_history(panel: pd.DataFrame) -> None:
-    """Fail when a reconstructed previous date is not strictly earlier."""
+    """Fail when a reconstructed previous start is not strictly earlier."""
     observed = panel["prev_race_date"].notna()
     bad = observed & (panel["prev_race_date"] >= panel["race_date"])
     if bad.any():
