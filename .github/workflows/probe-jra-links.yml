@@ -19,6 +19,6 @@ jobs:
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/JRA_2025_PDF_LINK_SAMPLES.txt
+          git add docs/JRA_2025_PDF_LINK_SAMPLES.txt docs/JRA_REPORT_HTML_SNIPPET.txt
           git commit -m "data: probe JRA report PDF links [skip ci]" || true
           git push
