@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "evaluation_mode": "RETROSPECTIVE_PIPELINE_TEST",
+  "official_outcome_source": "https://www.jra.go.jp/JRADB/accessS.html?CNAME=pw01sde0108202604011120261003/2F",
+  "locked_probability_sha256": "eefa16ad709c7568690e3f75a0df22491a31b3cb6aebdeebcf27fab274bc9e66",
+  "locked_source_commit_sha": "086f7a2a20e20dc226db6535b4738905e2011f1b",
+  "market_as_of_time": "2026-10-03T08:35:00+09:00",
+  "runner_count": 18,
+  "actual_top3": [
+    {"finish_rank": 1, "horse_no": 6, "horse_name": "リリージョワ"},
+    {"finish_rank": 2, "horse_no": 18, "horse_name": "ディアナザール"},
+    {"finish_rank": 3, "horse_no": 8, "horse_name": "レッドエヴァンス"}
+  ],
+  "stage6_values_modified": false,
+  "later_or_final_target_odds_used_for_forecast": false,
+  "workflow_run": 37110151054,
+  "artifact_id": 11270045420,
+  "artifact_digest": "sha256:c224ba078232365bcd4e5a360c43df87f2a0d03b29acce254374517a525ef252",
+  "artifact_output_sha256": {
+    "POSTRACE_EVALUATION.md": "158b8db623a67075e7ea5fd57f680aa5a7ca98bc9cf1cbffbe9ea710835c0433",
+    "postrace_metrics.csv": "04a30e05b366740d64e8ff62c29fd0f1663b757f11b280b415c443b3ce63e320",
+    "postrace_joined.csv": "e1e0811cba964f6a74c15287bcef58cb656fff6f6ef58972465498257158560f",
+    "stage7_evaluation_manifest.json": "f730afa9764e3133c10187f326332500092881e7b57979ab321887cf72ba08d7"
+  },
+  "metrics": [
+    {"model": "stage2_market_0835", "brier": 0.107207164128, "log_loss": 0.3351634127361814, "actual_top3_probability_mass": 0.8987500000000002, "actual_top3_forecast_ranks": "2/3/6"},
+    {"model": "stage5_ensemble", "brier": 0.11109743683151847, "log_loss": 0.3503778080165348, "actual_top3_probability_mass": 0.829375544, "actual_top3_forecast_ranks": "2/3/6"},
+    {"model": "stage6_locked", "brier": 0.11109743683151847, "log_loss": 0.3503778080165348, "actual_top3_probability_mass": 0.829375544, "actual_top3_forecast_ranks": "2/3/6"},
+    {"model": "stage4_nonmarket", "brier": 0.11359749917884293, "log_loss": 0.35517584839474614, "actual_top3_probability_mass": 0.823467973, "actual_top3_forecast_ranks": "2/4/7"},
+    {"model": "uniform_3_over_18", "brier": 0.1388888888888889, "log_loss": 0.45056120886630463, "actual_top3_probability_mass": 0.5, "actual_top3_forecast_ranks": "all_tied_1-18"}
+  ]
+}
