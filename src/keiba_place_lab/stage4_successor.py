@@ -12,7 +12,6 @@ from sklearn.linear_model import LogisticRegression
 
 from .model_selection import candidate_score
 
-
 DIAGNOSTIC_DIMENSIONS = (
     "year",
     "field_size_band",
