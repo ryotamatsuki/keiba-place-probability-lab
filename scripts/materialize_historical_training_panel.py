@@ -13,7 +13,6 @@ import json
 import os
 import re
 from pathlib import Path
-from urllib.request import urlopen
 
 import kagglehub
 import numpy as np
@@ -633,8 +632,10 @@ def main() -> None:
         "",
         f"- flat races: {std_diag['standardized_races']}",
         f"- starter rows: {std_diag['standardized_rows']}",
-        f"- obstacle races excluded by documented winner-last3F<20 rule: "
-        f"{std_diag['obstacle_races_excluded']}",
+        (
+            "- obstacle races excluded by documented winner-last3F<20 rule: "
+            f"{std_diag['obstacle_races_excluded']}"
+        ),
         f"- invalid core rows excluded: {std_diag['invalid_core_rows_excluded']}",
         f"- 2016-2025 flat races: {benchmark_2016_2025}",
         f"- independent benchmark: {benchmark_target}",
