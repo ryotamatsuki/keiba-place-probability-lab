@@ -204,8 +204,13 @@ Timing caveat: this remains retrospective because Stage 6 was not committed befo
 - [x] relative abilityはlock時点のactive全スターターで計算
 - [x] scratch policyをfreeze（horse_no/declared_field_size維持、active field_size/peer集合を更新）
 - [x] 2026-10-03 frozen targetでproduction rehearsal PASS（18/18 eligible、relative features 100% coverage）
-- [ ] Stage 5 v2: out-of-time successor predictions + market-only incumbent + race-macro Brier / paired 1-SE
-- [ ] time-matched market snapshotが得られるまではmorning-odds blendをhistorical final oddsで再最適化しない
+- [x] Stage 5 v2: out-of-time successor predictions + market-only incumbent + race-macro Brier / paired 1-SE
+- [x] 2023でlogit calibration familyをfitし、2024 market gateでcalibrated marketをhistorical final-odds baseとして採用
+- [x] 2024 blend point-bestは5% non-marketだが改善 0.0000485 < paired clustered SE 0.0001113
+- [x] market-onlyを維持し、Stage 5 v2 historical-domain selected non-market weight = 0.00
+- [x] 2025は2016-2024 fitによるOOFを再生成し、KNOWN_OUTCOME_AUDIT_NOT_TESTとして分離
+- [x] live morning canonical policy = raw market-only; Stage 4 v2 / historical-domain blendはshadow
+- [x] time-matched market snapshotが得られるまではmorning-odds blendをhistorical final oddsで再最適化しない
 - [ ] 複数liveレースを発走前lockで蓄積
 - [ ] live walk-forward評価
 - [ ] calibrationをサンプル外で検証
