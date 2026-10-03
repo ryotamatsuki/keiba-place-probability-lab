@@ -37,6 +37,10 @@ DATE_CANDIDATE = re.compile(
     r"(?=(?P<month>1[0-2]|[1-9])月(?P<calday>3[01]|[12]\d|[1-9])日)"
 )
 
+RACE_HEADER_DATE = re.compile(
+    r"(?m)^\s*\d{5}\s+(?P<month>1[0-2]|[1-9])月(?P<calday>3[01]|[12]\d|[1-9])日"
+)
+
 OFFICIAL_DATE_OVERRIDES = {
     "https://www.jra.go.jp/datafile/seiseki/report/2020/2020-1niigata1.pdf": "2020-05-09",
     "https://www.jra.go.jp/datafile/seiseki/report/2020/2020-2tokyo5.pdf": "2020-05-09",
@@ -44,14 +48,16 @@ OFFICIAL_DATE_OVERRIDES = {
 }
 
 
-def compact_pdf_text(data: bytes) -> str:
+def normalized_pdf_text(data: bytes) -> str:
     with pymupdf.open(stream=data, filetype="pdf") as doc:
-        pages = []
-        for page in doc:
-            text = unicodedata.normalize("NFKC", page.get_text("text"))
-            text = "".join(ch for ch in text if ch.isprintable())
-            pages.append(re.sub(r"\s+", "", text))
-    return "".join(pages)
+        return "\n\f\n".join(
+            unicodedata.normalize("NFKC", page.get_text("text")) for page in doc
+        )
+
+
+def compact_pdf_text(data: bytes) -> str:
+    text = normalized_pdf_text(data)
+    return re.sub(r"\s+", "", "".join(ch for ch in text if ch.isprintable()))
 
 
 def _valid_date(year: int, month: int, day: int) -> str | None:
@@ -87,7 +93,9 @@ def _valid_date_candidates(text: str, year: int) -> list[tuple[int, str]]:
     return out
 
 
-def parse_race_days(info: dict, compact: str) -> list[dict]:
+def parse_race_days(
+    info: dict, compact: str, raw_text: str | None = None
+) -> list[dict]:
     """Recover official (meeting, day) -> calendar date facts."""
     year = int(info["year"])
     by_day: dict[int, str] = {}
@@ -106,26 +114,41 @@ def parse_race_days(info: dict, compact: str) -> list[dict]:
         if not by_day:
             raise ValueError(f"No official meeting-day summary dates: {info['url']}")
     else:
-        # Modern annual pages provide one PDF per meeting day. PDF text sometimes
-        # concatenates a serial immediately before "1月31日" (e.g. "...211月31日").
-        # Use overlapping candidates and reject impossible calendar dates.
-        candidates = [date for _, date in _valid_date_candidates(compact, year)]
+        # Real JRA result PDFs print a five-digit race-management code before the
+        # calendar date on each race heading. Prefer that whitespace-preserving
+        # header because compact text makes e.g. code-ending-1 + "1月5日"
+        # indistinguishable from "11月5日".
+        header_candidates: list[str] = []
+        if raw_text is not None:
+            for m in RACE_HEADER_DATE.finditer(raw_text):
+                date = _valid_date(year, int(m["month"]), int(m["calday"]))
+                if date is not None:
+                    header_candidates.append(date)
+        candidates = (
+            header_candidates
+            if header_candidates
+            else [date for _, date in _valid_date_candidates(compact, year)]
+        )
         unique = list(dict.fromkeys(candidates))
         if not unique:
             override = OFFICIAL_DATE_OVERRIDES.get(info["url"])
             if override is None:
                 raise ValueError(f"No valid calendar date in official daily PDF: {info['url']}")
             unique = [override]
-        # A daily result PDF should describe one calendar day. Restrict ambiguity
-        # by using dates attached to parsed race markers when available.
-        marker_days: list[str] = []
-        for marker in [*MODERN_MARKER.finditer(compact), *LEGACY_MARKER.finditer(compact)]:
-            prefix = compact[max(0, marker.start() - 80) : marker.start()]
-            local = _valid_date_candidates(prefix, year)
-            if local:
-                marker_days.append(local[-1][1])
-        marker_unique = list(dict.fromkeys(marker_days))
-        chosen = marker_unique[0] if len(marker_unique) == 1 else unique[0]
+        # A daily result PDF should describe one calendar day. For unusual
+        # continuation racing a PDF can contain two dates; the race-level
+        # correction is handled separately by the frozen mapping adapter.
+        if header_candidates:
+            chosen = unique[0]
+        else:
+            marker_days: list[str] = []
+            for marker in [*MODERN_MARKER.finditer(compact), *LEGACY_MARKER.finditer(compact)]:
+                prefix = compact[max(0, marker.start() - 240) : marker.start()]
+                local = _valid_date_candidates(prefix, year)
+                if local:
+                    marker_days.append(local[-1][1])
+            marker_unique = list(dict.fromkeys(marker_days))
+            chosen = marker_unique[0] if len(marker_unique) == 1 else unique[0]
         meetday = int(info["day_no"])
         by_day[meetday] = chosen
 
@@ -223,8 +246,11 @@ def extract_pdf(info: dict, cache: Path) -> tuple[list[dict], list[dict]]:
         data = get_bytes(info["url"])
         pdf_cache.write_bytes(data)
     digest = hashlib.sha256(data).hexdigest()
-    compact = compact_pdf_text(data)
-    days = parse_race_days(info, compact)
+    raw_text = normalized_pdf_text(data)
+    compact = re.sub(
+        r"\s+", "", "".join(ch for ch in raw_text if ch.isprintable())
+    )
+    days = parse_race_days(info, compact, raw_text=raw_text)
     day_lookup = {int(r["meeting_day"]): r["actual_date"] for r in days}
 
     conditions: list[dict] = []
@@ -309,6 +335,19 @@ def main() -> None:
         raise ValueError(f"No official dates extracted for {args.year}")
     if days.groupby("race_day_key").actual_date.nunique().gt(1).any():
         raise ValueError("Conflicting official race-day dates")
+    duplicate_course_dates = days.duplicated(
+        ["actual_date", "racecourse"], keep=False
+    )
+    if duplicate_course_dates.any():
+        bad = days.loc[
+            duplicate_course_dates,
+            ["race_day_key", "actual_date", "racecourse", "official_source_url"],
+        ]
+        raise ValueError(
+            "Duplicate official course/date mapping: {}".format(
+                bad.to_dict("records")[:20]
+            )
+        )
     days = (
         days.sort_values(["race_day_key", "official_source_url"])
         .drop_duplicates("race_day_key", keep="first")
