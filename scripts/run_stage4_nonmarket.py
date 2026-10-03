@@ -204,14 +204,14 @@ def main() -> None:
         "test_2025": test_metrics.__dict__,
         "production_fit": {
             "period": "2016-2024",
-            "rows": int(len(fit_2016_2024)),
+            "rows": len(fit_2016_2024),
             "races": int(fit_2016_2024["race_id"].nunique()),
             "prior_mean": float(final_prior_mean),
             "prior_strength": PRIOR_STRENGTH,
             "uses_2025_outcomes": False,
         },
         "target": {
-            "runners": int(len(result)),
+            "runners": len(result),
             "sum_p_top3": float(result["p_top3"].sum()),
             "market_columns_loaded": False,
             "target_outcome_loaded": False,
