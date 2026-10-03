@@ -1,7 +1,7 @@
 # Canonical Stage 4 non-market allowlist — Feature Spec v1
-# Frozen after FEATURE_SELECTION_AUDIT.md. Market variables are forbidden.
+# Materialized at Stage 3.5. Market variables are forbidden.
 #
-# REQUIRED HORSE-LEVEL CORE
+# ACTIVE HORSE-LEVEL CORE
 draw_pct
 sex
 age
@@ -22,13 +22,10 @@ recent3_finish_pct_mean
 recent3_top3_count
 recent3_open_plus_count
 recent3_graded_count
+recent3_relative_time_mean
 recent4_early_pos_pct_mean
 
-# NORMALIZED SPEED BLOCK — required if materializable rights-clean
-recent3_relative_time_mean
-recent3_relative_last3f_mean
-
-# RACE-LEVEL CONTEXT
+# ACTIVE RACE-LEVEL CONTEXT
 front_forward_share
 field_size
 racecourse
@@ -38,8 +35,25 @@ course_layout
 race_class
 handicap_indicator
 
-# NOT CORE:
-# jbis_speed_index / recent3_jbis_speed_mean -> sensitivity model only
-# jockey/trainer/pedigree/workout -> future ablation blocks
-# same-day body weight/going/weather -> late-update model only
-# all market odds/popularity -> forbidden until Stage 5
+# EXPLICITLY UNAVAILABLE IN CURRENT CANONICAL V1
+# recent3_relative_last3f_mean
+# Reason: no consistent race-level sectional reference was materialized for all recent starts.
+# Raw final-3F seconds are not substituted.
+
+# SENSITIVITY ONLY
+# jbis_speed_index
+# recent3_jbis_speed_mean
+
+# FUTURE ABLATION BLOCKS
+# jockey_rolling_place_rate
+# trainer_rolling_place_rate
+# pedigree
+# workout
+
+# LATE-UPDATE MODEL ONLY
+# same_day_body_weight
+# going
+# weather
+
+# FORBIDDEN UNTIL STAGE 5
+# all market odds / popularity / market probabilities / payout fields
