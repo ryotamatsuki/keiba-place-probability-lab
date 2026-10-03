@@ -25,13 +25,14 @@ def _synthetic_rows() -> pd.DataFrame:
                     "horse_name": f"H{horse_no}",
                     "horse_no": horse_no,
                     "field_size": 8,
+                    "declared_field_size": 8,
                     "sex": "M",
                     "age": 4,
                     "assigned_weight_kg": 55.0 + 0.5 * race_index,
                     "distance_m": 1400 if race_index == 1 else 1200,
                     "surface": "turf",
                     "racecourse": "Kyoto",
-                    "course_layout": "inner",
+                    "turn_direction": "right",
                     "race_class": "Open",
                     "handicap_indicator": 1,
                     "finish_position": finish,
@@ -122,3 +123,12 @@ def test_phase_a_requires_history_and_eight_runner_field() -> None:
 def test_strict_history_passes_synthetic_panel() -> None:
     panel = build_historical_panel(_synthetic_rows())
     assert_strict_history(panel)
+
+
+def test_scratched_number_gap_does_not_break_draw_normalization() -> None:
+    rows = _synthetic_rows()
+    race = rows[rows["race_id"].eq("r0") & ~rows["horse_no"].eq(7)].copy()
+    race["field_size"] = 7
+    race["declared_field_size"] = 8
+    panel = build_historical_panel(race)
+    assert panel["draw_pct"].max() == 1.0
