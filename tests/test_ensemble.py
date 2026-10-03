@@ -53,7 +53,7 @@ def test_convex_blend_and_weight_selection():
 
 def test_nearby_weights_include_endpoints_and_selected():
     values = nearby_weights(0.35, radius=0.10)
-    assert values == [0.0, 0.25, 0.35, 0.44999999999999996, 1.0]
+    assert values == pytest.approx([0.0, 0.25, 0.35, 0.45, 1.0])
 
 
 def test_historical_market_reconstruction_uses_complete_starter_field(tmp_path: Path):
