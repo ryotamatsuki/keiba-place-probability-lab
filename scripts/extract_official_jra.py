@@ -14,10 +14,21 @@ from pathlib import Path
 import fitz
 import pandas as pd
 from materialize_historical_training_dataset import (
-    FULL_RACE_HEADER_RE,
+    VENUE_JP_RE,
     VENUE_JP_TO_CODE,
     annual_pdf_links,
     get_bytes,
+)
+
+MODERN_HEADER = re.compile(
+    rf"\d{{5}}(?P<month>\d{{1,2}})月(?P<calday>\d{{1,2}})日.{{0,180}}?"
+    rf"\((?P<year>\d{{4}})年(?P<meeting>\d+)(?P<venue>{VENUE_JP_RE})\)"
+    rf"第(?P<meetday>\d+)日第(?P<race>\d{{1,2}})競走"
+)
+LEGACY_HEADER = re.compile(
+    rf"\d{{5}}(?P<month>\d{{1,2}})月(?P<calday>\d{{1,2}})日.{{0,180}}?"
+    rf"\((?P<era>\d+)(?P<venue>{VENUE_JP_RE})(?P<meeting>\d+)\)"
+    rf"第(?P<meetday>\d+)日第(?P<race>\d{{1,2}})競走"
 )
 
 
@@ -70,7 +81,9 @@ def parse_conditions(text: str) -> dict:
             klass = label
             break
     grade = bool(re.search(r"\(G(?:III|II|I|1|2|3)\)", s))
+    dist = re.search(r"(\d{1,2},\d{3}|\d{4})", s)
     return {
+        "official_distance_m": int(dist[1].replace(",", "")) if dist else None,
         "race_kind": kind,
         "official_surface": surface,
         "course_layout": layout,
@@ -84,7 +97,7 @@ def parse_conditions(text: str) -> dict:
 
 
 def extract(info: dict, cache: Path) -> list[dict]:
-    key = hashlib.sha256(info["url"].encode()).hexdigest()
+    key = hashlib.sha256(("parser-v2:" + info["url"]).encode()).hexdigest()
     fact = cache / f"{key}.json"
     if fact.exists():
         return json.loads(fact.read_text())
@@ -98,27 +111,23 @@ def extract(info: dict, cache: Path) -> list[dict]:
             if page.number < 15:
                 diagnostic.append(page.get_text("dict"))
             compact = re.sub(r"\s+", "", unicodedata.normalize("NFKC", page.get_text("text")))
-            for m in FULL_RACE_HEADER_RE.finditer(compact):
+            for m in (LEGACY_HEADER if info.get("legacy") else MODERN_HEADER).finditer(compact):
                 if (
-                    int(m["year"]) != info["year"]
+                    (int(m["era"]) + 1988 if info.get("legacy") else int(m["year"])) != info["year"]
                     or int(m["meeting"]) != info["meeting_no"]
                     or m["venue"] != info["venue"]
                 ):
                     raise ValueError(f"PDF/header disagreement: {info}")
                 race_no = int(m["race"])
-                date = pd.Timestamp(
-                    year=int(m["year"]), month=int(m["month"]), day=int(m["calday"])
-                )
+                date = pd.Timestamp(year=info["year"], month=int(m["month"]), day=int(m["calday"]))
                 code = VENUE_JP_TO_CODE[m["venue"]]
-                race_id = (
-                    f"{m['year']}{code}{int(m['meeting']):02d}{int(m['meetday']):02d}{race_no:02d}"
-                )
+                race_id = f"{info['year']}{code}{int(m['meeting']):02d}{int(m['meetday']):02d}{race_no:02d}"
                 start = m.end()
                 end = compact.find("本賞", start)
                 snippet = compact[start : end if end >= start else start + 500]
                 row = {
                     "race_id": race_id,
-                    "year": int(m["year"]),
+                    "year": info["year"],
                     "racecourse": m["venue"],
                     "meeting_number": int(m["meeting"]),
                     "meeting_day": int(m["meetday"]),
