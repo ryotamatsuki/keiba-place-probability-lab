@@ -286,9 +286,21 @@ def classify_and_standardize_races(
         & source_distance.notna()
         & official_distance.ne(source_distance)
     )
-    if surface_conflict.any() or distance_conflict.any():
-        examples = joined.loc[surface_conflict | distance_conflict, "race_id"].tolist()[:30]
-        raise ValueError("Official/source race-condition conflict: {}".format(examples))
+    distance_audit = joined.loc[
+        distance_conflict,
+        [
+            "race_id",
+            "venue",
+            "race_name",
+            "distance",
+            "official_distance_m",
+            "official_source_url",
+        ],
+    ].copy()
+    distance_audit.to_csv(DOCS / "HISTORICAL_OFFICIAL_DISTANCE_CONFLICTS.csv", index=False)
+    if surface_conflict.any():
+        examples = joined.loc[surface_conflict, "race_id"].tolist()[:30]
+        raise ValueError("Official/source surface conflict: {}".format(examples))
 
     joined["winner_last3f"] = joined.race_id.map(winner_last3f)
     name_obstacle = joined.race_name.fillna("").astype(str).str.contains(
@@ -308,7 +320,10 @@ def classify_and_standardize_races(
         raise ValueError("Official/fallback obstacle classifier conflict: {}".format(examples))
 
     joined["surface"] = official_surface.combine_first(source_surface)
-    joined["distance_m"] = official_distance.combine_first(source_distance)
+    # Distance is taken from the primary source. The race-level PDF parser is
+    # retained only as an audit because old/new JRA PDFs concatenate unrelated
+    # four-digit numbers (anniversary years, weights, payouts) into text.
+    joined["distance_m"] = source_distance.combine_first(official_distance)
     niigata_straight = (
         joined.venue.eq("新潟") & joined.distance_m.eq(1000) & ~fallback_obstacle
     )
@@ -360,7 +375,9 @@ def classify_and_standardize_races(
         index=flat.index,
         dtype="object",
     )
-    flat["race_class_norm"] = flat.official_class.combine_first(source_class)
+    # Primary-source class/race-name parsing is preferred. Official PDF class
+    # extraction is best-effort and can match qualification prose in older PDFs.
+    flat["race_class_norm"] = source_class.combine_first(flat.official_class)
 
     source_grade = flat.race_name.fillna("").astype(str).str.contains(GRADE_RE, regex=True)
     official_grade = pd.to_numeric(flat.is_graded, errors="coerce")
