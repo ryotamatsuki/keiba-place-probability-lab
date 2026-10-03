@@ -276,10 +276,14 @@ def main() -> None:
         args.phase3a_reference,
     )
     a_probability = oof[f"p_{INCUMBENT}"].to_numpy(dtype=float)
-    if not np.allclose(a_probability, frozen_reference, atol=1e-12, rtol=0.0):
-        max_abs = float(np.max(np.abs(a_probability - frozen_reference)))
+    max_abs_reference_diff = float(
+        np.max(np.abs(a_probability - frozen_reference))
+    )
+    # The frozen Phase3A CSV was intentionally written at 9 decimal places.
+    if max_abs_reference_diff > 5.1e-10:
         raise ValueError(
-            f"Candidate A does not exactly reproduce frozen Phase3A: max_abs={max_abs}"
+            "Candidate A exceeds the frozen Phase3A CSV rounding bound: "
+            f"max_abs={max_abs_reference_diff}"
         )
 
     predictions = {
@@ -413,7 +417,8 @@ def main() -> None:
         "probability_sum_to_three_adjustment": False,
         "feature_definition_changed": False,
         "hyperparameters_changed": False,
-        "candidate_A_matches_frozen_phase3a_predictions": True,
+        "candidate_A_matches_frozen_phase3a_predictions_within_csv_rounding": True,
+        "candidate_A_max_abs_diff_vs_9dp_reference": max_abs_reference_diff,
         "candidate_A_race_macro_brier": a_score.race_macro_brier,
         "incumbent": INCUMBENT,
         "winner": decision.winner,
@@ -452,7 +457,8 @@ def main() -> None:
         f"- rows: **{len(oof):,}**",
         f"- races: **{oof['race_id'].nunique():,}**",
         f"- fingerprint: {fp}",
-        "- Candidate A exactly reproduces frozen Phase3A predictions: **yes**",
+        "- Candidate A reproduces frozen Phase3A predictions within 9-decimal CSV rounding: **yes**",
+        f"- max absolute A/reference difference: {max_abs_reference_diff:.12g}",
         "",
         "## Overall metrics",
         "",
