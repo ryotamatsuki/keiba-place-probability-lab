@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pytest
 
 from keiba_place_lab.successor import (
     FEATURE_VARIANTS,
@@ -57,8 +58,8 @@ def test_relative_features_use_only_same_race_values():
     frame = _engineered_frame()
     out = add_feature_variant(frame, "relative")
     col = "rel__career_top3_shrunk__centered"
-    assert out.loc[frame["race_id"].eq("R1"), col].mean() == 0.0
-    assert out.loc[frame["race_id"].eq("R2"), col].mean() == 0.0
+    assert out.loc[frame["race_id"].eq("R1"), col].mean() == pytest.approx(0.0)
+    assert out.loc[frame["race_id"].eq("R2"), col].mean() == pytest.approx(0.0)
     assert (
         out.loc[1, "rel__career_top3_shrunk__pct"]
         > out.loc[0, "rel__career_top3_shrunk__pct"]
@@ -78,7 +79,7 @@ def test_recent_deviation_and_interactions_do_not_use_target_columns():
     assert "top3_label" not in out.columns
     assert out.loc[1, "recent3_top3_rate"] == 2.0 / 3.0
     assert out.loc[0, "abs_distance_change_m"] == 200.0
-    assert out.loc[0, "interaction_draw_early"] == 0.02
+    assert out.loc[0, "interaction_draw_early"] == pytest.approx(0.02)
 
 
 def test_numeric_column_registry_expands_monotonically():
