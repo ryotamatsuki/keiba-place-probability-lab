@@ -140,7 +140,14 @@ def parse_conditions(text: str) -> dict:
     s = re.sub(r"(?<=\d),(?=\d)", "", s)
     course = re.search(r"\((芝|ダート)[・･]([^)]*)\)", s)
     head = s[:250]
-    obstacle = bool(\n        re.search(\n            r"障害(?:2歳|3歳|4歳|4歳以上|未勝利|オープン)|J[・･]?G|ジャンプ|大障害",\n            head,\n        )\n    )\n    kind = "obstacle" if obstacle else "flat" if course else "unknown"\n    surface = {"芝": "turf", "ダート": "dirt"}.get(course[1]) if course else None
+    obstacle = bool(
+        re.search(
+            r"障害(?:2歳|3歳|4歳|4歳以上|未勝利|オープン)|J[・･]?G|ジャンプ|大障害",
+            head,
+        )
+    )
+    kind = "obstacle" if obstacle else "flat" if course else "unknown"
+    surface = {"芝": "turf", "ダート": "dirt"}.get(course[1]) if course else None
     direction = None
     layout = None
     if course:
