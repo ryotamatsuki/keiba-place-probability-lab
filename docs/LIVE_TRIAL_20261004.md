@@ -39,9 +39,9 @@ field. Use the provider's explicit odds update time, not HTTP retrieval time.
 
 ## Timed execution
 
-Invoke the lock command at 15:19:30 and 15:34:30 Japan time respectively. It may
-wait up to a minute for T-minus-ten. It fetches a new roster, recomputes predictions
-for any pre-lock cancellation, then fetches timestamped current win odds. All
+Invoke the lock command at 15:19:00 and 15:34:00 Japan time respectively. It fetches
+a new roster and recomputes predictions for any pre-lock cancellation, then waits
+up to a minute for T-minus-ten before fetching timestamped current win odds. All
 horse IDs/numbers/names must match, odds must be at most five minutes old, and
 the actual lock clock must be inside T-minus-ten to T-minus-nine.
 

@@ -1,0 +1,9 @@
+{
+  "prediction_sha256": "d20e34ff7a64800a90f5336cea73f743988da34395bacb3dcd0bdbaa5592e611",
+  "model_sha256": "2135442ac31e6489bd209ca338694455b3b887569392f045b5228fc58c59321b",
+  "roster_sha256": "39dc010b8237b72301ced7377f65c68d06ad560267f3f6dcf441df3b635330d8",
+  "history_sha256": "8cf68c669cd763d9c9d69694feb6cf9d33aba1bf7cd56e71941c89d8bb8954b5",
+  "history_date_max": "2026-10-03",
+  "stage5_canonical": "market-only",
+  "shadow_only": true
+}

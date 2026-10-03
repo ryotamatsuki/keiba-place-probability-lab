@@ -21,7 +21,7 @@ def digest(path):
 
 
 def fetch(url, path):
-    response = requests.get(url, timeout=(5, 12), headers={"User-Agent": "keiba-place-lab research/0.1", "Cache-Control": "no-cache"})
+    response = requests.get(url, timeout=(15, 20), headers={"User-Agent": "keiba-place-lab research/0.1", "Cache-Control": "no-cache"})
     response.raise_for_status()
     path.write_text(response.text)
     return response.text, {"url": url, "retrieved_at": datetime.now(UTC).isoformat(),
@@ -44,8 +44,6 @@ def main():
         seconds = (off - datetime.now(UTC)).total_seconds()
         if seconds > 660 or seconds < 540:
             raise ValueError("Invoke lock within eleven to nine minutes before off")
-        while (off - datetime.now(UTC)).total_seconds() > 600:
-            time.sleep(1)
     history = args.prepared / "target_history.parquet"
     audit = json.loads((args.prepared / "history_manifest.json").read_text())
     if digest(history) != audit["history_sha256"] or audit["no_future_rows"] is not True:
@@ -63,6 +61,9 @@ def main():
     predictions = args.output / "shadow.csv"
     subprocess.run([sys.executable, "scripts/run_stage4_scope_v3.py", "predict", "--roster", str(roster_path),
                     "--history", str(history), "--output", str(predictions)], check=True)
+    if args.mode == "lock":
+        while (off - datetime.now(UTC)).total_seconds() > 600:
+            time.sleep(1)
     html, odds_source = fetch(f"https://sports.yahoo.co.jp/keiba/race/odds/tfw/{target['provider_id']}", raw / "odds.html")
     odds, asof = parse_win_snapshot(html, target)
     age = (datetime.now(UTC) - asof).total_seconds()

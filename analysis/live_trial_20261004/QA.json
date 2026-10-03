@@ -1,0 +1,31 @@
+{
+  "starters": 35,
+  "eligible": 35,
+  "history_rows": 7037,
+  "history_races": 515,
+  "history_cutoff": "2026-10-03",
+  "future_rows": 0,
+  "duplicate_keys": 0,
+  "coverage_verified_horses": 35,
+  "bundle_sha256": "2135442ac31e6489bd209ca338694455b3b887569392f045b5228fc58c59321b",
+  "all_probabilities_valid": true,
+  "early_lock_rejected": true,
+  "provider_market_conversion_replay": {
+    "race_id": "202605040211",
+    "snapshot_at": "2026-10-04T07:30:06+09:00",
+    "rows": 17,
+    "harville_sum": 3.0000000000000004,
+    "formal_lock": false,
+    "fresh_capture": false
+  },
+  "formal_lock_count": 0,
+  "market_capture_status": "blocked: network approval cancelled / proxy 403 on fresh requests",
+  "failed_preview_attempts": [
+    "kyoto_preview_v1",
+    "tokyo_preview_v1",
+    "kyoto_preview_v2 market step",
+    "tokyo_preview_v2"
+  ],
+  "no_interim_scores_computed": true,
+  "recorded_at": "2026-10-03T22:48:15.486362+00:00"
+}

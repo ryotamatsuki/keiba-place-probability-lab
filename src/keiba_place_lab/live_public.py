@@ -34,8 +34,19 @@ def _sex_age(cell):
     return {"牡": "M", "牝": "F", "せん": "G", "セン": "G", "セ": "G"}[m[1]], int(m[2])
 
 
+def _weight(cell):
+    text = cell.find("p").get_text(strip=True)
+    match = re.fullmatch(r"[▲△☆★◇]*([0-9]+(?:\.[0-9]+)?)(?:kg)?", text)
+    if match is None:
+        raise ValueError(f"Invalid assigned weight: {text}")
+    return float(match[1])
+
+
 def metadata(html: str, provider_id: str):
     soup = BeautifulSoup(html, "html.parser")
+    identity = soup.select_one('meta[property="og:url"]')
+    if identity is None or not re.search(rf"/race/(?:[^/]+/)+{re.escape(provider_id)}(?:[/?#]|$)", identity.get("content", "")):
+        raise ValueError("Page race identity mismatch")
     info = soup.select_one(".hr-predictRaceInfo")
     if info is None:
         raise ValueError("Race metadata absent")
@@ -81,7 +92,7 @@ def parse_roster(html: str, target: dict):
         hid, name = _identity(c[2]); sex, age = _sex_age(c[2])
         r = {k: v for k, v in meta.items() if k not in ("off_at", "is_open_plus", "is_graded")}
         r.update(horse_id=hid, horse_name=name, horse_no=number, sex=sex, age=age,
-                 assigned_weight_kg=float(c[3].find("p").get_text(strip=True)))
+                 assigned_weight_kg=_weight(c[3]))
         rows.append(r)
         odds = c[-1].find("span")
         market.append({"race_id": meta["race_id"], "horse_id": hid,
@@ -141,7 +152,7 @@ def parse_results(html: str, provider_id: str):
         early = re.match(r"\s*(\d+)", c[5].get_text())
         row = {k: v for k, v in meta.items() if k != "off_at"}
         row.update(horse_id=hid, horse_name=name, horse_no=number, sex=sex, age=age,
-                   assigned_weight_kg=float(c[6].find("p").get_text(strip=True)),
+                   assigned_weight_kg=_weight(c[6]),
                    finish_position=float(rank) if rank.isdigit() else np.nan,
                    finish_status="finished" if rank.isdigit() else "dnf",
                    race_time_seconds=int(tm[1])*60+float(tm[2]) if tm else np.nan,
