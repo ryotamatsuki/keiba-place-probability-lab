@@ -20,6 +20,11 @@ dev = [
 ]
 historical = [
   "kaggle>=1.6",
+  "kagglehub>=1.0",
+  "requests>=2.32",
+  "beautifulsoup4>=4.12",
+  "pymupdf>=1.26",
+  "pyarrow>=18",
 ]
 
 [tool.setuptools.packages.find]
