@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "lock_mode": "RETROSPECTIVE_DRY_RUN",
+  "source_commit_sha": "086f7a2a20e20dc226db6535b4738905e2011f1b",
+  "market_as_of_time": "2026-10-03T08:35:00+09:00",
+  "runner_count": 18,
+  "sum_p_ensemble": 2.9999999999999996,
+  "model_version": "stage5-ensemble-v1",
+  "target_outcome_loaded": false,
+  "final_target_odds_loaded": false,
+  "payout_loaded": false,
+  "popularity_loaded": false,
+  "generated_at_utc": "2026-10-03T08:16:15.563766+00:00",
+  "fingerprints": {
+    "stage5_ensemble.csv": "560387ab264462af0421109f1f045f9335de3c6e030c91fba8837b0becad365f",
+    "nonmarket_baseline.csv": "a4340b194ef38daaf14d3e45f9a983f7bef498eddae7a726f15e3efaf46aa149",
+    "market_baseline.csv": "19462942f4493785c955512b486a60b0098dc65959a58339290fa22f2f45ca6e",
+    "probability_estimates.csv": "eefa16ad709c7568690e3f75a0df22491a31b3cb6aebdeebcf27fab274bc9e66"
+  },
+  "workflow_run": 37109094245,
+  "artifact_id": 11268249828,
+  "artifact_digest": "sha256:144854c3b0742fc62d54aa078ff68420d8068ad8491a9fe322e1792b277ffbdd"
+}

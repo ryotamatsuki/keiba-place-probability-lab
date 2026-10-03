@@ -1,0 +1,45 @@
+name: Stage 6 retrospective lock rehearsal
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "src/keiba_place_lab/lock.py"
+      - "scripts/run_stage6_lock.py"
+      - "tests/test_lock.py"
+      - "analysis/2026-10-03_kyoto11_opal/stage5_ensemble.csv"
+      - "analysis/2026-10-03_kyoto11_opal/nonmarket_baseline.csv"
+      - "analysis/2026-10-03_kyoto11_opal/market_baseline.csv"
+      - ".github/workflows/stage6-lock.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  lock-rehearsal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install project
+        run: python -m pip install -e ".[dev,historical]"
+      - name: Tests
+        run: pytest -q tests/test_lock.py
+      - name: Materialize retrospective lock
+        run: |
+          python scripts/run_stage6_lock.py \
+            --stage5 analysis/2026-10-03_kyoto11_opal/stage5_ensemble.csv \
+            --nonmarket analysis/2026-10-03_kyoto11_opal/nonmarket_baseline.csv \
+            --market analysis/2026-10-03_kyoto11_opal/market_baseline.csv \
+            --source-commit 086f7a2a20e20dc226db6535b4738905e2011f1b \
+            --output-dir /tmp/stage6-lock
+      - name: Upload lock artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage6-retrospective-lock
+          path: /tmp/stage6-lock/
+          if-no-files-found: error
+          retention-days: 90

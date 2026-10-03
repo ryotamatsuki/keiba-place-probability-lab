@@ -79,43 +79,39 @@ tests/      # 自動テスト
 
 ## Current status
 
-**Stage 5 calibration / ensemble — COMPLETE / QA PASS**
+**Stage 6 pre-race lock rehearsal — RETROSPECTIVE_DRY_RUN COMPLETE / QA PASS**
 
-Stage 2の08:35 win-market baselineとStage 4のnon-market baselineを、履歴JRA芝1200mで
-同一行に突合して比較しました。履歴市場はKaggle v1の単勝オッズを全starterで正規化し、
-Stage 2と同じHarville / Plackett-LuceでP(top3)へ変換しています。
+2026-10-03 京都11RはStage 5完成時点で発走予定時刻を過ぎていたため、Stage 6は
+本番のpre-race lockではなく、運用手順を検証するretrospective dry runとして実施しました。
 
-Stage 5の時間分割は、2023 calibration fit / 2024 blend selection / 2025 held-out testです。
-2024で選択されたblendは **market 95% / non-market 5%**。2025 paired test
-(245 races / 3,070 eligible rows)では、selected blendが Brier `0.139662`,
-log loss `0.434544`、calibrated market-onlyが Brier `0.139753`,
-log loss `0.434701`でした。改善幅は小さく、Stage 5は市場主導モデルです。
+凍結対象はStage 5確定commit
+`086f7a2a20e20dc226db6535b4738905e2011f1b` のみです。市場は引き続き08:35 snapshotを
+使用し、結果・後刻/最終オッズ・払戻・人気はlock処理へ入力していません。
 
-2026-10-03 京都11Rの18頭には、凍結済み08:35 market snapshotとStage 4出力だけを使用し、
-final ensembleを `sum P(top3)=3` に整合化しています。上位は
-10 ヒシアイラ `0.342056`, 6 リリージョワ `0.311323`,
-18 ディアナザール `0.287488` です。
+Rehearsal lock:
+- 18 runners / unique horse numbers: PASS
+- exact `sum P(top3)=3`: PASS
+- model version: `stage5-ensemble-v1`
+- `probability_estimates.csv`: populated and frozen
+- decision log / SHA256 manifest: frozen
+- lock mode: `RETROSPECTIVE_DRY_RUN`
+- source Stage 5 commit: `086f7a2a20e20dc226db6535b4738905e2011f1b`
+- Stage 6 rehearsal workflow run #2: SUCCESS
+- artifact ID: `11268249828`
+- artifact digest: `sha256:144854c3b0742fc62d54aa078ff68420d8068ad8491a9fe322e1792b277ffbdd`
+- locked `probability_estimates.csv` SHA256:
+  `eefa16ad709c7568690e3f75a0df22491a31b3cb6aebdeebcf27fab274bc9e66`
 
-Results:
-- `analysis/2026-10-03_kyoto11_opal/STAGE5_ENSEMBLE.md`
-- `analysis/2026-10-03_kyoto11_opal/stage5_ensemble.csv`
-- `analysis/2026-10-03_kyoto11_opal/stage5_metrics.json`
-- reproducible runner: `scripts/run_stage5_ensemble.py`
-- calibration/ensemble helpers: `src/keiba_place_lab/ensemble.py`
-- historical market reconstruction: `src/keiba_place_lab/historical_market.py`
+Files:
+- `analysis/2026-10-03_kyoto11_opal/probability_estimates.csv`
+- `analysis/2026-10-03_kyoto11_opal/STAGE6_LOCK_DECISION_LOG.md`
+- `analysis/2026-10-03_kyoto11_opal/stage6_lock_manifest.json`
 
-Final verified Stage 5 Actions run #2 (run id `37108131492`) was SUCCESS on
-head `79a885bf46c1c398e6cabc60ddb22e4cbfc3847e`.
-Artifact ID `11269180077`, digest
-`sha256:ef7b6d93d20fa2b5762fec4329612b35f19ffe035d65230c832e98bea372ac44`.
+The rehearsal-locked values are immutable from this point forward and must be used unchanged
+for any subsequent evaluation of this race.
 
-Important transport limitation: historical Kaggle odds are effectively final win odds whereas the
-target market input is the frozen **08:35** snapshot. The historical Stage 5 test is therefore not
-perfectly time-matched to the target. Later/final target odds were not substituted.
-
-Stage 5 execution occurred after the scheduled target-race start, so this remains a blind
-retrospective reconstruction from frozen pre-race inputs, not a pre-start prediction lock.
-Stage 6 has not been performed.
+**The genuine Stage 6 timing gate was not satisfied for this race.** A real live execution must
+run and commit the same locking procedure before the scheduled start of the next target race.
 
 ## License
 
