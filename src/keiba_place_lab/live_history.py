@@ -312,40 +312,60 @@ def verify_full_field(
     result_entries: pd.DataFrame,
     roster_entries: pd.DataFrame,
 ) -> dict[str, object]:
-    """Cross-check actual starters against the independently parsed entry page."""
+    """Cross-check actual starters against the independently parsed entry page.
+
+    The result table is allowed to omit cancelled/excluded horses. The declared
+    roster is therefore the authority for declared-field identities and size,
+    while the result table is the authority for actual starter outcomes.
+    """
     key_cols = ["horse_no", "horse_id", "horse_name"]
     a = result_entries[key_cols + ["finish_status", "is_starter"]].copy()
     b = roster_entries[key_cols + ["entry_status", "is_starter"]].copy()
-    for col in ("horse_id", "horse_name"):
-        a[col] = a[col].astype(str)
-        b[col] = b[col].astype(str)
-    if set(map(tuple, a[key_cols].to_records(index=False))) != set(
-        map(tuple, b[key_cols].to_records(index=False))
-    ):
-        raise ValueError("Declared roster/result identity sets differ")
-    merged = a.merge(b, on=key_cols, validate="one_to_one", suffixes=("_result", "_entry"))
-    # Result non-starters must be explicitly cancelled/excluded on both views.
+    for frame in (a, b):
+        for col in ("horse_id", "horse_name"):
+            frame[col] = frame[col].astype(str)
+
+    a_keys = set(map(tuple, a[key_cols].to_records(index=False)))
+    b_keys = set(map(tuple, b[key_cols].to_records(index=False)))
+    unexpected = a_keys - b_keys
+    if unexpected:
+        raise ValueError(f"Result contains identities absent from declared roster: {sorted(unexpected)[:5]}")
+
+    merged = b.merge(
+        a,
+        on=key_cols,
+        how="left",
+        validate="one_to_one",
+        suffixes=("_entry", "_result"),
+    )
     for row in merged.itertuples(index=False):
-        if row.finish_status in ("scratched", "excluded"):
-            if row.entry_status != row.finish_status or bool(row.is_starter_result) or bool(row.is_starter_entry):
-                raise ValueError("Cancellation/exclusion mismatch between result and roster")
+        if row.entry_status in ("scratched", "excluded"):
+            if pd.notna(row.finish_status):
+                if row.finish_status != row.entry_status or bool(row.is_starter_result):
+                    raise ValueError("Cancellation/exclusion mismatch between result and roster")
         else:
-            if not bool(row.is_starter_result) or not bool(row.is_starter_entry):
-                raise ValueError("Actual starter missing from independently parsed roster")
-    starters = merged.loc[merged.is_starter_result]
-    declared = int(result_entries.declared_field_size.iloc[0])
-    if declared != int(roster_entries.declared_field_size.iloc[0]):
-        raise ValueError("Declared field size mismatch")
-    if int(starters.shape[0]) != int(result_entries.field_size.iloc[0]):
-        raise ValueError("Actual starter count mismatch")
+            if pd.isna(row.finish_status):
+                raise ValueError("Declared active starter missing from confirmed result")
+            if row.finish_status not in ("finished", "dnf", "disqualified"):
+                raise ValueError("Active roster horse has non-starter result status")
+            if not bool(row.is_starter_result):
+                raise ValueError("Confirmed starter flagged non-starter in result")
+
+    roster_starters = int(roster_entries.is_starter.sum())
+    result_starters = int(result_entries.is_starter.sum())
+    if roster_starters != result_starters:
+        raise ValueError(
+            f"Actual starter count mismatch: roster={roster_starters}, result={result_starters}"
+        )
+    declared = int(roster_entries.declared_field_size.iloc[0])
     return {
-        "declared_entries": len(merged),
-        "actual_starters": len(starters),
+        "declared_entries": len(roster_entries),
+        "actual_starters": result_starters,
         "declared_field_size": declared,
-        "scratched": int((merged.finish_status == "scratched").sum()),
-        "excluded": int((merged.finish_status == "excluded").sum()),
-        "dnf": int((merged.finish_status == "dnf").sum()),
-        "disqualified": int((merged.finish_status == "disqualified").sum()),
+        "scratched": int(roster_entries.entry_status.eq("scratched").sum()),
+        "excluded": int(roster_entries.entry_status.eq("excluded").sum()),
+        "dnf": int(result_entries.finish_status.eq("dnf").sum()),
+        "disqualified": int(result_entries.finish_status.eq("disqualified").sum()),
     }
 
 
@@ -434,9 +454,11 @@ def publish_snapshot(
 
     with tempfile.TemporaryDirectory(dir=root) as td:
         temp = Path(td)
-        history_path = temp / "jra_flat_history.parquet"
-        entries_path = temp / "entry_audit.parquet"
-        ledger_path = temp / "race_ledger.csv"
+        payload = temp / "payload"
+        payload.mkdir()
+        history_path = payload / "jra_flat_history.parquet"
+        entries_path = payload / "entry_audit.parquet"
+        ledger_path = payload / "race_ledger.csv"
         starters.to_parquet(history_path, index=False)
         entries.to_parquet(entries_path, index=False)
         expected_ledger.to_csv(ledger_path, index=False)
@@ -470,13 +492,13 @@ def publish_snapshot(
                 f"Snapshot incomplete: {confirmed_races}/{expected_races}; "
                 f"missing {missing[:20]}"
             )
-        manifest_path = temp / "manifest.json"
+        manifest_path = payload / "manifest.json"
         manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2, default=_safe_json) + "\n")
         destination = root / "snapshots" / snapshot_id
         destination.parent.mkdir(parents=True, exist_ok=True)
         if destination.exists():
             shutil.rmtree(destination)
-        shutil.move(str(temp), str(destination))
+        shutil.move(str(payload), str(destination))
 
     pointer = {
         "schema_version": SCHEMA_VERSION,
@@ -543,6 +565,9 @@ def update_live_history(
             retrieved_at=roster_rec.retrieved_at,
         )
         qa = verify_full_field(result_entries, roster_entries)
+        declared_size = int(roster_entries.declared_field_size.iloc[0])
+        starters["declared_field_size"] = declared_size
+        result_entries["declared_field_size"] = declared_size
         if not starters.race_id.astype(str).eq(str(row.race_id)).all():
             raise ValueError("Result race identity mismatch")
         if not pd.to_datetime(starters.race_date).dt.normalize().eq(pd.Timestamp(row.race_date).normalize()).all():
@@ -564,6 +589,13 @@ def update_live_history(
             how="left",
             validate="one_to_one",
         )
+        nonstarter = audit["entry_status"].isin(["scratched", "excluded"])
+        audit.loc[nonstarter & audit["finish_status"].isna(), "finish_status"] = audit.loc[
+            nonstarter & audit["finish_status"].isna(), "entry_status"
+        ]
+        audit.loc[nonstarter & audit["outcome_confirmed"].isna(), "outcome_confirmed"] = True
+        audit["result_source_url"] = audit["result_source_url"].fillna(result_rec.url)
+        audit["result_retrieved_at"] = audit["result_retrieved_at"].fillna(result_rec.retrieved_at)
         qa.update(
             race_id=str(row.race_id),
             provider_id=str(row.provider_id),
@@ -604,7 +636,11 @@ def update_live_history(
             )
             + "\n"
         )
-        raise RuntimeError(f"Live history update failed for {len(failures)} races")
+        print(json.dumps({"failed_races": failures}, ensure_ascii=False, indent=2), flush=True)
+        examples = list(failures.items())[:10]
+        raise RuntimeError(
+            f"Live history update failed for {len(failures)} races; examples={examples}"
+        )
 
     # Replace refreshed races race-by-race; preserve older confirmed races.
     replace_ids = set(collected_history)
