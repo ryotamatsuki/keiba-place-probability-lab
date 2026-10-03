@@ -345,6 +345,55 @@ def enforce_race_top3_sum(
     return adjusted
 
 
+def calibration_table(
+    frame: pd.DataFrame,
+    probability: np.ndarray,
+    *,
+    bins: int = 10,
+) -> pd.DataFrame:
+    """Return equal-frequency reliability bins for marginal P(top3)."""
+    if bins < 2:
+        raise ValueError("bins must be at least 2")
+    if len(frame) != len(probability):
+        raise ValueError("frame and probability length mismatch")
+    work = pd.DataFrame(
+        {
+            "y": frame["top3_label"].astype(int).to_numpy(),
+            "p": np.asarray(probability, dtype=float),
+        }
+    )
+    if work["p"].isna().any():
+        raise ValueError("probability contains missing values")
+    q = min(bins, len(work))
+    work["bin"] = pd.qcut(
+        work["p"].rank(method="first"),
+        q=q,
+        labels=False,
+        duplicates="drop",
+    )
+    out = (
+        work.groupby("bin", observed=True)
+        .agg(
+            rows=("y", "size"),
+            mean_predicted=("p", "mean"),
+            observed_top3_rate=("y", "mean"),
+            min_predicted=("p", "min"),
+            max_predicted=("p", "max"),
+        )
+        .reset_index()
+    )
+    out["calibration_gap"] = out["observed_top3_rate"] - out["mean_predicted"]
+    return out
+
+
+def expected_calibration_error(table: pd.DataFrame) -> float:
+    """Weighted absolute reliability gap."""
+    if table.empty:
+        raise ValueError("calibration table is empty")
+    weights = table["rows"] / table["rows"].sum()
+    return float((weights * table["calibration_gap"].abs()).sum())
+
+
 def evaluate_binary(
     frame: pd.DataFrame, probability: np.ndarray
 ) -> BinaryEvaluation:
