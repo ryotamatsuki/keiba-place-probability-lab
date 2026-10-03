@@ -38,7 +38,11 @@ DATE_CANDIDATE = re.compile(
 )
 
 RACE_HEADER_DATE = re.compile(
-    r"(?m)^[^\S\r\n]*\d{5}[^\S\r\n]+"
+    # The serial is not reliably line-anchored in older PDFs because page
+    # headings can be concatenated to it. A whitespace separator after the
+    # five-digit serial is the critical disambiguator: without it,
+    # serial-ending-1 + "1月" is indistinguishable from "11月".
+    r"(?<!\d)\d{5}\s+"
     r"(?P<month>1[0-2]|[1-9])\s*月\s*"
     r"(?P<calday>3[01]|[12]\d|[1-9])\s*日"
 )
