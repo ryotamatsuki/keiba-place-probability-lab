@@ -100,6 +100,94 @@ def train(args):
     print(f"Saved {len(specs)} fitted configurations, serialization parity PASS", flush=True)
 
 
+def _load_live_snapshot(root: Path):
+    pointer_path = root / "current.json"
+    if not pointer_path.exists():
+        raise ValueError(f"Live-history current pointer missing: {pointer_path}")
+    pointer = json.loads(pointer_path.read_text())
+    snapshot_dir = root / "snapshots" / pointer["snapshot_id"]
+    manifest_path = snapshot_dir / "manifest.json"
+    history_path = snapshot_dir / "jra_flat_history.parquet"
+    if not manifest_path.exists() or not history_path.exists():
+        raise ValueError("Live-history snapshot files are incomplete")
+    live_manifest = json.loads(manifest_path.read_text())
+    if live_manifest["snapshot_id"] != pointer["snapshot_id"]:
+        raise ValueError("Live-history pointer/manifest snapshot mismatch")
+    if live_manifest["schema_version"] != pointer["schema_version"]:
+        raise ValueError("Live-history schema mismatch")
+    if digest(history_path) != live_manifest["history_sha256"]:
+        raise ValueError("Live-history snapshot checksum mismatch")
+    return pd.read_parquet(history_path), live_manifest, history_path
+
+
+def _prediction_history(args, roster):
+    target_date = pd.Timestamp(roster.race_date.iloc[0]).normalize()
+    source_meta = {}
+    if args.history is not None:
+        if args.historical_base is not None or args.live_history_root is not None:
+            raise ValueError("--history cannot be combined with --historical-base/--live-history-root")
+        history = pd.read_parquet(args.history) if args.history.suffix == ".parquet" else pd.read_csv(args.history)
+        source_meta = {
+            "mode": "standalone",
+            "history_sha256": digest(args.history),
+        }
+    else:
+        if args.historical_base is None or args.live_history_root is None:
+            raise ValueError(
+                "Supported scope needs either --history or both --historical-base and --live-history-root"
+            )
+        base = (
+            pd.read_parquet(args.historical_base)
+            if args.historical_base.suffix == ".parquet"
+            else pd.read_csv(args.historical_base)
+        )
+        live, live_manifest, live_path = _load_live_snapshot(args.live_history_root)
+        complete_through = pd.Timestamp(live_manifest["complete_through"])
+        required_through = target_date - pd.Timedelta(days=1)
+        if complete_through < required_through:
+            raise ValueError(
+                f"Live history is not certified complete through the day before target: "
+                f"{complete_through.date()} < {required_through.date()}"
+            )
+        base["race_id"] = base["race_id"].astype("string")
+        base["horse_id"] = base["horse_id"].astype("string")
+        live["race_id"] = live["race_id"].astype("string")
+        live["horse_id"] = live["horse_id"].astype("string")
+        overlap = base[["race_id", "horse_id"]].merge(
+            live[["race_id", "horse_id"]],
+            on=["race_id", "horse_id"],
+            how="inner",
+        )
+        if not overlap.empty:
+            raise ValueError("Historical base and live snapshot overlap")
+        history = pd.concat([base, live], ignore_index=True, sort=False)
+        source_meta = {
+            "mode": "historical_base_plus_live_snapshot",
+            "base_history_sha256": digest(args.historical_base),
+            "live_history_snapshot_id": live_manifest["snapshot_id"],
+            "live_history_schema_version": live_manifest["schema_version"],
+            "live_history_sha256": live_manifest["history_sha256"],
+            "live_history_complete_through": live_manifest["complete_through"],
+            "live_history_latest_race_date": live_manifest["latest_race_date"],
+            "live_history_path": str(live_path),
+        }
+
+    history["race_date"] = pd.to_datetime(history["race_date"], errors="raise")
+    history["race_id"] = history["race_id"].astype("string")
+    history["horse_id"] = history["horse_id"].astype("string")
+    if history.duplicated(["race_id", "horse_id"]).any():
+        raise ValueError("Combined prediction history contains duplicate race_id x horse_id")
+
+    # Explicit as-of slice at the caller boundary. build_live_context retains its own
+    # strict no-on/after-target validation as a second information barrier.
+    rows_before = len(history)
+    history = history.loc[history["race_date"] < target_date].copy()
+    source_meta["rows_before_asof_filter"] = rows_before
+    source_meta["rows_after_asof_filter"] = len(history)
+    source_meta["asof_exclusive"] = target_date.date().isoformat()
+    return history, source_meta
+
+
 def predict(args):
     manifest = json.loads((args.bundle.parent / "manifest.json").read_text())
     if digest(args.bundle) != manifest["bundle_sha256"]:
@@ -107,13 +195,17 @@ def predict(args):
     # Load only the trusted, hash-verified repository model artifact.
     bundle = joblib.load(args.bundle)
     roster = validate_roster(pd.read_csv(args.roster, dtype={"horse_id": "string", "race_id": "string"}))
+    history = None
+    history_meta = None
     if route_model(roster, bundle["routing"]) is None:
         scored = score_scope_target(bundle, roster)
     else:
-        if args.history is None:
-            raise ValueError("Supported scope needs updated standardized history")
-        history = pd.read_parquet(args.history) if args.history.suffix == ".parquet" else pd.read_csv(args.history)
-        context = build_live_context(history, roster, max_history_age_days=args.max_history_age_days)
+        history, history_meta = _prediction_history(args, roster)
+        context = build_live_context(
+            history,
+            roster,
+            max_history_age_days=args.max_history_age_days,
+        )
         scored = score_scope_target(bundle, context)
     if args.output.exists():
         raise ValueError("Prediction output already exists; use a new version")
@@ -121,10 +213,16 @@ def predict(args):
     scored.to_csv(args.output, index=False)
     json_write(args.output.with_suffix(".manifest.json"), {
         "prediction_sha256": digest(args.output),
-        "model_sha256": digest(args.bundle), "roster_sha256": digest(args.roster),
-        "history_sha256": digest(args.history) if args.history else None,
-        "history_date_max": str(pd.to_datetime(history.race_date).max().date()) if args.history and route_model(roster, bundle["routing"]) else None,
-        "stage5_canonical": "market-only", "shadow_only": True,
+        "model_sha256": digest(args.bundle),
+        "roster_sha256": digest(args.roster),
+        "history_sources": history_meta,
+        "history_date_max": (
+            str(pd.to_datetime(history.race_date).max().date())
+            if history is not None and not history.empty
+            else None
+        ),
+        "stage5_canonical": "market-only",
+        "shadow_only": True,
     })
 
 
@@ -139,6 +237,8 @@ def main():
     live.add_argument("--bundle", type=Path, default=ROOT / "models/stage4_scope_v3/bundle.joblib")
     live.add_argument("--roster", type=Path, required=True)
     live.add_argument("--history", type=Path)
+    live.add_argument("--historical-base", type=Path)
+    live.add_argument("--live-history-root", type=Path)
     live.add_argument("--max-history-age-days", type=int, default=7)
     live.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
