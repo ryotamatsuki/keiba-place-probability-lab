@@ -13,10 +13,10 @@ import re
 import shutil
 import tempfile
 import time
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from collections.abc import Iterable
 
 import pandas as pd
 import requests
