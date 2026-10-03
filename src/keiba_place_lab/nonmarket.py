@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Iterable
 
 import numpy as np
 import pandas as pd
@@ -303,6 +303,6 @@ def evaluate(
         max_abs_race_sum_error=float(
             np.max(np.abs(sums.to_numpy() - 3.0))
         ),
-        rows=int(len(frame)),
+        rows=len(frame),
         races=int(frame["race_id"].nunique()),
     )
