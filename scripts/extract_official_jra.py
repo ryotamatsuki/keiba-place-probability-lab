@@ -40,6 +40,7 @@ DATE_CANDIDATE = re.compile(
 OFFICIAL_DATE_OVERRIDES = {
     "https://www.jra.go.jp/datafile/seiseki/report/2020/2020-1niigata1.pdf": "2020-05-09",
     "https://www.jra.go.jp/datafile/seiseki/report/2020/2020-2tokyo5.pdf": "2020-05-09",
+    "https://www.jra.go.jp/datafile/seiseki/report/2020/2020-3kyoto5.pdf": "2020-05-09",
 }
 
 
