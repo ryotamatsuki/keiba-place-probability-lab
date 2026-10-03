@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "phase": "stage4_successor_phase3a",
+  "historical_panel_sha256": "cee9ae9a099f521f12b1bcdd371c25a3d7b9ba3555fbcf5a46f2c9098f59a33d",
+  "evaluation_fingerprint_sha256": "a72fa10cc9adcd1ceee4c5b5eacd0dfdcdfc33fc984bf0b7866ec70b617bfd85",
+  "evaluation_rows": 6313,
+  "evaluation_races": 495,
+  "outer_years": [
+    2023,
+    2024
+  ],
+  "uses_2025_rows": false,
+  "uses_market_fields": false,
+  "model_hyperparameters_retuned": false,
+  "posthoc_calibration": "none",
+  "incumbent": "xgboost_phase2_xgb01",
+  "challenger": "xgboost_xgb01_plus_relative_ability",
+  "winner": "xgboost_xgb01_plus_relative_ability",
+  "point_brier_best": "xgboost_xgb01_plus_relative_ability",
+  "incumbent_retained": false,
+  "challenger_accepted": true,
+  "selection_reason": "point-Brier-best selected: no incumbent was supplied or the incumbent fell outside the paired one-SE Brier retention band"
+}
