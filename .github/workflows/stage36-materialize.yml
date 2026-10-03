@@ -36,7 +36,8 @@ jobs:
             docs/HISTORICAL_PANEL_FREEZE_V1.md
           retention-days: 90
       - name: Commit computed QA and date map (no raw data)
-        if: always()
+        # Never commit stale checkout copies when materialization/QA failed.
+        if: success()
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
