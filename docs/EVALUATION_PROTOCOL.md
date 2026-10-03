@@ -1,32 +1,93 @@
 # Evaluation Protocol
 
-## Primary metrics
+## Scope
 
-### Brier score
+This document defines the repository-wide evaluation principles for marginal `P(top3)`
+probability forecasts.
 
-二値の複勝圏結果 `y ∈ {0,1}` と予測確率 `p` に対して
+The exact **future model-winner rule** is frozen in
+[`MODEL_SELECTION_PROTOCOL_V2.md`](MODEL_SELECTION_PROTOCOL_V2.md).
+
+Historical Stage 4/5 specifications remain immutable audit records. v2 governs future
+model-improvement and ensemble-selection cycles.
+
+## Primary probability metrics
+
+### Race-macro Brier score — winner metric for v2
+
+For runner `i` in race `r`:
 
 ```text
-Brier = mean((p - y)^2)
+Brier_r = mean_i((p_ri - y_ri)^2)
+Primary Brier = mean_races(Brier_r)
 ```
 
-を記録します。小さいほどよい指標です。
+where `y ∈ {0,1}` and `p = P(top3)`.
 
-### Log loss
+Lower is better. Each race receives equal weight, and all candidates must be scored on exactly
+the same eligible race/runner rows.
 
-過信した誤予測を強く罰するため、log lossも併記します。
+The runner-micro Brier used in the historical v1 reports is retained as a companion metric for
+continuity.
 
-### Calibration
+### Log loss — mandatory guardrail
 
-予測確率をビン分けし、「40%と予測した馬群が長期的に約40%複勝圏へ入ったか」を確認します。
-ECE等はサンプル数が十分になってから導入します。
+Log loss is always reported. It is a strictly proper scoring rule and more strongly penalizes
+catastrophic overconfidence than Brier.
 
-## Secondary metrics
+For v2 it is **not** independently optimized. It is used as the secondary safety gate in the
+paired incumbent one-standard-error selection rule.
+
+### Calibration — mandatory diagnostic
+
+Report out-of-fold:
+
+- calibration intercept / calibration-in-the-large;
+- calibration slope;
+- reliability curve;
+- ECE for descriptive continuity.
+
+Calibration alone does not choose the winner. In particular, ECE depends on binning and can look
+good for low-resolution forecasts.
+
+### Discrimination — diagnostic only
+
+ROC-AUC may be reported to describe ranking/discrimination, but it cannot select the winner
+because it does not assess the probability scale.
+
+## v2 winner rule
+
+Do not select the numerically smallest Brier score without accounting for validation noise.
+
+1. Identify the candidate with the lowest race-macro Brier (`Brier-best`).
+2. Compute paired per-race loss differences between the incumbent and `Brier-best`.
+3. Estimate the standard error with race date as the cluster.
+4. Retain the incumbent when it is within one paired clustered SE of `Brier-best` on both
+   Brier and log loss.
+5. Otherwise select `Brier-best`.
+
+This is a one-SE model-selection regularizer, not a significance test.
+
+For ensemble selection, `market-only` is the mandatory reference/default. A non-zero
+non-market blend must clear the same gate to replace it.
+
+Implementation:
+`src/keiba_place_lab/model_selection.py`.
+
+## Secondary / descriptive metrics
+
+These may be reported but never override the v2 probability winner rule:
 
 - 複勝圏的中率
 - レースごとの最高 `p_place` 馬の複勝圏率
-- 市場ベースラインとの差
-- ROI（参考値。確率精度とは分離）
+- actual-top3 probability mass
+- top-k hit rate
+- ROC-AUC
+- ECE
+- ROI / realized betting profit
+
+ROI is a separate downstream utility question and is deliberately separated from probability
+model selection.
 
 ## Validation design
 
@@ -34,7 +95,14 @@ ECE等はサンプル数が十分になってから導入します。
 - 同一レースの馬をtrain/testへ分割しない
 - 将来情報・確定結果由来の特徴を禁止する
 - final oddsを予測時点で取得していない場合、事前モデルには使わない
-- モデル選択と最終評価の期間を分離する
+- preprocessing / feature selection / tuning / calibrationもtraining側だけでfitする
+- model selectionとfinal assessmentの役割を分離する
+- compared candidates must use an identical evaluation-row fingerprint
+
+Because the 2025 outcomes have already been inspected, 2025 is not reused as an untouched v2
+test set. After a v2 winner is frozen, a production refit may use 2025 as legitimately historical
+training data for later live races. The next genuinely untouched assessment is the pre-registered
+live Stage 6/7 sequence.
 
 ## Prediction lock
 
