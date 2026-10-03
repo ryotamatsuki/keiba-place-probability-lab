@@ -1,0 +1,9 @@
+race_id,race_kind,official_source_url,verification_status,official_surface,official_distance_m,course_layout,official_turn
+201309010804,obstacle,https://www.jra.go.jp/datafile/seiseki/report/2013/2013-1hanshin8.pdf,official_pdf_visual_verified,,,,
+201706020104,obstacle,https://www.jra.go.jp/datafile/seiseki/report/2017/2017-2nakayama1.pdf,official_pdf_visual_verified,,,,
+201708050804,obstacle,https://www.jra.go.jp/datafile/seiseki/report/2017/2017-5kyoto8.pdf,official_pdf_visual_verified,,,,
+201804020707,flat,https://www.jra.go.jp/datafile/seiseki/report/2018/2018-2niigata7.pdf,official_pdf_visual_verified,turf,1000.0,straight,straight
+201804030611,flat,https://www.jra.go.jp/datafile/seiseki/report/2018/2018-3niigata6.pdf,official_pdf_visual_verified,turf,1000.0,straight,straight
+202004010101,obstacle,https://www.jra.go.jp/datafile/seiseki/report/2020/2020-1niigata1.pdf,official_pdf_visual_verified,,,,
+202004010104,obstacle,https://www.jra.go.jp/datafile/seiseki/report/2020/2020-1niigata1.pdf,official_pdf_visual_verified,,,,
+202004010110,flat,https://www.jra.go.jp/datafile/seiseki/report/2020/2020-1niigata1.pdf,official_pdf_visual_verified,turf,1000.0,straight,straight

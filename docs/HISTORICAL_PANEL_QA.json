@@ -1,0 +1,550 @@
+{
+  "status": "PASS",
+  "source": {
+    "id": 9140476,
+    "ref": "noriyukifurufuru/japan-horse-racing-2010-2025",
+    "title": "Japan Horse Racing Data 2010-2025",
+    "currentVersionNumber": 1,
+    "licenseName": "CC0: Public Domain",
+    "lastUpdated": "2025-12-28T07:41:37.95Z",
+    "totalBytes": 383238987
+  },
+  "source_files_sha256": {
+    "keiba_races.csv": "b9ba4423efbaec641f9285ff01d79895c7b3821c2146522a397127245c81fadb",
+    "keiba_results.csv": "fb9345273b21a7c23d41260dc77e45134a1bc2fe756899f3416b24ac0dd51de3",
+    "keiba_payouts.csv": "a49c5dfcb28f9d361590d84f5a281d5172b090e0adf322a300f0454739ffaab9"
+  },
+  "adapter_version": "jra-historical-adapter-v2",
+  "feature_spec_version": "historical-v1.1",
+  "code_commit": "33add480a784ba59682d7367ed6aa5d7a90a8e66",
+  "generation_command": "python -u scripts/freeze_historical_panel.py",
+  "date_mapping": {
+    "mapped": 55268,
+    "total": 55268,
+    "coverage": 1.0,
+    "sha256": "f75a44b593f5f9fff3fd49e9d7c1083b30ec550024f29b3b19b61689518a3ce3"
+  },
+  "data": {
+    "races": 53220,
+    "runner_rows": 753387,
+    "horses": 81900,
+    "top3_prevalence": 0.21210745606175843,
+    "field_size_distribution": {
+      "4": 2,
+      "5": 66,
+      "6": 173,
+      "7": 535,
+      "8": 1236,
+      "9": 1939,
+      "10": 2650,
+      "11": 3149,
+      "12": 4045,
+      "13": 4176,
+      "14": 4863,
+      "15": 6776,
+      "16": 18319,
+      "17": 1104,
+      "18": 4187
+    },
+    "date_min": "2010-01-05",
+    "date_max": "2025-12-28",
+    "flat_races": 53220,
+    "obstacle_races_excluded": 2048
+  },
+  "splits": {
+    "warmup": {
+      "races": 19937,
+      "runner_rows": 288583,
+      "horses": 34090,
+      "top3_prevalence": 0.20745851280220942,
+      "field_size_distribution": {
+        "4": 1,
+        "5": 8,
+        "6": 31,
+        "7": 115,
+        "8": 271,
+        "9": 540,
+        "10": 817,
+        "11": 1051,
+        "12": 1476,
+        "13": 1666,
+        "14": 1727,
+        "15": 2660,
+        "16": 7278,
+        "17": 435,
+        "18": 1861
+      }
+    },
+    "train": {
+      "races": 23292,
+      "runner_rows": 326834,
+      "horses": 39542,
+      "top3_prevalence": 0.2139618277168226,
+      "field_size_distribution": {
+        "4": 1,
+        "5": 28,
+        "6": 80,
+        "7": 245,
+        "8": 649,
+        "9": 944,
+        "10": 1271,
+        "11": 1449,
+        "12": 1791,
+        "13": 1731,
+        "14": 2146,
+        "15": 2959,
+        "16": 7892,
+        "17": 446,
+        "18": 1660
+      }
+    },
+    "validation": {
+      "races": 6656,
+      "runner_rows": 91650,
+      "horses": 16531,
+      "top3_prevalence": 0.21805782869612658,
+      "field_size_distribution": {
+        "5": 16,
+        "6": 35,
+        "7": 115,
+        "8": 204,
+        "9": 308,
+        "10": 391,
+        "11": 470,
+        "12": 524,
+        "13": 526,
+        "14": 661,
+        "15": 808,
+        "16": 2021,
+        "17": 151,
+        "18": 426
+      }
+    },
+    "test": {
+      "races": 3335,
+      "runner_rows": 46320,
+      "horses": 11698,
+      "top3_prevalence": 0.216213298791019,
+      "field_size_distribution": {
+        "5": 14,
+        "6": 27,
+        "7": 60,
+        "8": 112,
+        "9": 147,
+        "10": 171,
+        "11": 179,
+        "12": 254,
+        "13": 253,
+        "14": 329,
+        "15": 349,
+        "16": 1128,
+        "17": 72,
+        "18": 240
+      }
+    }
+  },
+  "cohorts": {
+    "all_turf": {
+      "warmup": {
+        "races": 8312,
+        "runner_rows": 93321,
+        "horses": 15221,
+        "top3_prevalence": 0.2142390244425156,
+        "field_size_distribution": {
+          "8": 141,
+          "9": 278,
+          "10": 411,
+          "11": 520,
+          "12": 623,
+          "13": 567,
+          "14": 743,
+          "15": 675,
+          "16": 2286,
+          "17": 372,
+          "18": 1696
+        }
+      },
+      "train": {
+        "races": 9686,
+        "runner_rows": 107792,
+        "horses": 17559,
+        "top3_prevalence": 0.22087910048983228,
+        "field_size_distribution": {
+          "8": 391,
+          "9": 560,
+          "10": 694,
+          "11": 742,
+          "12": 757,
+          "13": 766,
+          "14": 785,
+          "15": 764,
+          "16": 2359,
+          "17": 380,
+          "18": 1488
+        }
+      },
+      "validation": {
+        "races": 2713,
+        "runner_rows": 29825,
+        "horses": 6512,
+        "top3_prevalence": 0.22212908633696563,
+        "field_size_distribution": {
+          "8": 120,
+          "9": 159,
+          "10": 221,
+          "11": 201,
+          "12": 209,
+          "13": 225,
+          "14": 258,
+          "15": 210,
+          "16": 584,
+          "17": 130,
+          "18": 396
+        }
+      },
+      "test": {
+        "races": 1381,
+        "runner_rows": 15168,
+        "horses": 4358,
+        "top3_prevalence": 0.22178270042194093,
+        "field_size_distribution": {
+          "8": 78,
+          "9": 86,
+          "10": 90,
+          "11": 83,
+          "12": 101,
+          "13": 111,
+          "14": 126,
+          "15": 95,
+          "16": 337,
+          "17": 56,
+          "18": 218
+        }
+      }
+    },
+    "turf_sprint_1000_1400": {
+      "warmup": {
+        "races": 2663,
+        "runner_rows": 32104,
+        "horses": 7455,
+        "top3_prevalence": 0.20115873411412907,
+        "field_size_distribution": {
+          "8": 10,
+          "9": 38,
+          "10": 51,
+          "11": 89,
+          "12": 125,
+          "13": 132,
+          "14": 162,
+          "15": 226,
+          "16": 903,
+          "17": 144,
+          "18": 783
+        }
+      },
+      "train": {
+        "races": 2929,
+        "runner_rows": 37111,
+        "horses": 8110,
+        "top3_prevalence": 0.2029586914930883,
+        "field_size_distribution": {
+          "8": 30,
+          "9": 69,
+          "10": 95,
+          "11": 125,
+          "12": 141,
+          "13": 190,
+          "14": 181,
+          "15": 224,
+          "16": 926,
+          "17": 159,
+          "18": 789
+        }
+      },
+      "validation": {
+        "races": 798,
+        "runner_rows": 9921,
+        "horses": 2823,
+        "top3_prevalence": 0.2079427477068844,
+        "field_size_distribution": {
+          "8": 11,
+          "9": 26,
+          "10": 46,
+          "11": 43,
+          "12": 39,
+          "13": 55,
+          "14": 57,
+          "15": 66,
+          "16": 210,
+          "17": 39,
+          "18": 206
+        }
+      },
+      "test": {
+        "races": 403,
+        "runner_rows": 4934,
+        "horses": 1765,
+        "top3_prevalence": 0.21280907985407377,
+        "field_size_distribution": {
+          "8": 9,
+          "9": 16,
+          "10": 14,
+          "11": 21,
+          "12": 29,
+          "13": 31,
+          "14": 27,
+          "15": 30,
+          "16": 104,
+          "17": 29,
+          "18": 93
+        }
+      }
+    },
+    "turf_1200": {
+      "warmup": {
+        "races": 1626,
+        "runner_rows": 19879,
+        "horses": 5399,
+        "top3_prevalence": 0.2028271039790734,
+        "field_size_distribution": {
+          "8": 5,
+          "9": 23,
+          "10": 31,
+          "11": 52,
+          "12": 73,
+          "13": 69,
+          "14": 89,
+          "15": 156,
+          "16": 721,
+          "17": 60,
+          "18": 347
+        }
+      },
+      "train": {
+        "races": 1822,
+        "runner_rows": 23656,
+        "horses": 5992,
+        "top3_prevalence": 0.20350016909029423,
+        "field_size_distribution": {
+          "8": 12,
+          "9": 34,
+          "10": 52,
+          "11": 65,
+          "12": 83,
+          "13": 119,
+          "14": 109,
+          "15": 142,
+          "16": 748,
+          "17": 74,
+          "18": 384
+        }
+      },
+      "validation": {
+        "races": 495,
+        "runner_rows": 6313,
+        "horses": 2019,
+        "top3_prevalence": 0.20830033264691905,
+        "field_size_distribution": {
+          "8": 7,
+          "9": 14,
+          "10": 26,
+          "11": 27,
+          "12": 18,
+          "13": 35,
+          "14": 35,
+          "15": 40,
+          "16": 171,
+          "17": 16,
+          "18": 106
+        }
+      },
+      "test": {
+        "races": 248,
+        "runner_rows": 3100,
+        "horses": 1248,
+        "top3_prevalence": 0.2161290322580645,
+        "field_size_distribution": {
+          "8": 7,
+          "9": 8,
+          "10": 12,
+          "11": 13,
+          "12": 10,
+          "13": 19,
+          "14": 16,
+          "15": 21,
+          "16": 87,
+          "17": 9,
+          "18": 46
+        }
+      }
+    }
+  },
+  "checks": {
+    "chronology_violations": 0,
+    "duplicate_race_horse_keys": 0,
+    "duplicate_target_rows": 0,
+    "market_leakage_columns": 0,
+    "future_year_rows": 0,
+    "same_race_predictor_contamination": 0,
+    "same_race_pace_contamination": 0,
+    "unresolved_date_mappings": 0,
+    "malformed_JRA_rows": 0,
+    "unclassified_JRA_races": 0
+  },
+  "result_diagnostics": {
+    "source_result_rows": 2253541,
+    "malformed_all": 217,
+    "malformed_JRA": 0,
+    "malformed_flat": 0,
+    "rank_counts": {
+      "1": 53249,
+      "2": 53189,
+      "3": 53203,
+      "4": 53173,
+      "5": 53166,
+      "6": 53129,
+      "7": 52914,
+      "8": 52324,
+      "9": 51086,
+      "10": 49128,
+      "11": 46445,
+      "12": 43253,
+      "13": 39164,
+      "14": 34949,
+      "15": 29937,
+      "16": 22667,
+      "中": 2422,
+      "取": 1300,
+      "除": 1411,
+      "17": 5228,
+      "18": 3979,
+      "3(降)": 8,
+      "失": 15,
+      "9(降)": 4,
+      "10(降)": 10,
+      "12(降)": 7,
+      "13(降)": 7,
+      "4(降)": 5,
+      "6(降)": 5,
+      "5(降)": 4,
+      "18(降)": 3,
+      "16(降)": 3,
+      "7(降)": 3,
+      "2(降)": 11,
+      "14(降)": 6,
+      "11(降)": 6,
+      "8(降)": 1,
+      "15(降)": 2,
+      "17(降)": 1
+    },
+    "nonstarter_counts": {
+      "取": 1300,
+      "除": 1411
+    },
+    "finish_status_counts": {
+      "finished": 750269,
+      "dnf": 2422,
+      "disqualified": 15
+    },
+    "official_supplement_races": 48,
+    "official_supplement_flat_races": 46,
+    "official_supplement_starter_rows": 681,
+    "supplemental_name_mapped": 557,
+    "supplemental_new_horses": 114,
+    "supplemental_ambiguous_names": 10
+  },
+  "race_diagnostics": {
+    "source_JRA_races": 55268,
+    "flat_races": 53220,
+    "obstacle_races": 2048,
+    "unknown_races": 0,
+    "official_race_condition_rows_matched": 55037,
+    "fallback_obstacle_races": 0,
+    "last3f_obstacle_signal_rows": 2028,
+    "niigata_straight_surface_restored": 330,
+    "official_surface_source_conflicts": 0,
+    "official_distance_source_conflicts": 15961,
+    "official_fallback_kind_conflicts": 0,
+    "primary_source_JRA_races": 55220,
+    "official_supplement_races": 48
+  },
+  "feature_coverage": {
+    "race_class": {
+      "known": 752334,
+      "total": 753387,
+      "coverage": 0.9986023119591922
+    },
+    "course_layout": {
+      "known": 96144,
+      "total": 753387,
+      "coverage": 0.1276156875550016
+    },
+    "handicap_indicator": {
+      "known": 424527,
+      "total": 753387,
+      "coverage": 0.5634912734092836
+    },
+    "is_open_plus": {
+      "known": 752334,
+      "total": 753387,
+      "coverage": 0.9986023119591922
+    },
+    "is_graded": {
+      "known": 750686,
+      "total": 753387,
+      "coverage": 0.9964148571716793
+    }
+  },
+  "historical_model_predictors": [
+    "draw_pct",
+    "sex",
+    "age",
+    "assigned_weight_kg",
+    "assigned_weight_delta_from_prev_kg",
+    "days_since_prev",
+    "distance_change_from_prev_m",
+    "surface_changed_from_prev",
+    "career_starts",
+    "career_top3",
+    "turf_starts",
+    "turf_top3",
+    "same_distance_starts",
+    "same_distance_top3",
+    "same_course_starts",
+    "same_course_top3",
+    "recent3_finish_pct_mean",
+    "recent3_top3_count",
+    "recent3_open_plus_count",
+    "recent3_graded_count",
+    "recent3_relative_time_mean",
+    "recent4_early_pos_pct_mean",
+    "front_forward_share",
+    "field_size",
+    "declared_field_size",
+    "racecourse",
+    "surface",
+    "distance_m",
+    "turn_direction",
+    "race_class"
+  ],
+  "historical_feature_exclusions": {
+    "course_layout": {
+      "coverage": 0.1276156875550016,
+      "historical_model_input": false,
+      "reason": "official PDF race-level extraction is incomplete across 2010-2025"
+    },
+    "handicap_indicator": {
+      "coverage": 0.5634912734092836,
+      "historical_model_input": false,
+      "reason": "official weight-clause extraction is incomplete across 2010-2025"
+    }
+  },
+  "panel": {
+    "file": "jra_flat_historical_panel_v1.parquet",
+    "sha256": "cee9ae9a099f521f12b1bcdd371c25a3d7b9ba3555fbcf5a46f2c9098f59a33d",
+    "bytes": 21786362
+  },
+  "python": "3.11.16",
+  "pandas": "3.0.6",
+  "numpy": "2.4.6"
+}
