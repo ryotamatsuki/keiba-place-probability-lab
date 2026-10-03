@@ -92,6 +92,8 @@ market列、future-year、未解決日付、JRA malformed selected rowはいず�
 
 Freeze artifactは `jra_flat_historical_panel_v1.parquet`
 (SHA256 `cee9ae9a099f521f12b1bcdd371c25a3d7b9ba3555fbcf5a46f2c9098f59a33d`)。
+GitHub Actions materialize run #27 の `stage36-historical-training-panel-v1` artifact
+(ID `11266998371`, archive digest `sha256:014b3e5d554fa24d8db042aaacc338a8a562db6bf93824e2197b84065aec9c85`) に保存しています。
 `course_layout` と `handicap_indicator` は公式データcoverage不足のためhistorical-v1.1
 model inputから除外し、監査列としてのみ保持します。
 
