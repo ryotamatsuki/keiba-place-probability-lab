@@ -59,15 +59,38 @@ Status: REVISED — initial snapshot retained, canonical Feature Spec v1 frozen 
 - [x] relative final-3F block explicitly excluded for current v1 rather than raw-time substitution
 - [x] canonical matrix validated: 18 rows / 0 missing / 0 market-column matches
 
-Status: COMPLETE — Stage 4 UNBLOCKED
+Status: COMPLETE
 
-## Stage 4 — P(top3) baseline model
+## Stage 3.6 — Historical training panel
 
-- [ ] 説明可能な手法から開始
-- [ ] 入力、欠損処理、重みを固定
-- [ ] 18頭へ同一ルール適用
-- [ ] market fieldsが入力にないことを検証
-- [ ] aggregate non-market rankingを生成
+- [x] public-data source strategy fixed
+- [x] raw-source / redistribution gate documented
+- [x] standardized historical row schema fixed
+- [x] leakage-safe panel builder implemented
+- [x] chronological split fixed: 2010-15 warmup / 2016-22 train / 2023-24 validation / 2025 test
+- [x] target-race market fields prohibited at builder boundary
+- [x] unit tests added for shift / cumulative-history leakage controls
+- [x] local acquisition and build CLIs added
+- [ ] acquire and verify exact dataset version/license
+- [ ] standardize the historical source into canonical event rows
+- [ ] materialize the full historical panel locally
+- [ ] produce QA counts, missingness and leakage report
+- [ ] reconcile race counts against JRA official references
+- [ ] freeze the training-ready panel fingerprint
+
+Status: IN PROGRESS — infrastructure complete; population/QA required before Stage 4 fitting
+
+## Stage 4 — P(top3) historical baseline model
+
+Blocked until Stage 3.6 training-panel QA passes.
+
+- [ ] fit transparent historical model(s)
+- [ ] compare predeclared cohorts on validation only
+- [ ] keep 2025 untouched for final historical test
+- [ ] evaluate Brier score / log loss / calibration
+- [ ] apply selected model to the 2026-10-03 target matrix
+- [ ] verify market fields are absent from model inputs
+- [ ] generate aggregate non-market ranking
 
 ## Stage 5 — Calibration / ensemble
 
