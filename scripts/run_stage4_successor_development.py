@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Run the pre-registered Stage 4 successor development experiment.
 
 Selection uses only 2016-2024. The 2025 split is loaded only after the development
