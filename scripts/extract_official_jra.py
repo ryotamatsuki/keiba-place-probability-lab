@@ -125,6 +125,8 @@ def parse_race_days(info: dict, compact: str) -> list[dict]:
                 "mapping_status": (
                     "official_meeting_summary"
                     if info.get("legacy")
+                    else "official_calendar_verified_override"
+                    if info["url"] in OFFICIAL_DATE_OVERRIDES
                     else "official_daily_result_pdf"
                 ),
             }
@@ -137,9 +139,8 @@ def parse_conditions(text: str) -> dict:
     s = re.sub(r"\s+", "", unicodedata.normalize("NFKC", text))
     s = re.sub(r"(?<=\d),(?=\d)", "", s)
     course = re.search(r"\((芝|ダート)[・･]([^)]*)\)", s)
-    obstacle = "障害" in s or bool(re.search(r"J[・･]?G|ジャンプ|大障害", s))
-    kind = "obstacle" if obstacle else "flat" if course else "unknown"
-    surface = {"芝": "turf", "ダート": "dirt"}.get(course[1]) if course else None
+    head = s[:250]
+    obstacle = bool(\n        re.search(\n            r"障害(?:2歳|3歳|4歳|4歳以上|未勝利|オープン)|J[・･]?G|ジャンプ|大障害",\n            head,\n        )\n    )\n    kind = "obstacle" if obstacle else "flat" if course else "unknown"\n    surface = {"芝": "turf", "ダート": "dirt"}.get(course[1]) if course else None
     direction = None
     layout = None
     if course:
