@@ -26,7 +26,7 @@ def _parse_horse_no(value: object) -> int:
         parsed = int(float(str(value).strip()))
     except (TypeError, ValueError):
         return 0
-    return parsed if parsed > 0 else 0
+    return max(0, parsed)
 
 
 def reconstruct_historical_market(
@@ -99,7 +99,7 @@ def reconstruct_historical_market(
                     "market_p_win": float(p_win[idx]),
                     "market_p_top3": float(p_top3[idx]),
                     "market_overround": float(overround),
-                    "market_field_size": int(len(starters)),
+                    "market_field_size": len(starters),
                 }
             )
 
