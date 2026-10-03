@@ -101,7 +101,7 @@ def test_daily_date_parser_recovers_header_after_concatenated_leading_digit():
     }
     rows = parse_race_days(
         info,
-        "93500112月6日曇良(26中京4)第1日第1競走",
+        "935001・12月6日曇良(26中京4)第1日第1競走",
         raw_text="machine text without a usable header",
     )
     assert rows[0]["actual_date"] == "2014-12-06"
