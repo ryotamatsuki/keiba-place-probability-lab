@@ -208,6 +208,7 @@ def annual_pdf_links(year: int) -> list[dict]:
                 {
                     "year": year,
                     "meeting_no": int(modern.group("meeting")),
+                    "day_no": int(modern.group("day")),
                     "slug": slug,
                     "venue_code": venue_code,
                     "venue": venue_jp,
@@ -225,6 +226,7 @@ def annual_pdf_links(year: int) -> list[dict]:
                 {
                     "year": year,
                     "meeting_no": int(legacy.group("meeting")),
+                    "day_no": None,
                     "slug": slug,
                     "venue_code": venue_code,
                     "venue": venue_jp,
@@ -339,9 +341,48 @@ def parse_result_pdf(info: dict) -> list[dict]:
             }
         )
 
-    if not extracted:
-        raise RuntimeError(f"no full race headers extracted from {info['url']}")
-    return extracted
+    if extracted:
+        return extracted
+
+    # 2011-2014 daily PDFs use the modern filename convention but retain an
+    # older internal typesetting in which the Gregorian year/race number can be
+    # poorly extractable. The PDF filename still fixes venue/meeting/day, while
+    # the official PDF text exposes the calendar month/day. This is sufficient
+    # for the date map; race-level exact reconciliation is reserved for PDFs
+    # whose full race headings are machine-readable.
+    if info.get("day_no") is not None:
+        dm = re.search(r"(?P<month>\d{1,2})月(?P<calday>\d{1,2})日", compact)
+        if not dm:
+            raise RuntimeError(
+                f"could not extract calendar date from daily PDF {info['url']}"
+            )
+        month = int(dm.group("month"))
+        calday = int(dm.group("calday"))
+        meetday = int(info["day_no"])
+        actual = pd.Timestamp(
+            year=info["year"], month=month, day=calday
+        ).date().isoformat()
+        key = (
+            f"{info['year']}{info['venue_code']}"
+            f"{info['meeting_no']:02d}{meetday:02d}"
+        )
+        return [
+            {
+                "race_day_key": key,
+                "year": info["year"],
+                "venue_code": info["venue_code"],
+                "venue": info["venue"],
+                "meeting_no": info["meeting_no"],
+                "day_no": meetday,
+                "actual_date": actual,
+                "race_number": np.nan,
+                "pdf_sha256": pdf_hash,
+                "pdf_url": info["url"],
+                "verification_level": "official_daily_date_header",
+            }
+        ]
+
+    raise RuntimeError(f"no official date facts extracted from {info['url']}")
 
 def build_official_date_map() -> pd.DataFrame:
     tasks: list[dict] = []
@@ -386,13 +427,14 @@ def build_official_date_map() -> pd.DataFrame:
         urls = sorted(group["pdf_url"].drop_duplicates().tolist())
         hashes = sorted(group["pdf_sha256"].drop_duplicates().tolist())
         levels = sorted(group["verification_level"].drop_duplicates().tolist())
-        level = (
-            "official_exact_race_headers"
-            if nums
-            else "official_legacy_day_summary"
-        )
-        if nums and "official_exact_race_header" not in levels:
-            raise RuntimeError(f"inconsistent verification level for {key}")
+        if nums:
+            level = "official_exact_race_headers"
+            if "official_exact_race_header" not in levels:
+                raise RuntimeError(f"inconsistent verification level for {key}")
+        elif len(levels) == 1:
+            level = levels[0]
+        else:
+            level = "+".join(levels)
         day_rows.append(
             DayRecord(
                 race_day_key=key,
@@ -845,7 +887,8 @@ def render_qa(
         f"- exact-era official IDs missing from primary source: {len(official_missing):,}",
         f"- exact-era primary-source IDs absent from official archive: {len(source_extra):,}",
         f"- official day mappings: {len(date_map):,}",
-        f"- legacy day-summary mappings: {int(date_map['verification_level'].eq('official_legacy_day_summary').sum()):,}",
+        f"- legacy meeting-summary mappings: {int(date_map['verification_level'].eq('official_legacy_day_summary').sum()):,}",
+        f"- daily-date-header mappings: {int(date_map['verification_level'].eq('official_daily_date_header').sum()):,}",
         f"- source race days without official date mapping: {len({x[:10] for x in source_jra_ids} - set(date_map['race_day_key'].astype(str))):,}",
         f"- PDF date verification failures: {int((~date_map['header_verified']).sum()):,}",
         "",
