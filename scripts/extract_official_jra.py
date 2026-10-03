@@ -38,20 +38,19 @@ DATE_CANDIDATE = re.compile(
 )
 
 RACE_HEADER_DATE = re.compile(
-    # The JRA race-management serial is exactly five digits. That fixed-width
-    # boundary makes compact text such as "010011月5日" unambiguous:
-    # serial=01001, date=1月5日. Older PDFs may insert spaces or control
-    # characters between the serial and date, so permit a short non-digit gap.
-    r"(?<!\d)\d{5}[^\d]{0,16}"
+    # Official race headers use a five-digit management serial whose final two
+    # digits are the race number (01-12). Do not require a left digit boundary:
+    # PDF text extraction can concatenate a numeric page/table fragment before
+    # the serial. The race-number suffix plus following month/date is the anchor.
+    r"\d{3}(?:0[1-9]|1[0-2])[^\d]{0,16}"
     r"(?P<month>1[0-2]|[1-9])\s*月\s*"
     r"(?P<calday>3[01]|[12]\d|[1-9])\s*日"
 )
 
 COMPACT_RACE_HEADER_DATE = re.compile(
-    # After whitespace/control removal the five-digit serial is immediately
-    # followed by the calendar month. The fixed five-digit width is the
-    # disambiguator: "3500112月6日" => serial 35001, date 12月6日.
-    r"(?<!\d)\d{5}"
+    # Whitespace/control removal can yield e.g. "3500112月6日".
+    # 35001 is the five-digit race serial (race 01); 12月6日 is the date.
+    r"\d{3}(?:0[1-9]|1[0-2])"
     r"(?P<month>1[0-2]|[1-9])月"
     r"(?P<calday>3[01]|[12]\d|[1-9])日"
 )
