@@ -67,6 +67,20 @@ for c,ctr in counters.items():
         lines.append(f"{value!r}: {count}")
     lines += ["~~~"]
 
+jra_venues={"札幌","函館","福島","新潟","東京","中山","中京","京都","阪神","小倉"}
+jra=races[races["venue"].isin(jra_venues)].copy()
+jra["parsed_date"]=pd.to_datetime(jra["date"],errors="coerce")
+lines += ["","## JRA-only date diagnostics","",
+          f"- JRA races by venue filter: {len(jra)}",
+          f"- JRA invalid parsed dates: {int(jra['parsed_date'].isna().sum())}",
+          f"- JRA date min: {jra['parsed_date'].min()}",
+          f"- JRA date max: {jra['parsed_date'].max()}",
+          "",
+          "### JRA sample race_id/date/venue","",
+          "~~~text"]
+lines += [jra[["race_id","date","venue","course_type","distance","race_class"]].head(30).to_string(index=False)]
+lines += ["~~~",""]
+
 lines += ["","## basic ranges","","~~~text",
           f"races rows={len(races)}",
           f"results raw rows={total}",
