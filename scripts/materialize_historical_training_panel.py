@@ -275,6 +275,9 @@ def standardize(
         validate="many_to_one",
     )
 
+    merged["horse_no"] = pd.to_numeric(merged["number"], errors="coerce")
+    merged["draw_field_size"] = merged.groupby("race_id")["horse_no"].transform("max")
+
     rank_text = merged["rank"].fillna("").str.strip()
     nonstarter = rank_text.isin({"", "取", "除"})
     merged = merged.loc[~nonstarter].copy()
@@ -284,7 +287,6 @@ def standardize(
     merged["early_position"] = merged["passing"].map(parse_first_position)
     merged["last_3f_num"] = pd.to_numeric(merged["last_3f"], errors="coerce")
     merged["assigned_weight_kg"] = pd.to_numeric(merged["weight"], errors="coerce")
-    merged["horse_no"] = pd.to_numeric(merged["number"], errors="coerce")
 
     sex_age = merged["sex_age"].map(parse_sex_age)
     merged["sex"] = sex_age.map(lambda value: value[0])
@@ -348,6 +350,7 @@ def standardize(
             "horse_name",
             "horse_no",
             "field_size",
+            "draw_field_size",
             "sex",
             "age",
             "assigned_weight_kg",
