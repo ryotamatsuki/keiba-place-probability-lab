@@ -43,6 +43,30 @@ DERIVED = Path("data/derived")
 DOCS = Path("docs")
 YEARS = range(2010, 2026)
 
+# JRA continuation-racing exception. On 2020-03-29, 3rd Nakayama meeting
+# day 2 completed races 1-2 before races 3-12 were cancelled; those races
+# were then held on 2020-03-31 without changing the meeting/day race IDs.
+# The ordinary race_day_key -> one calendar date relation therefore does not
+# exist for this one official meeting day.
+RACE_DATE_OVERRIDES = {
+    **{
+        f"2020060302{race_no:02d}": {
+            "actual_date": "2020-03-29",
+            "official_source_url": "https://www.jra.go.jp/keiba/calendar2020/2020/3/0329.html",
+            "mapping_status": "official_continuation_racing_exception",
+        }
+        for race_no in [1, 2]
+    },
+    **{
+        f"2020060302{race_no:02d}": {
+            "actual_date": "2020-03-31",
+            "official_source_url": "https://www.jra.go.jp/keiba/calendar2020/2020/3/0331.html",
+            "mapping_status": "official_continuation_racing_exception",
+        }
+        for race_no in range(3, 13)
+    },
+}
+
 
 def json_write(path: Path, data: object) -> None:
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2, default=str) + "\n")
@@ -192,6 +216,14 @@ def classify_and_standardize_races(
         "racecourse",
     ]
     joined = jra.merge(days[day_cols], on="race_day_key", how="left", validate="many_to_one")
+    for race_id, override in RACE_DATE_OVERRIDES.items():
+        mask = joined.race_id.eq(race_id)
+        if mask.any():
+            joined.loc[mask, "actual_date"] = override["actual_date"]
+            joined.loc[mask, "official_source_url"] = override["official_source_url"]
+            joined.loc[mask, "mapping_status"] = override["mapping_status"]
+            joined.loc[mask, "racecourse"] = "中山"
+
     unresolved = joined.loc[joined.actual_date.isna()].copy()
     unresolved.to_csv(DOCS / "HISTORICAL_UNRESOLVED_MAPPINGS.csv", index=False)
     if len(unresolved):
