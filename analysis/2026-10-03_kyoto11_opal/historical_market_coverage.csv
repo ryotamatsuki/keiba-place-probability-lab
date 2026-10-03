@@ -1,0 +1,4 @@
+period,eligible_races,paired_market_races,eligible_rows,paired_rows,race_coverage,row_coverage
+2023,250,250,3194,3194,1.0,1.0
+2024,245,245,3119,3119,1.0,1.0
+2025,248,245,3100,3070,0.9879032258064516,0.9903225806451613
