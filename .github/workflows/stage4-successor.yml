@@ -1,0 +1,55 @@
+name: Stage 4 successor development
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "docs/STAGE4_SUCCESSOR_EXPERIMENT_V1.md"
+      - "src/keiba_place_lab/successor.py"
+      - "src/keiba_place_lab/model_selection.py"
+      - "scripts/run_stage4_successor_development.py"
+      - "tests/test_successor.py"
+      - "pyproject.toml"
+      - ".github/workflows/stage4-successor.yml"
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  nested-development:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install project
+        run: python -m pip install -e ".[dev,historical,modeling]"
+      - name: Static checks and focused tests
+        run: |
+          ruff check .
+          pytest -q tests/test_model_selection.py tests/test_nonmarket.py tests/test_successor.py
+      - name: Download frozen Stage 3.6 panel
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Run nested Stage 4 successor development
+        run: |
+          python -u scripts/run_stage4_successor_development.py \
+            --historical-dir /tmp/stage36/data/historical_processed/stage36_freeze_v1 \
+            --target analysis/2026-10-03_kyoto11_opal/canonical_nonmarket_features_v1.csv \
+            --output-dir /tmp/stage4-successor
+      - name: Upload successor artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage4-successor-development-v1
+          path: /tmp/stage4-successor/
+          if-no-files-found: error
+          retention-days: 90
