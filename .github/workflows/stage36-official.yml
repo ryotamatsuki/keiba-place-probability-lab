@@ -1,0 +1,56 @@
+name: Stage 3.6 official JRA extraction
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/extract_official_jra.py
+      - .github/workflows/stage36-official.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: stage36-official
+  cancel-in-progress: false
+jobs:
+  dates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        year: [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install -e '.[historical]'
+      - uses: actions/cache@v4
+        with:
+          path: data/historical_raw/official_fact_cache
+          key: jra-official-v1-${{ matrix.year }}
+      - run: python -u scripts/extract_official_jra.py --year ${{ matrix.year }} --workers 2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jra-official-${{ matrix.year }}
+          path: data/derived/jra_official_*.csv
+          if-no-files-found: error
+          retention-days: 90
+  combine:
+    needs: dates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: main}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: jra-official-*
+          path: data/derived
+          merge-multiple: true
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/derived/jra_official_*.csv
+          git commit -m 'data: materialize official JRA race dates and conditions' || true
+          git push

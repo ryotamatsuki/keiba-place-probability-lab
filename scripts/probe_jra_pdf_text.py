@@ -1,5 +1,6 @@
-from urllib.request import Request,urlopen
 from pathlib import Path
+from urllib.request import Request, urlopen
+
 import fitz
 
 url="https://www.jra.go.jp/datafile/seiseki/report/2025/2025-1nakayama1.pdf"

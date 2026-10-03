@@ -67,7 +67,7 @@ VENUE_JP_TO_CODE = {jp: code for _, (code, jp) in VENUES.items()}
 VENUE_SLUG_RE = "|".join(sorted(VENUES, key=len, reverse=True))
 PDF_NAME_RE = re.compile(
     rf"^(?P<year>\d{{4}})-(?P<meeting>\d+)(?P<slug>{VENUE_SLUG_RE})(?P<day>\d+)\.pdf$",
-    re.I,
+    re.IGNORECASE,
 )
 OLD_VENUE_ALIASES = {
     "sap": "sapporo",
@@ -83,7 +83,7 @@ OLD_VENUE_ALIASES = {
 }
 OLD_PDF_NAME_RE = re.compile(
     r"^(?P<meeting>\d+)(?P<slug>sap|hako|fuku|niiga|tokyo|naka|chu|kyo|han|koku)\.pdf$",
-    re.I,
+    re.IGNORECASE,
 )
 VENUE_JP_RE = "|".join(re.escape(v[1]) for v in VENUES.values())
 FULL_RACE_HEADER_RE = re.compile(
@@ -96,11 +96,11 @@ NONSTARTER_RANKS = {"", "取", "除"}
 OBSTACLE_RE = re.compile(
     r"障害|ジャンプ|Ｊ・Ｇ|J・G|JG[123ⅠⅡⅢ]|グランドジャンプ|大障害|ハイジャンプ|"
     r"スプリングJ|スプリングＪ",
-    re.I,
+    re.IGNORECASE,
 )
 GRADE_RE = re.compile(
     r"(?:\(|（)(?:G[123]|JG[123])(?:\)|）)|GⅠ|GⅡ|GⅢ|J・GⅠ|J・GⅡ|J・GⅢ",
-    re.I,
+    re.IGNORECASE,
 )
 
 SAFE_EXPORT_COLUMNS = [
@@ -180,7 +180,7 @@ def get_bytes(url: str, *, attempts: int = 4) -> bytes:
             )
             r.raise_for_status()
             return r.content
-        except Exception as exc:
+        except (requests.RequestException, ValueError) as exc:
             last = exc
             if attempt + 1 < attempts:
                 time.sleep(1.5 * (2**attempt))
@@ -355,10 +355,8 @@ def build_official_date_map() -> pd.DataFrame:
     workers = int(os.getenv("JRA_PDF_WORKERS", "12"))
     with ThreadPoolExecutor(max_workers=workers) as pool:
         futures = {pool.submit(parse_result_pdf, task): task for task in tasks}
-        done = 0
-        for future in as_completed(futures):
+        for done, future in enumerate(as_completed(futures), start=1):
             records.extend(future.result())
-            done += 1
             if done % 100 == 0 or done == len(tasks):
                 print(f"JRA result PDFs parsed: {done}/{len(tasks)}")
 
@@ -436,7 +434,7 @@ def kaggle_metadata() -> dict:
         r = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=60)
         r.raise_for_status()
         raw = r.json()
-    except Exception as exc:
+    except (requests.RequestException, ValueError) as exc:
         return {"metadata_error": repr(exc)}
     keys = (
         "id",
@@ -549,13 +547,13 @@ def normalize_races(
     flat = flat.loc[flat["distance_m"].notna()].copy()
 
     diagnostics = {
-        "all_source_races": int(len(races)),
-        "jra_races_2010_2025": int(len(jra)),
+        "all_source_races": len(races),
+        "jra_races_2010_2025": len(jra),
         "jra_missing_official_date": missing_dates,
         "jra_venue_code_mismatch": venue_code_mismatch,
         "jra_race_number_mismatch": race_number_mismatch,
         "obstacle_or_unrecognized_excluded": int(len(jra) - len(flat)),
-        "flat_races": int(len(flat)),
+        "flat_races": len(flat),
         "graded_name_detected": int(flat["is_graded"].sum()),
         "race_class_counts": flat["race_class_norm"].value_counts().to_dict(),
     }
@@ -565,7 +563,7 @@ def normalize_races(
 def parse_float(value: str) -> float:
     try:
         return float(value)
-    except Exception:
+    except (ValueError, TypeError):
         return np.nan
 
 
@@ -713,7 +711,7 @@ def parse_results(
         "nonstarter_rows_excluded": nonstarters,
         "other_finish_status": dict(other_status),
         "flat_races_with_any_result": len(result_race_ids),
-        "actual_starter_rows": int(len(rows)),
+        "actual_starter_rows": len(rows),
         "missing_horse_id": int(rows["horse_id"].eq("").sum()),
         "bad_horse_no": int(rows["horse_no"].le(0).sum()),
         "duplicate_race_horse": int(rows.duplicated(["race_id", "horse_id"]).sum()),
@@ -801,7 +799,7 @@ def render_qa(
                 "split": split,
                 "years": {"train": "2016-2022", "validation": "2023-2024", "test": "2025"}[split],
                 "races": int(g["race_id"].nunique()),
-                "runners": int(len(g)),
+                "runners": len(g),
                 "top3_prevalence": float(g["top3_label"].mean()) if len(g) else np.nan,
             }
         )

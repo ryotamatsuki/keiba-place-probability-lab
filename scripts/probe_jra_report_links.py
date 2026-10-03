@@ -1,6 +1,7 @@
-from urllib.request import Request,urlopen
 from html.parser import HTMLParser
 from pathlib import Path
+from urllib.request import Request, urlopen
+
 
 class P(HTMLParser):
     def __init__(self):
