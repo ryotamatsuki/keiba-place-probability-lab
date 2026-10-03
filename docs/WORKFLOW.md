@@ -71,18 +71,18 @@ Status: COMPLETE
 - [x] target-race market fields prohibited at builder boundary
 - [x] unit tests added for shift / cumulative-history leakage controls
 - [x] local acquisition and build CLIs added
-- [ ] acquire and verify exact dataset version/license
-- [ ] standardize the historical source into canonical event rows
-- [ ] materialize the full historical panel locally
-- [ ] produce QA counts, missingness and leakage report
-- [ ] reconcile race counts against JRA official references
-- [ ] freeze the training-ready panel fingerprint
+- [x] acquire and verify exact dataset version/license
+- [x] standardize the historical source into canonical event rows
+- [x] materialize the full historical panel locally
+- [x] produce QA counts, missingness and leakage report
+- [x] reconcile race counts against JRA official references
+- [x] freeze the training-ready panel fingerprint
 
-Status: IN PROGRESS — infrastructure complete; population/QA required before Stage 4 fitting
+Status: COMPLETE / QA PASS — 55,268 official JRA races reconciled; 53,220 flat races / 753,387 runner rows frozen
 
 ## Stage 4 — P(top3) historical baseline model
 
-Blocked until Stage 3.6 training-panel QA passes.
+Unblocked by Stage 3.6 QA PASS. Stage 4 fitting has not started.
 
 - [ ] fit transparent historical model(s)
 - [ ] compare predeclared cohorts on validation only
