@@ -1,3 +1,6 @@
+> **Supersession note (Feature Selection Audit v1, 2026-10-03):**  
+> The first Stage 3 allowlist below has been audited against JRA-VAN's operational feature design, recent JRA temporal-validation evidence, ranking-model literature and redundancy checks. The original `nonmarket_features.csv` is retained as an immutable descriptive snapshot, but it is **not** the canonical Stage 4 input matrix. See `docs/FEATURE_SELECTION_AUDIT.md`, `docs/FEATURE_REGISTRY_V1.csv`, and the revised `nonmarket_model_allowlist.txt`. Stage 4 is blocked until the newly required v1 fields are materialized or explicitly declared unavailable.
+
 # Stage 3 — Non-market feature freeze
 
 Race: 2026-10-03 Kyoto 11R Opal Stakes  
