@@ -103,15 +103,25 @@ def _pdf_header_counts(url: str, actual_date: str) -> dict[str, int]:
 
     compact = re.sub(r"\s+", "", "".join(ch for ch in raw if ch.isprintable()))
     race_label_re = re.compile(r"第\s*(1[0-2]|[1-9])\s*競走")
+    summary_re = re.compile(r"競走回数\s*(1[0-2]|[1-9])\s*回")
 
     def race_label_count(text: str) -> int:
         return len({int(value) for value in race_label_re.findall(text)})
+
+    summary_values = {int(value) for value in summary_re.findall(raw)}
+    if len(summary_values) > 1:
+        raise ValueError(
+            f"Conflicting official summary race counts in {url}: "
+            f"{sorted(summary_values)}"
+        )
+    summary_race_count = next(iter(summary_values), 0)
 
     return {
         "raw_header_count": count(raw),
         "compact_header_count": count(compact),
         "raw_race_label_count": race_label_count(raw),
         "compact_race_label_count": race_label_count(compact),
+        "official_summary_race_count": summary_race_count,
     }
 
 
