@@ -1,51 +1,41 @@
-"""Diagnose result/entry source availability for known completed 2026 races."""
+"""Diagnose audited parsers on known completed 2026 races."""
 from __future__ import annotations
 
+from datetime import UTC, datetime
+
 import requests
-from bs4 import BeautifulSoup
 
-from keiba_place_lab.live_history import DENMA_URL, RESULT_URL
+from keiba_place_lab.live_history import (
+    DENMA_URL,
+    RESULT_URL,
+    parse_declared_entry_audit,
+    parse_result_audited,
+    verify_full_field,
+)
 
 
-def inspect(url: str) -> dict:
-    r = requests.get(
-        url,
-        timeout=(15, 45),
-        headers={"User-Agent": "keiba-place-probability-lab research/0.1"},
-        allow_redirects=True,
-    )
-    soup = BeautifulSoup(r.text, "html.parser")
-    return {
-        "url": url,
-        "status": r.status_code,
-        "final_url": r.url,
-        "chars": len(r.text),
-        "title": soup.title.get_text(" ", strip=True) if soup.title else None,
-        "has_denma_list": soup.select_one("#denma_list table") is not None,
-        "result_tables": len(
-            [
-                t
-                for t in soup.select("table")
-                if all(s in t.get_text() for s in ("着順", "馬名", "通過順位", "騎手名"))
-            ]
-        ),
-        "race_info": soup.select_one(".hr-predictRaceInfo") is not None,
-        "body_prefix": soup.get_text(" ", strip=True)[:300],
-    }
+def fetch(url: str) -> tuple[str, str]:
+    r=requests.get(url,timeout=(15,45),headers={"User-Agent":"keiba-place-probability-lab research/0.1"})
+    r.raise_for_status()
+    return r.text, datetime.now(UTC).isoformat()
 
 
 def main():
-    for provider_id in ("2608040101", "2608040111", "2605040101", "2605040111"):
-        print("\nRACE", provider_id, flush=True)
-        for url in (
-            RESULT_URL.format(provider_id=provider_id),
-            DENMA_URL.format(provider_id=provider_id),
-        ):
-            try:
-                print(inspect(url), flush=True)
-            except Exception as exc:  # noqa: BLE001 - diagnostics print transport failures
-                print({"url": url, "error": f"{type(exc).__name__}: {exc}"}, flush=True)
+    for provider_id in ("2608040101","2608040111","2605040101","2605040111"):
+        print("\nRACE",provider_id,flush=True)
+        try:
+            ru=RESULT_URL.format(provider_id=provider_id)
+            du=DENMA_URL.format(provider_id=provider_id)
+            rh,rt=fetch(ru)
+            dh,dt=fetch(du)
+            starters,result_entries=parse_result_audited(rh,provider_id,source_url=ru,retrieved_at=rt)
+            print("result",len(starters),len(result_entries),result_entries.finish_status.value_counts(dropna=False).to_dict(),flush=True)
+            roster=parse_declared_entry_audit(dh,provider_id,source_url=du,retrieved_at=dt)
+            print("roster",len(roster),roster.entry_status.value_counts(dropna=False).to_dict(),flush=True)
+            print("qa",verify_full_field(result_entries,roster),flush=True)
+        except Exception as exc:  # noqa: BLE001
+            print("ERROR",type(exc).__name__,repr(str(exc)),flush=True)
 
 
-if __name__ == "__main__":
+if __name__=="__main__":
     main()
