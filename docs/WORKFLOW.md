@@ -33,20 +33,26 @@ Status: COMPLETE — 08:35 JST market snapshot
 
 ## Stage 3 — Form / suitability features
 
-- [ ] 距離
-- [ ] コース
-- [ ] 馬場
-- [ ] 近走
-- [ ] クラス
-- [ ] 斤量
-- [ ] 脚質 / ペース
-- [ ] market情報から独立した特徴量セットをfreeze
+- [x] 距離
+- [x] コース
+- [x] 馬場
+- [x] 近走
+- [x] クラス
+- [x] 斤量
+- [x] 脚質 / ペース
+- [x] market情報から独立した特徴量セットをfreeze
+- [x] model-input allowlistを固定
+- [x] missingnessを0と混同しない
+
+Status: COMPLETE — 09:00 JST feature freeze
 
 ## Stage 4 — P(top3) baseline model
 
 - [ ] 説明可能な手法から開始
 - [ ] 入力、欠損処理、重みを固定
 - [ ] 18頭へ同一ルール適用
+- [ ] market fieldsが入力にないことを検証
+- [ ] aggregate non-market rankingを生成
 
 ## Stage 5 — Calibration / ensemble
 
