@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Phase 1: leakage-safe diagnosis of the frozen Stage 4 incumbent."""
 
 from __future__ import annotations
