@@ -1,0 +1,66 @@
+name: Build 2026 live history
+
+on:
+  workflow_dispatch:
+    inputs:
+      through:
+        description: Inclusive completion cutoff (YYYY-MM-DD)
+        required: true
+        default: "2026-10-03"
+      recheck_days:
+        description: Re-fetch this many recent calendar days
+        required: true
+        default: "14"
+      max_workers:
+        description: Concurrent race fetches
+        required: true
+        default: "6"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install verified environment
+        run: python -m pip install -e ".[dev,historical,modeldev]" -c requirements-scope.txt
+      - name: Build and verify immutable snapshot
+        run: |
+          python scripts/update_live_history.py \
+            --year 2026 \
+            --through "${{ inputs.through }}" \
+            --recheck-days "${{ inputs.recheck_days }}" \
+            --max-workers "${{ inputs.max_workers }}"
+      - name: Show current manifest
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path("data/live_history/2026")
+          pointer=json.loads((root/"current.json").read_text())
+          manifest=json.loads((root/"snapshots"/pointer["snapshot_id"]/"manifest.json").read_text())
+          keep={k:manifest[k] for k in (
+              "schema_version","snapshot_id","requested_through","complete_through",
+              "latest_race_date","expected_races","confirmed_races","missing_race_ids",
+              "expected_race_days","confirmed_race_days","rows","entry_rows",
+              "history_sha256","entry_audit_sha256","race_ledger_sha256"
+          )}
+          print(json.dumps(keep, ensure_ascii=False, indent=2))
+          PY
+      - name: Commit verified snapshot
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/live_history/2026
+          if ! git diff --cached --quiet; then
+            git commit -m "data: publish 2026 live history through ${{ inputs.through }}"
+            git pull --rebase origin "${{ github.ref_name }}"
+            git push origin "HEAD:${{ github.ref_name }}"
+          fi
