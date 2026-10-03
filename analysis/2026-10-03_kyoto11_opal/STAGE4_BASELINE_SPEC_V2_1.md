@@ -70,3 +70,8 @@ All v2 controls remain in force:
 - no Stage 2 blend;
 - no horse-10 anchor variable, prior, constraint, or weight;
 - leave-one-feature-block-out sensitivity analysis.
+
+
+## Terminology
+
+The final report calls 2025 a **held-out test** rather than claiming it remained literally unseen after the discarded QA run. The invariant required for scientific validity is preserved: 2025 outcomes never determine feature definitions, cohort choice, regularization, sensitivity choices, or target-model fitting.
