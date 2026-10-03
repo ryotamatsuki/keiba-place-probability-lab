@@ -1,0 +1,65 @@
+{
+  "status": "PASS",
+  "phase": "stage4_successor_phase1",
+  "incumbent": {
+    "name": "l2_logistic_c0.1",
+    "C": 0.1,
+    "prior_strength": 6.0,
+    "posthoc_calibration": "none",
+    "historical_probability_transform": "raw marginal P(top3)"
+  },
+  "historical_panel_sha256": "cee9ae9a099f521f12b1bcdd371c25a3d7b9ba3555fbcf5a46f2c9098f59a33d",
+  "development_years": [
+    2016,
+    2024
+  ],
+  "outer_years": [
+    2023,
+    2024
+  ],
+  "uses_2025_rows": false,
+  "uses_market_fields": false,
+  "uses_target_outcome": false,
+  "evaluation_rows": 6313,
+  "evaluation_races": 495,
+  "evaluation_row_fingerprint_sha256": "a72fa10cc9adcd1ceee4c5b5eacd0dfdcdfc33fc984bf0b7866ec70b617bfd85",
+  "folds": [
+    {
+      "outer_year": 2023,
+      "train_date_min": "2016-01-09",
+      "train_date_max": "2022-12-28",
+      "train_rows": 23656,
+      "train_races": 1822,
+      "evaluation_rows": 3194,
+      "evaluation_races": 250,
+      "prior_mean": 0.20350016909029423,
+      "race_macro_brier": 0.15318053740317186,
+      "race_macro_log_loss": 0.4708914819269451,
+      "baseline_race_macro_brier": 0.17051132209151307
+    },
+    {
+      "outer_year": 2024,
+      "train_date_min": "2016-01-09",
+      "train_date_max": "2023-12-28",
+      "train_rows": 26850,
+      "train_races": 2072,
+      "evaluation_rows": 3119,
+      "evaluation_races": 245,
+      "prior_mean": 0.20409683426443204,
+      "race_macro_brier": 0.15300950880924116,
+      "race_macro_log_loss": 0.47060708712345456,
+      "baseline_race_macro_brier": 0.17230451357262724
+    }
+  ],
+  "overall": {
+    "name": "l2_logistic_c0.1",
+    "race_macro_brier": 0.15309588688698392,
+    "race_macro_log_loss": 0.47075072086259123,
+    "runner_micro_brier": 0.14728522458779258,
+    "runner_micro_log_loss": 0.4582028234191215,
+    "races": 495,
+    "rows": 6313,
+    "baseline_race_macro_brier": 0.17139886130943827,
+    "brier_skill_vs_field_size_baseline": 0.10678585775089089
+  }
+}

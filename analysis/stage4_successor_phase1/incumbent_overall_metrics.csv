@@ -1,0 +1,3 @@
+model,name,race_macro_brier,race_macro_log_loss,runner_micro_brier,runner_micro_log_loss,races,rows,brier_skill_vs_field_size_baseline
+l2_logistic_c0.1,l2_logistic_c0.1,0.153095887,0.470750721,0.147285225,0.458202823,495,6313,0.106785858
+field_size_baseline,field_size_baseline,0.171398861,0.525782970,0.163678026,0.508255028,495,6313,0.000000000
