@@ -1,0 +1,61 @@
+name: Stage 3.6 materialize historical training dataset
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/stage36-materialize.yml"
+      - "scripts/materialize_historical_training_dataset.py"
+      - "src/keiba_place_lab/historical_panel.py"
+      - "tests/test_historical_panel.py"
+      - "pyproject.toml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install package and historical dependencies
+        run: python -m pip install --upgrade pip && pip install -e ".[dev,historical]"
+
+      - name: Run leakage-control tests
+        run: pytest -q tests/test_historical_panel.py tests/test_feature_validation.py tests/test_market.py
+
+      - name: Materialize historical dataset
+        env:
+          JRA_PDF_WORKERS: "12"
+        run: python scripts/materialize_historical_training_dataset.py
+
+      - name: Upload reproducibility artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage36-historical-training-dataset
+          path: |
+            data/historical_training/
+            docs/HISTORICAL_PANEL_QA_REPORT.md
+            docs/HISTORICAL_TRAINING_SCHEMA.csv
+          retention-days: 30
+
+      - name: Commit verified dataset and QA
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config http.postBuffer 524288000
+          git add data/historical_training docs/HISTORICAL_PANEL_QA_REPORT.md docs/HISTORICAL_TRAINING_SCHEMA.csv
+          if git diff --cached --quiet; then
+            echo "No generated changes."
+          else
+            git commit -m "data: freeze Stage 3.6 training dataset [skip ci]"
+            git push
+          fi
