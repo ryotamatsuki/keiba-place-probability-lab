@@ -92,8 +92,11 @@ def extract(info: dict, cache: Path) -> list[dict]:
     data = get_bytes(info["url"])
     digest = hashlib.sha256(data).hexdigest()
     rows = []
+    diagnostic = []
     with fitz.open(stream=data, filetype="pdf") as doc:
         for page in doc:
+            if page.number < 15:
+                diagnostic.append(page.get_text("dict"))
             compact = re.sub(r"\s+", "", unicodedata.normalize("NFKC", page.get_text("text")))
             for m in FULL_RACE_HEADER_RE.finditer(compact):
                 if (
@@ -128,6 +131,10 @@ def extract(info: dict, cache: Path) -> list[dict]:
                 row.update(parse_conditions(snippet))
                 rows.append(row)
     if not rows:
+        Path("data/derived").mkdir(parents=True, exist_ok=True)
+        Path(
+            f"data/derived/diagnostic_{info['year']}_{info['slug']}_{info['meeting_no']}.json"
+        ).write_text(json.dumps(diagnostic, ensure_ascii=False))
         raise ValueError(f"No race headings: {info['url']}")
     fact.write_text(json.dumps(rows, ensure_ascii=False))
     return rows

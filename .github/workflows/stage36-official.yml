@@ -10,14 +10,14 @@ permissions:
   contents: write
 concurrency:
   group: stage36-official
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   dates:
     runs-on: ubuntu-latest
     timeout-minutes: 100
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 4
       matrix:
         year: [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
     steps:
@@ -34,7 +34,7 @@ jobs:
         if: always()
         with:
           name: jra-official-${{ matrix.year }}
-          path: data/derived/jra_official_*.csv
+          path: data/derived/
           if-no-files-found: error
           retention-days: 90
   combine:
