@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from math import sqrt
-from typing import Mapping
+from collections.abc import Mapping
 
 import numpy as np
 import pandas as pd
