@@ -154,7 +154,7 @@ def main() -> None:
         prior_strength=PRIOR_STRENGTH,
     )
 
-    # One-time 2025 historical test evaluation. The Phase-A panel is runner-filtered,
+    # Held-out 2025 historical test evaluation. The Phase-A panel is runner-filtered,
     # so marginal probabilities are scored on all eligible rows without forcing race sums.
     _, test_raw_probability, _ = predict_adjusted(
         final_model, test_eval, final_prior_mean
@@ -257,7 +257,7 @@ def main() -> None:
     lines = [
         "# Stage 4 Non-market P(top3) Baseline",
         "",
-        "Status: **PASS — historical fit / validation / untouched-2025 test completed**",
+        "Status: **PASS — historical fit / validation / held-out-2025 test completed**",
         "",
         "## Timing and interpretation",
         "",
@@ -289,7 +289,7 @@ def main() -> None:
         "",
         fmt_table(grid, ["training_cohort", "C", "brier", "log_loss"]),
         "",
-        "## Untouched 2025 test",
+        "## Held-out 2025 test",
         "",
         "After selection, the chosen specification was refit on its 2016-2024 train+validation cohort",
         "and evaluated once on the frozen 2025 turf-1200 test set.",
