@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "phase": "stage4_successor_phase3b",
+  "historical_panel_sha256": "cee9ae9a099f521f12b1bcdd371c25a3d7b9ba3555fbcf5a46f2c9098f59a33d",
+  "evaluation_fingerprint_sha256": "a72fa10cc9adcd1ceee4c5b5eacd0dfdcdfc33fc984bf0b7866ec70b617bfd85",
+  "evaluation_rows": 6313,
+  "evaluation_races": 495,
+  "outer_years": [
+    2023,
+    2024
+  ],
+  "uses_warmup_history": true,
+  "uses_2025_rows": false,
+  "uses_market_fields": false,
+  "model_hyperparameters_retuned": false,
+  "posthoc_calibration": "none",
+  "incumbent": "xgboost_xgb01_plus_relative_ability",
+  "challenger": "xgboost_xgb01_plus_relative_and_recent_trend",
+  "winner": "xgboost_xgb01_plus_relative_ability",
+  "point_brier_best": "xgboost_xgb01_plus_relative_and_recent_trend",
+  "incumbent_retained": true,
+  "challenger_accepted": false,
+  "selection_reason": "incumbent retained: race-macro Brier is within one paired date-clustered SE of the point-Brier-best",
+  "challenger_minus_incumbent_mean_brier_delta": -0.00028488620121398193,
+  "challenger_minus_incumbent_se_brier_delta": 0.0003223604063850828,
+  "challenger_minus_incumbent_mean_log_loss_delta": -0.0005811014433678678,
+  "challenger_minus_incumbent_se_log_loss_delta": 0.0007951740915180305
+}
