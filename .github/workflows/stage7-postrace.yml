@@ -1,0 +1,50 @@
+name: Stage 7 post-race evaluation
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "analysis/2026-10-03_kyoto11_opal/official_outcome.csv"
+      - "analysis/2026-10-03_kyoto11_opal/POSTRACE_EVALUATION.md"
+      - "analysis/2026-10-03_kyoto11_opal/postrace_metrics.csv"
+      - "analysis/2026-10-03_kyoto11_opal/stage7_evaluation_manifest.json"
+      - "README.md"
+      - "docs/WORKFLOW.md"
+      - "analysis/2026-10-03_kyoto11_opal/probability_estimates.csv"
+      - "src/keiba_place_lab/postrace.py"
+      - "scripts/run_stage7_evaluation.py"
+      - "tests/test_postrace.py"
+      - ".github/workflows/stage7-postrace.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install project
+        run: python -m pip install -e ".[dev,historical]"
+      - name: Tests
+        run: pytest -q tests/test_postrace.py tests/test_lock.py
+      - name: Verify immutable lock and evaluate
+        run: |
+          python scripts/run_stage7_evaluation.py \
+            --outcome analysis/2026-10-03_kyoto11_opal/official_outcome.csv \
+            --lock analysis/2026-10-03_kyoto11_opal/probability_estimates.csv \
+            --market analysis/2026-10-03_kyoto11_opal/market_baseline.csv \
+            --nonmarket analysis/2026-10-03_kyoto11_opal/nonmarket_baseline.csv \
+            --stage5 analysis/2026-10-03_kyoto11_opal/stage5_ensemble.csv \
+            --output-dir /tmp/stage7
+      - name: Upload Stage 7 evaluation
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage7-postrace-evaluation
+          path: /tmp/stage7/
+          if-no-files-found: error
+          retention-days: 90

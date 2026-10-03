@@ -79,39 +79,49 @@ tests/      # 自動テスト
 
 ## Current status
 
-**Stage 6 pre-race lock rehearsal — RETROSPECTIVE_DRY_RUN COMPLETE / QA PASS**
+**Stage 7 post-race evaluation — RETROSPECTIVE PIPELINE TEST COMPLETE / QA PASS**
 
-2026-10-03 京都11RはStage 5完成時点で発走予定時刻を過ぎていたため、Stage 6は
-本番のpre-race lockではなく、運用手順を検証するretrospective dry runとして実施しました。
+Stage 6で固定した18頭の確率を一切変更せず、JRA公式の2026-10-03京都11R
+オパールステークス結果を別outcomeとして追加し、Stage 2 / 4 / 5 / 6を同じ18頭で
+事後評価しました。
 
-凍結対象はStage 5確定commit
-`086f7a2a20e20dc226db6535b4738905e2011f1b` のみです。市場は引き続き08:35 snapshotを
-使用し、結果・後刻/最終オッズ・払戻・人気はlock処理へ入力していません。
+Official top 3:
+- 1着 6 リリージョワ
+- 2着 18 ディアナザール
+- 3着 8 レッドエヴァンス
 
-Rehearsal lock:
-- 18 runners / unique horse numbers: PASS
-- exact `sum P(top3)=3`: PASS
-- model version: `stage5-ensemble-v1`
-- `probability_estimates.csv`: populated and frozen
-- decision log / SHA256 manifest: frozen
-- lock mode: `RETROSPECTIVE_DRY_RUN`
-- source Stage 5 commit: `086f7a2a20e20dc226db6535b4738905e2011f1b`
-- Stage 6 rehearsal workflow run #2: SUCCESS
-- artifact ID: `11268249828`
-- artifact digest: `sha256:144854c3b0742fc62d54aa078ff68420d8068ad8491a9fe322e1792b277ffbdd`
-- locked `probability_estimates.csv` SHA256:
+One-race metrics:
+- Stage 2 raw market (08:35): Brier `0.107207`, log loss `0.335163`
+- Stage 5/6 ensemble: Brier `0.111097`, log loss `0.350378`
+- Stage 4 non-market: Brier `0.113597`, log loss `0.355176`
+- uniform 3/18: Brier `0.138889`, log loss `0.450561`
+
+Stage 5/6は実際の3着内3頭を予測順位2位・3位・6位に置きましたが、この1レースでは
+08:35 raw marketの方がBrier/log lossとも良好でした。したがって、2025 held-out aggregateで
+確認されたmarket 95% / non-market 5%の小幅改善は、今回の単発レースでは再現しませんでした。
+
+Locked file controls:
+- `probability_estimates.csv` SHA256:
   `eefa16ad709c7568690e3f75a0df22491a31b3cb6aebdeebcf27fab274bc9e66`
+- Stage 6 values modified after outcome: **no**
+- later/final target odds substituted: **no**
+- market timestamp: `2026-10-03T08:35:00+09:00`
 
 Files:
-- `analysis/2026-10-03_kyoto11_opal/probability_estimates.csv`
-- `analysis/2026-10-03_kyoto11_opal/STAGE6_LOCK_DECISION_LOG.md`
-- `analysis/2026-10-03_kyoto11_opal/stage6_lock_manifest.json`
+- `analysis/2026-10-03_kyoto11_opal/official_outcome.csv`
+- `analysis/2026-10-03_kyoto11_opal/POSTRACE_EVALUATION.md`
+- `analysis/2026-10-03_kyoto11_opal/postrace_metrics.csv`
+- `analysis/2026-10-03_kyoto11_opal/stage7_evaluation_manifest.json`
+- reproducible runner: `scripts/run_stage7_evaluation.py`
+- tests: `tests/test_postrace.py`
 
-The rehearsal-locked values are immutable from this point forward and must be used unchanged
-for any subsequent evaluation of this race.
+Stage 7 verified workflow run #2: `37110151054` SUCCESS.
+Artifact ID `11270045420`, digest
+`sha256:c224ba078232365bcd4e5a360c43df87f2a0d03b29acce254374517a525ef252`.
 
-**The genuine Stage 6 timing gate was not satisfied for this race.** A real live execution must
-run and commit the same locking procedure before the scheduled start of the next target race.
+This remains a **retrospective pipeline test**, not a genuine pre-start forecast audit,
+because the Stage 6 timing gate was missed for this race. The next live target must execute
+Stages 1-6 before post time, then use this same Stage 7 procedure after the official result.
 
 ## License
 
