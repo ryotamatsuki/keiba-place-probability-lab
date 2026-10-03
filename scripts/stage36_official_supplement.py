@@ -65,9 +65,8 @@ PDF_HEADER_RE = re.compile(
     r"(?P<calday>3[01]|[12]\d|[1-9])\s*日"
 )
 COURSE_RE = re.compile(
-    r"コース\s*[:：]\s*(?P<distance>[\d,\s]+?)\s*メートル\s*"
-    r"[（(]\s*(?P<surface>芝|ダート)\s*"
-    r"(?:[・･]\s*(?P<detail>[^）)]*?))?\s*[）)]"
+    r"コース\s*[:：]\s*(?P<distance>[\d,\s]+)\s*メートル\s*"
+    r"[（(]\s*(?P<surface>芝|ダート)(?P<detail>[^）)]*)[）)]"
 )
 
 
