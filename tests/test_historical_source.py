@@ -107,6 +107,24 @@ def test_daily_date_parser_recovers_header_after_concatenated_leading_digit():
     assert rows[0]["actual_date"] == "2014-12-06"
 
 
+def test_daily_date_parser_does_not_treat_management_suffix_as_race_number():
+    info = {
+        "year": 2011,
+        "venue_code": "01",
+        "venue": "札幌",
+        "meeting_no": 1,
+        "day_no": 2,
+        "url": "https://example.invalid/2011-1sapporo2.pdf",
+        "legacy": False,
+    }
+    rows = parse_race_days(
+        info,
+        "250138月14日曇良(23札幌1)第2日第1競走",
+        raw_text="machine text without a usable header",
+    )
+    assert rows[0]["actual_date"] == "2011-08-14"
+
+
 def test_daily_date_parser_uses_five_digit_header_serial_for_november():
     info = {
         "year": 2016,
