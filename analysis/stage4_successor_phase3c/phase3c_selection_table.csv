@@ -1,0 +1,3 @@
+name,race_macro_brier,race_macro_log_loss,runner_micro_brier,runner_micro_log_loss,races,rows,point_brier_best,mean_brier_delta_vs_best,se_brier_delta_vs_best,mean_log_loss_delta_vs_best,se_log_loss_delta_vs_best,within_one_se_brier,within_one_se_log_loss
+xgboost_xgb01_plus_relative_and_interactions,0.14876758596557793,0.4589781455225705,0.14468003727855666,0.450816427249319,495,6313,True,0.0,0.0,0.0,0.0,True,True
+xgboost_xgb01_plus_relative_ability,0.14895859292795072,0.45940533637341124,0.1447331344593969,0.4508940306650354,495,6313,False,0.00019100696237278598,0.00021632458176445513,0.0004271908508407325,0.0005084667816084599,True,True
