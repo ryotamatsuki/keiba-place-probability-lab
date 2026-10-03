@@ -170,7 +170,7 @@ Timing caveat: this remains retrospective because Stage 6 was not committed befo
 
 - [x] future model-selection protocol v2をfreeze
 - [x] winner metricをrace-macro Brierに固定
-- [x] log lossをsecondary guardrailに固定
+- [x] log lossをsecondary diagnostic / tie-breakerに固定
 - [x] ROC-AUC / ECE / hit rate / ROIをwinner criterionから除外
 - [x] market-onlyをensemble selectionのmandatory default/referenceに固定
 - [x] 2025をv2のuntouched testとして再利用しないことを固定
