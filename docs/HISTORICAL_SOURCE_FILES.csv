@@ -1,0 +1,5 @@
+path,bytes,kind,encoding,separator,columns,sample_rows_read,row_count,error
+.complete/datasets/noriyukifurufuru/japan-horse-racing-2010-2025/1/bundle.complete,0,complete,,,,0,,
+keiba_payouts.csv,80809803,csv,utf-8-sig,",",race_id | bet_type | horse_num | payout | popularity,5,2359257,
+keiba_races.csv,11722602,csv,utf-8-sig,",",race_id | date | venue | race_name | race_number | course_type | distance | turn | weather | track_condition | race_class,5,198044,
+keiba_results.csv,290706582,csv,utf-8-sig,",",race_id | rank | frame | number | horse_id | horse_name | sex_age | weight | jockey_id | jockey_name | trainer | time | margin | passing | last_3f | odds | popularity | horse_weight,5,2253541,
