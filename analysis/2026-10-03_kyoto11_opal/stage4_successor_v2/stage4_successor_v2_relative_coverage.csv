@@ -1,0 +1,6 @@
+feature,source_feature,context_rows,context_nonmissing,relative_nonmissing,relative_coverage,eligible_rows,eligible_nonmissing,eligible_coverage
+rel_career_top3_vs_others,career_top3_shrunk,18,18,18,1.0,18,18,1.0
+rel_same_distance_top3_vs_others,same_distance_top3_shrunk,18,18,18,1.0,18,18,1.0
+rel_same_course_top3_vs_others,same_course_top3_shrunk,18,18,18,1.0,18,18,1.0
+rel_recent3_finish_vs_others,recent3_finish_pct_mean,18,18,18,1.0,18,18,1.0
+rel_recent3_time_vs_others,recent3_relative_time_mean,18,18,18,1.0,18,18,1.0
