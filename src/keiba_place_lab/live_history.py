@@ -340,9 +340,10 @@ def verify_full_field(
     )
     for row in merged.itertuples(index=False):
         if row.entry_status in ("scratched", "excluded"):
-            if pd.notna(row.finish_status):
-                if row.finish_status != row.entry_status or bool(row.is_starter_result):
-                    raise ValueError("Cancellation/exclusion mismatch between result and roster")
+            if pd.notna(row.finish_status) and (
+                row.finish_status != row.entry_status or bool(row.is_starter_result)
+            ):
+                raise ValueError("Cancellation/exclusion mismatch between result and roster")
         else:
             if pd.isna(row.finish_status):
                 raise ValueError("Declared active starter missing from confirmed result")
