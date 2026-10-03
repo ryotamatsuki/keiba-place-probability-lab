@@ -26,6 +26,9 @@ Status: **PASS — Stage 3.6 supports the frozen A/B/C comparison**
 - separately reported eligible straight-course rows: **4,801**
 - separately reported straight-course races: **337**
 - straight-course races enter none of the A/B/C primary training populations
+- non-round source-distance rows inside excluded straight subset: **143**
+- affected straight-course races: **10**
+- primary A/B/C scope has no non-100m distance values
 
 ## Highest missingness among frozen raw model inputs
 

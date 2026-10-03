@@ -22,7 +22,10 @@
   },
   "eligible_straight_separate": {
     "rows": 4801,
-    "races": 337
+    "races": 337,
+    "non_round_distance_rows": 143,
+    "non_round_distance_races": 10,
+    "data_quality_note": "Non-round source distances occur only in the separately excluded straight-course subset; primary A/B/C scope has none."
   },
   "evaluation_1200_2023_2024": {
     "rows": 6313,
