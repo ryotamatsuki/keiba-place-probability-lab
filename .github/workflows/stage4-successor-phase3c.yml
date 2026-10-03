@@ -1,0 +1,68 @@
+name: Stage 4 successor phase 3C interactions
+
+on:
+  push:
+    branches: [stage4-successor-phase3c-interactions]
+    paths:
+      - docs/STAGE4_SUCCESSOR_PHASE3C_SPEC.md
+      - scripts/run_stage4_successor_phase3c.py
+      - src/keiba_place_lab/stage4_successor_phase3c.py
+      - tests/test_stage4_successor_phase3c.py
+      - .github/workflows/stage4-successor-phase3c.yml
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: stage4-successor-phase3c
+  cancel-in-progress: true
+
+jobs:
+  compare-interaction-block:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install project
+        run: python -m pip install -e ".[dev,historical,modeldev]"
+      - name: Unit tests
+        run: |
+          ruff check .
+          pytest -q tests/test_model_selection.py tests/test_stage4_successor.py tests/test_stage4_successor_phase2.py tests/test_stage4_successor_phase3a.py tests/test_stage4_successor_phase3b.py tests/test_stage4_successor_phase3c.py tests/test_nonmarket.py
+      - name: Download frozen Stage 3.6 panel
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Run Phase 3C interaction comparison
+        run: |
+          python -u scripts/run_stage4_successor_phase3c.py \
+            --historical-dir /tmp/stage36/data/historical_processed/stage36_freeze_v1 \
+            --phase3a-oof analysis/stage4_successor_phase3a/phase3a_outer_predictions.csv \
+            --output-dir analysis/stage4_successor_phase3c
+      - name: Upload Phase 3C results
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage4-successor-phase3c-results
+          path: analysis/stage4_successor_phase3c/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Commit Phase 3C measured outputs
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/stage4_successor_phase3c/
+          if ! git diff --cached --quiet; then
+            git commit -m 'analysis: record Stage 4 successor phase 3C'
+            git pull --rebase origin stage4-successor-phase3c-interactions
+            git push origin HEAD:stage4-successor-phase3c-interactions
+          fi
