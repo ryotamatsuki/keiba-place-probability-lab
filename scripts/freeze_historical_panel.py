@@ -309,18 +309,20 @@ def classify_and_standardize_races(
     name_obstacle = joined.race_name.fillna("").astype(str).str.contains(
         OBSTACLE_RE, regex=True
     )
-    last3f_obstacle = joined.winner_last3f.lt(20)
-    fallback_obstacle = name_obstacle | last3f_obstacle
+    # Historical last-3F values are retained for audit only. They are not a
+    # reliable obstacle classifier across dataset encodings.
+    last3f_obstacle_signal = joined.winner_last3f.lt(20)
+    fallback_obstacle = name_obstacle
 
     official_kind = joined.race_kind.where(joined.race_kind.isin(["flat", "obstacle"]))
     known_official = official_kind.notna()
-    kind_conflict = known_official & (
-        (official_kind.eq("obstacle") & joined.winner_last3f.notna() & ~last3f_obstacle)
-        | (official_kind.eq("flat") & last3f_obstacle)
-    )
+    # Only a source name explicitly saying "obstacle" against an official flat
+    # classification is a hard contradiction. An official obstacle race may
+    # have a named-stakes title without an obstacle token.
+    kind_conflict = official_kind.eq("flat") & name_obstacle
     if kind_conflict.any():
         examples = joined.loc[kind_conflict, "race_id"].tolist()[:30]
-        raise ValueError("Official/fallback obstacle classifier conflict: {}".format(examples))
+        raise ValueError("Official/source obstacle-name conflict: {}".format(examples))
 
     joined["surface"] = official_surface.combine_first(source_surface)
     # Distance is taken from the primary source. The race-level PDF parser is
@@ -429,6 +431,7 @@ def classify_and_standardize_races(
         "fallback_obstacle_races": int(
             (official_kind.isna() & fallback_obstacle).sum()
         ),
+        "last3f_obstacle_signal_rows": int(last3f_obstacle_signal.sum()),
         "niigata_straight_surface_restored": int(
             (niigata_straight & source_surface.isna()).sum()
         ),
