@@ -76,8 +76,12 @@ def verify_phase1_incumbent(oof: pd.DataFrame, phase1_path: Path) -> float:
         else ["race_id", "horse_no"]
     )
     current = oof[join_keys + ["p_incumbent"]].copy()
+    frozen_keys = frozen[join_keys + ["p_incumbent"]].copy()
+    for key in join_keys:
+        current[key] = current[key].astype("string")
+        frozen_keys[key] = frozen_keys[key].astype("string")
     merged = current.merge(
-        frozen[join_keys + ["p_incumbent"]],
+        frozen_keys,
         on=join_keys,
         how="inner",
         suffixes=("_phase2", "_phase1"),
