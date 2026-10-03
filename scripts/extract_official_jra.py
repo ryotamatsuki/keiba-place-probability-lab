@@ -52,7 +52,7 @@ COMPACT_RACE_HEADER_DATE = re.compile(
     # the management serial, so do not require a left digit boundary here.
     # Safety comes from _verified_compact_header_dates(), which requires the
     # nearby official venue/meeting/day/race marker and serial race suffix.
-    r"(?P<serial>\d{5})"
+    r"(?P<serial>\d{5})[^\d]{0,16}"
     r"(?P<month>1[0-2]|[1-9])月"
     r"(?P<calday>3[01]|[12]\d|[1-9])日"
 )
