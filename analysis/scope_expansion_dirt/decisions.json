@@ -1,0 +1,37 @@
+{
+  "surface": "dirt",
+  "global_selection": {
+    "winner": "G0",
+    "point_brier_best": "G3",
+    "incumbent": "G0",
+    "incumbent_retained": true,
+    "reason": "incumbent retained: race-macro Brier is within one paired date-clustered SE of the point-Brier-best"
+  },
+  "whole_selection": {
+    "winner": "G0",
+    "point_brier_best": "G3",
+    "incumbent": "G0",
+    "incumbent_retained": true,
+    "reason": "incumbent retained: race-macro Brier is within one paired date-clustered SE of the point-Brier-best"
+  },
+  "routes": [
+    {
+      "min_distance_m": 1000,
+      "max_distance_m": 1400,
+      "model": "G0",
+      "blocks": []
+    },
+    {
+      "min_distance_m": 1401,
+      "max_distance_m": 2000,
+      "model": "G0",
+      "blocks": []
+    },
+    {
+      "min_distance_m": 2001,
+      "max_distance_m": 2600,
+      "model": "G0",
+      "blocks": []
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "version": "stage4_scope_v3",
+  "stage5_canonical": "market-only",
+  "train_years": [
+    2016,
+    2025
+  ],
+  "surfaces": {
+    "turf": {
+      "routes": [
+        {
+          "min_distance_m": 1000,
+          "max_distance_m": 1400,
+          "model": "G0",
+          "blocks": [],
+          "model_id": "turf_G0"
+        },
+        {
+          "min_distance_m": 1401,
+          "max_distance_m": 2000,
+          "model": "G0",
+          "blocks": [],
+          "model_id": "turf_G0"
+        },
+        {
+          "min_distance_m": 2001,
+          "max_distance_m": 2600,
+          "model": "R3",
+          "blocks": [
+            "near",
+            "regime",
+            "course_distance"
+          ],
+          "model_id": "turf_R3_2001_2600"
+        }
+      ],
+      "decision_sha256": "e0bb4c5aeef032d5aceec644adb3dffcee366cd57898fa8128efa50f83b0964c",
+      "1200_override": {
+        "scope": [
+          1000,
+          1400
+        ],
+        "blocks": [
+          "regime"
+        ],
+        "model_id": "turf_1200_override"
+      }
+    },
+    "dirt": {
+      "routes": [
+        {
+          "min_distance_m": 1000,
+          "max_distance_m": 1400,
+          "model": "G0",
+          "blocks": [],
+          "model_id": "dirt_G0"
+        },
+        {
+          "min_distance_m": 1401,
+          "max_distance_m": 2000,
+          "model": "G0",
+          "blocks": [],
+          "model_id": "dirt_G0"
+        },
+        {
+          "min_distance_m": 2001,
+          "max_distance_m": 2600,
+          "model": "G0",
+          "blocks": [],
+          "model_id": "dirt_G0"
+        }
+      ],
+      "decision_sha256": "dba86d8b7297c9425a549ef643643f12f0579eacbce8a44d2d4ecd9f6ad73218"
+    }
+  }
+}

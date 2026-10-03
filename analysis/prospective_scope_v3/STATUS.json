@@ -1,0 +1,14 @@
+{
+  "status": "awaiting_real_pre_off_locks",
+  "canonical_stage5": "market-only",
+  "real_forward_locks": 0,
+  "adoption_completed": false,
+  "trained_bundle_sha256": "2135442ac31e6489bd209ca338694455b3b887569392f045b5228fc58c59321b",
+  "protocol_sha256": "1bcce02a536f70777bcb4fcdc01265395883a9125c6f0a2e26222ad1c91abed5",
+  "next_inputs": [
+    "updated confirmed-outcome JRA history through most recent completed date",
+    "actual active-starter roster and scheduled off",
+    "time-matched canonical Stage5 market snapshot",
+    "pre-off push-run proof and later official outcomes"
+  ]
+}

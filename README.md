@@ -96,6 +96,16 @@ tests/      # 自動テスト
 
 ## Current status
 
+**Scope expansion V3 — development, turf/dirt refitting and forward-evaluation infrastructure complete.**
+
+芝1200mはSprint＋距離帯履歴、その他の芝1000–2000mはGlobal、芝2000m超–2600mは長距離帯モデル。ダート1000–2600mは独立Globalを採用候補としてfreezeし、2025年までで4構成を再学習済みです。Stage 4の新しい予測入口は `scripts/run_stage4_scope_v3.py predict`。Stage 5は実際の前向きgate通過までmarket-onlyを維持します。
+
+- 結果: [Scope completion](docs/SCOPE_EXPANSION_COMPLETION_RESULT.md)
+- 新規実行・履歴更新・発走前lock: [V3 operations](docs/SCOPE_V3_OPERATIONS.md)
+- 新規仕様: [V3 freeze](docs/STAGE4_SCOPE_V3_FREEZE.md) / [Prospective protocol](docs/SCOPE_PROSPECTIVE_V3_SPEC.md)
+
+以下は保持している従来レースの監査記録です。
+
 **Stage 7 post-race evaluation — RETROSPECTIVE PIPELINE TEST COMPLETE / QA PASS**
 
 Stage 6で固定した18頭の確率を一切変更せず、JRA公式の2026-10-03京都11R

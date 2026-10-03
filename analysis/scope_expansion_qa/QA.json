@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "rows": 753387,
+  "races": 53220,
+  "full_field_context": true,
+  "turf_same_surface_matches_frozen_history": true,
+  "strict_date_mutation_test": "tests/test_scope_features.py",
+  "new_block_full_field_LOO_test": "tests/test_stage4_scope_v3.py",
+  "source_cache_sha256": "8af28c7818e333e8c19ed9c90685c2e076e0258a78ac5106e8f737dfa6c92cd8"
+}
