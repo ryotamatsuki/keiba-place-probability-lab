@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Run Stage 5 historical market calibration and market/non-market ensemble."""
 
 from __future__ import annotations
