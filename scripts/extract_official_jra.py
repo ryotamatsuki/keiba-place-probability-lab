@@ -1,17 +1,22 @@
-"""Extract official race dates and conditions; cache facts, never commit PDFs."""
+"""Extract official JRA race-day dates and best-effort race conditions.
+
+Race-day dates are a hard requirement and are reconstructed from official JRA
+annual-result PDFs. Race-level condition extraction is deliberately best-effort:
+older PDFs can lose race-number glyphs in text extraction, so failure to recover
+one condition row must never corrupt or invent a calendar date.
+"""
 
 from __future__ import annotations
 
 import argparse
 import hashlib
-import json
 import re
 import time
 import unicodedata
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-import fitz
+import pymupdf
 import pandas as pd
 from materialize_historical_training_dataset import (
     VENUE_JP_RE,
@@ -20,20 +25,109 @@ from materialize_historical_training_dataset import (
     get_bytes,
 )
 
-MODERN_HEADER = re.compile(
-    rf"\d{{5}}(?P<month>1[012]|[1-9])月(?P<calday>\d{{1,2}})日.{{0,180}}?"
+MODERN_MARKER = re.compile(
     rf"\((?P<year>\d{{4}})年(?P<meeting>\d+)(?P<venue>{VENUE_JP_RE})\)"
     rf"第(?P<meetday>\d+)日第(?P<race>\d{{1,2}})競走"
 )
-LEGACY_HEADER = re.compile(
-    rf"\d{{5}}(?P<month>1[012]|[1-9])月(?P<calday>\d{{1,2}})日.{{0,180}}?"
-    rf"\((?P<era>\d+)(?P<venue>{VENUE_JP_RE})(?P<meeting>\d+)\)"
+LEGACY_MARKER = re.compile(
+    rf"\((?P<era>\d{{1,2}})(?P<venue>{VENUE_JP_RE})(?P<meeting>\d+)\)"
     rf"第(?P<meetday>\d+)日第(?P<race>\d{{1,2}})競走"
+)
+LEGACY_DAY = re.compile(r"第(?P<meetday>\d+)日(?P<month>\d{1,2})月(?P<calday>\d{1,2})日")
+DATE_CANDIDATE = re.compile(
+    r"(?=(?P<month>1[0-2]|[1-9])月(?P<calday>3[01]|[12]\d|[1-9])日)"
 )
 
 
+def compact_pdf_text(data: bytes) -> str:
+    with pymupdf.open(stream=data, filetype="pdf") as doc:
+        pages = []
+        for page in doc:
+            text = unicodedata.normalize("NFKC", page.get_text("text"))
+            text = "".join(ch for ch in text if ch.isprintable())
+            pages.append(re.sub(r"\s+", "", text))
+    return "".join(pages)
+
+
+def _valid_date(year: int, month: int, day: int) -> str | None:
+    try:
+        return pd.Timestamp(year=year, month=month, day=day).date().isoformat()
+    except ValueError:
+        return None
+
+
+def parse_race_days(info: dict, compact: str) -> list[dict]:
+    """Recover official (meeting, day) -> calendar date facts."""
+    year = int(info["year"])
+    by_day: dict[int, str] = {}
+
+    # Old meeting-level PDFs contain an official summary table with all meeting days.
+    if info.get("legacy"):
+        for m in LEGACY_DAY.finditer(compact):
+            date = _valid_date(year, int(m["month"]), int(m["calday"]))
+            if date is None:
+                continue
+            meetday = int(m["meetday"])
+            old = by_day.get(meetday)
+            if old is not None and old != date:
+                raise ValueError(f"Conflicting official dates in {info['url']}: {old} vs {date}")
+            by_day[meetday] = date
+        if not by_day:
+            raise ValueError(f"No official meeting-day summary dates: {info['url']}")
+    else:
+        # Modern annual pages provide one PDF per meeting day. PDF text sometimes
+        # concatenates a serial immediately before "1月31日" (e.g. "...211月31日").
+        # Use overlapping candidates and reject impossible calendar dates.
+        candidates: list[str] = []
+        for m in DATE_CANDIDATE.finditer(compact):
+            date = _valid_date(year, int(m["month"]), int(m["calday"]))
+            if date is not None:
+                candidates.append(date)
+        unique = list(dict.fromkeys(candidates))
+        if not unique:
+            raise ValueError(f"No valid calendar date in official daily PDF: {info['url']}")
+        # A daily result PDF should describe one calendar day. Restrict ambiguity
+        # by using dates attached to parsed race markers when available.
+        marker_days: list[str] = []
+        for marker in [*MODERN_MARKER.finditer(compact), *LEGACY_MARKER.finditer(compact)]:
+            prefix = compact[max(0, marker.start() - 80) : marker.start()]
+            local = []
+            for dm in DATE_CANDIDATE.finditer(prefix):
+                date = _valid_date(year, int(dm["month"]), int(dm["calday"]))
+                if date is not None:
+                    local.append(date)
+            if local:
+                marker_days.append(local[-1])
+        marker_unique = list(dict.fromkeys(marker_days))
+        chosen = marker_unique[0] if len(marker_unique) == 1 else unique[0]
+        meetday = int(info["day_no"])
+        by_day[meetday] = chosen
+
+    rows = []
+    for meetday, date in sorted(by_day.items()):
+        rows.append(
+            {
+                "race_day_key": (
+                    f"{year}{info['venue_code']}{int(info['meeting_no']):02d}{meetday:02d}"
+                ),
+                "year": year,
+                "racecourse": info["venue"],
+                "meeting_number": int(info["meeting_no"]),
+                "meeting_day": meetday,
+                "actual_date": date,
+                "official_source_url": info["url"],
+                "mapping_status": (
+                    "official_meeting_summary"
+                    if info.get("legacy")
+                    else "official_daily_result_pdf"
+                ),
+            }
+        )
+    return rows
+
+
 def parse_conditions(text: str) -> dict:
-    """Only explicit official condition text produces values."""
+    """Extract only condition values explicitly present in official text."""
     s = re.sub(r"\s+", "", unicodedata.normalize("NFKC", text))
     s = re.sub(r"(?<=\d),(?=\d)", "", s)
     course = re.search(r"\((芝|ダート)[・･]([^)]*)\)", s)
@@ -45,30 +139,16 @@ def parse_conditions(text: str) -> dict:
     if course:
         detail = course[2]
         direction = (
-            "right"
-            if "右" in detail
-            else "left"
-            if "左" in detail
-            else "straight"
-            if "直" in detail
-            else None
+            "right" if "右" in detail else "left" if "左" in detail else "straight" if "直" in detail else None
         )
         layout = (
-            "outer"
-            if "外" in detail
-            else "inner"
-            if "内" in detail
-            else "straight"
-            if "直" in detail
-            else None
+            "outer" if "外" in detail else "inner" if "内" in detail else "straight" if "直" in detail else None
         )
-    weight = re.search(r"負担重量[^本]*", s)
+    weight = re.search(r"負担重量[^本]{0,120}", s)
     handicap = None
     if weight:
         w = weight[0]
-        handicap = (
-            1 if "ハンデ" in w else 0 if any(t in w for t in ["馬齢", "定量", "別定"]) else None
-        )
+        handicap = 1 if "ハンデ" in w else 0 if any(t in w for t in ["馬齢", "定量", "別定"]) else None
     klass = None
     for tokens, label in [
         (["新馬"], "Newcomer"),
@@ -84,9 +164,9 @@ def parse_conditions(text: str) -> dict:
     grade = bool(re.search(r"\(G(?:III|II|I|1|2|3)\)", s))
     if grade:
         klass = "Open"
-    dist = re.search(r"(\d{4})", s)
+    dist = re.search(r"(?<!\d)(\d{4})(?!\d)", s)
     return {
-        "official_distance_m": int(dist[1].replace(",", "")) if dist else None,
+        "official_distance_m": int(dist[1]) if dist else None,
         "race_kind": kind,
         "official_surface": surface,
         "course_layout": layout,
@@ -99,80 +179,67 @@ def parse_conditions(text: str) -> dict:
     }
 
 
-def extract(info: dict, cache: Path) -> list[dict]:
-    key = hashlib.sha256(("parser-v4:" + info["url"]).encode()).hexdigest()
-    fact = cache / f"{key}.json"
-    if fact.exists():
-        return json.loads(fact.read_text())
+def extract_pdf(info: dict, cache: Path) -> tuple[list[dict], list[dict]]:
+    """Return required day facts plus optional race-condition facts."""
     pdf_cache = cache / (hashlib.sha256(info["url"].encode()).hexdigest() + ".pdf")
     if pdf_cache.exists():
         data = pdf_cache.read_bytes()
     else:
-        time.sleep(0.3)
+        time.sleep(0.25)
         data = get_bytes(info["url"])
         pdf_cache.write_bytes(data)
     digest = hashlib.sha256(data).hexdigest()
-    rows = []
-    diagnostic = []
-    with fitz.open(stream=data, filetype="pdf") as doc:
-        compact = "".join(
-            re.sub(r"\s+", "", unicodedata.normalize("NFKC", page.get_text("text"))) for page in doc
-        )
+    compact = compact_pdf_text(data)
+    days = parse_race_days(info, compact)
+    day_lookup = {int(r["meeting_day"]): r["actual_date"] for r in days}
+
+    conditions: list[dict] = []
     matches = sorted(
-        [*MODERN_HEADER.finditer(compact), *LEGACY_HEADER.finditer(compact)],
+        [*MODERN_MARKER.finditer(compact), *LEGACY_MARKER.finditer(compact)],
         key=lambda m: m.start(),
     )
-    for m in matches:
-        year = info["year"]
-        if "era" in m.re.groupindex:
+    for i, m in enumerate(matches):
+        year = int(info["year"])
+        if "year" in m.re.groupindex and m.groupdict().get("year"):
+            if int(m["year"]) != year:
+                continue
+        if "era" in m.re.groupindex and m.groupdict().get("era"):
             if int(m["era"]) not in {year - 1988, year - 2018}:
-                raise ValueError(f"Era/year conflict: {info}, {m.group(0)!r}")
-        elif int(m["year"]) != year:
-            raise ValueError(f"Gregorian year conflict: {info}")
-        if (
-            year != info["year"]
-            or int(m["meeting"]) != info["meeting_no"]
-            or m["venue"] != info["venue"]
-        ):
-            raise ValueError(f"PDF/header disagreement: {info}")
-        filename_day = (
-            None if info.get("legacy") else int(re.search(r"(\d+)\.pdf$", info["url"])[1])
-        )
-        if filename_day is not None and int(m["meetday"]) != filename_day:
-            raise ValueError(f"PDF/header day disagreement: {info}")
+                continue
+        if int(m["meeting"]) != int(info["meeting_no"]) or m["venue"] != info["venue"]:
+            continue
+        meetday = int(m["meetday"])
         race_no = int(m["race"])
-        try:
-            date = pd.Timestamp(year=year, month=int(m["month"]), day=int(m["calday"]))
-        except ValueError as exc:
-            raise ValueError(f"Invalid date in {info['url']}: {m.group(0)!r}") from exc
-        code = VENUE_JP_TO_CODE[m["venue"]]
-        race_id = f"{year}{code}{int(m['meeting']):02d}{int(m['meetday']):02d}{race_no:02d}"
+        if not 1 <= race_no <= 12 or meetday not in day_lookup:
+            continue
         start = m.end()
-        post = compact.find("発走", start)
-        end = compact.find("本賞", max(post, start))
-        snippet = compact[start : end if end >= start else start + 1000]
+        end = matches[i + 1].start() if i + 1 < len(matches) else min(len(compact), start + 5000)
+        snippet = compact[start:end]
         row = {
-            "race_id": race_id,
+            "race_id": (
+                f"{year}{info['venue_code']}{int(info['meeting_no']):02d}{meetday:02d}{race_no:02d}"
+            ),
             "year": year,
-            "racecourse": m["venue"],
-            "meeting_number": int(m["meeting"]),
-            "meeting_day": int(m["meetday"]),
+            "racecourse": info["venue"],
+            "meeting_number": int(info["meeting_no"]),
+            "meeting_day": meetday,
             "race_number": race_no,
-            "actual_date": date.date().isoformat(),
+            "actual_date": day_lookup[meetday],
             "official_source_url": info["url"],
             "pdf_sha256": digest,
-            "mapping_status": "official_header_verified",
+            "mapping_status": "official_race_marker_verified",
         }
         row.update(parse_conditions(snippet))
-        rows.append(row)
-    if not rows:
-        Path("data/derived").mkdir(parents=True, exist_ok=True)
-        Path(
-            f"data/derived/diagnostic_{info['year']}_{info['slug']}_{info['meeting_no']}.json"
-        ).write_text(json.dumps(diagnostic, ensure_ascii=False))
-        raise ValueError(f"No race headings: {info['url']}")
-    fact.write_text(json.dumps(rows, ensure_ascii=False))
-    return rows
+        conditions.append(row)
+
+    # Duplicate race markers in PDF text are harmless only when facts agree.
+    if conditions:
+        frame = pd.DataFrame(conditions)
+        conflicts = frame.groupby("race_id").actual_date.nunique().gt(1)
+        if conflicts.any():
+            raise ValueError(f"Conflicting condition rows in {info['url']}")
+        conditions = frame.drop_duplicates("race_id", keep="first").to_dict("records")
+    return days, conditions
 
 
 def main() -> None:
@@ -180,23 +247,60 @@ def main() -> None:
     parser.add_argument("--year", type=int, required=True)
     parser.add_argument("--workers", type=int, default=2)
     args = parser.parse_args()
+
     cache = Path("data/historical_raw/official_fact_cache")
     cache.mkdir(parents=True, exist_ok=True)
     output = Path("data/derived")
     output.mkdir(parents=True, exist_ok=True)
+
     tasks = annual_pdf_links(args.year)
-    rows = []
+    day_rows: list[dict] = []
+    condition_rows: list[dict] = []
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        for i, records in enumerate(pool.map(lambda t: extract(t, cache), tasks), 1):
-            rows.extend(records)
-            if i % 20 == 0:
+        for i, result in enumerate(pool.map(lambda t: extract_pdf(t, cache), tasks), 1):
+            days, conditions = result
+            day_rows.extend(days)
+            condition_rows.extend(conditions)
+            if i % 20 == 0 or i == len(tasks):
                 print(f"{args.year}: {i}/{len(tasks)} PDFs", flush=True)
-    df = pd.DataFrame(rows).sort_values("race_id").reset_index(drop=True)
-    if df["race_id"].duplicated().any():
-        raise ValueError("Duplicate official race headers")
-    df.to_csv(output / f"jra_official_{args.year}.csv", index=False)
-    print(df.groupby("race_kind").size().to_dict(), flush=True)
-    print("condition null counts", df.isna().sum().to_dict(), flush=True)
+
+    days = pd.DataFrame(day_rows)
+    if days.empty:
+        raise ValueError(f"No official dates extracted for {args.year}")
+    if days.groupby("race_day_key").actual_date.nunique().gt(1).any():
+        raise ValueError("Conflicting official race-day dates")
+    days = (
+        days.sort_values(["race_day_key", "official_source_url"])
+        .drop_duplicates("race_day_key", keep="first")
+        .reset_index(drop=True)
+    )
+    days.to_csv(output / f"jra_official_{args.year}.csv", index=False)
+
+    conditions = pd.DataFrame(condition_rows)
+    if conditions.empty:
+        conditions = pd.DataFrame(
+            columns=[
+                "race_id", "year", "racecourse", "meeting_number", "meeting_day",
+                "race_number", "actual_date", "official_source_url", "pdf_sha256",
+                "mapping_status", "official_distance_m", "race_kind", "official_surface",
+                "course_layout", "official_turn", "handicap_indicator", "official_class",
+                "is_open_plus", "is_graded", "condition_excerpt",
+            ]
+        )
+    if conditions.race_id.duplicated().any():
+        raise ValueError("Duplicate official condition race ids")
+    conditions.to_csv(output / f"jra_official_conditions_{args.year}.csv", index=False)
+
+    print(
+        {
+            "official_days": int(len(days)),
+            "condition_races": int(len(conditions)),
+            "condition_race_kinds": conditions.race_kind.value_counts(dropna=False).to_dict()
+            if "race_kind" in conditions
+            else {},
+        },
+        flush=True,
+    )
 
 
 if __name__ == "__main__":
