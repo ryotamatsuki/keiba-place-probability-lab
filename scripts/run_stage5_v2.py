@@ -288,11 +288,13 @@ def main() -> None:
                 period="2024_market_gate",
             )
         )
+    market_gate_diag_frame = pd.DataFrame(market_gate_diag)[
+        ["name", "calibration_intercept", "calibration_slope", "ece_10bin"]
+    ]
     market_gate_table = market_gate_table.merge(
-        pd.DataFrame(market_gate_diag).drop(columns=["stage"]),
+        market_gate_diag_frame,
         on="name",
         how="left",
-        suffixes=("", "_diag"),
         validate="one_to_one",
     )
 
@@ -320,8 +322,11 @@ def main() -> None:
                 period="2024_blend_selection",
             )
         )
+    blend_diag_frame = pd.DataFrame(blend_diagnostics)[
+        ["name", "calibration_intercept", "calibration_slope", "ece_10bin"]
+    ]
     blend_table = blend_table.merge(
-        pd.DataFrame(blend_diagnostics),
+        blend_diag_frame,
         left_on="candidate",
         right_on="name",
         how="left",
