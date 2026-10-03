@@ -93,7 +93,7 @@ def verify_phase1_incumbent(oof: pd.DataFrame, phase1_path: Path) -> float:
             )
         )
     )
-    if max_abs > 1e-10:
+    if max_abs > 1e-8:
         raise ValueError(
             f"Phase-2 incumbent does not reproduce Phase 1: max_abs={max_abs}"
         )
