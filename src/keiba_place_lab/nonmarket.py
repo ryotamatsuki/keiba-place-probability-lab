@@ -64,6 +64,29 @@ CATEGORICAL_BLOCKS = {
 }
 
 ALL_BLOCKS = tuple(NUMERIC_BLOCKS)
+
+RACECOURSE_ALIASES = {
+    "Sapporo": "札幌",
+    "Hakodate": "函館",
+    "Fukushima": "福島",
+    "Niigata": "新潟",
+    "Tokyo": "東京",
+    "Nakayama": "中山",
+    "Chukyo": "中京",
+    "Kyoto": "京都",
+    "Hanshin": "阪神",
+    "Kokura": "小倉",
+}
+
+RACE_CLASS_ALIASES = {
+    "Listed_open": "Open",
+    "Listed": "Open",
+    "Open": "Open",
+    "G1": "Open",
+    "G2": "Open",
+    "G3": "Open",
+}
+
 REQUIRED_RAW_COLUMNS = {
     "top3_label",
     "race_id",
@@ -84,6 +107,14 @@ for prefix in HISTORY_PAIRS:
 
 
 @dataclass(frozen=True)
+class BinaryEvaluation:
+    brier: float
+    log_loss: float
+    rows: int
+    races: int
+
+
+@dataclass(frozen=True)
 class Evaluation:
     brier: float
     log_loss: float
@@ -98,6 +129,32 @@ def validate_market_free(columns: Iterable[str]) -> None:
     bad = forbidden_columns(columns)
     if bad:
         raise ValueError(f"Forbidden market columns in Stage 4 input: {bad}")
+
+
+def canonicalize_target_context(frame: pd.DataFrame) -> pd.DataFrame:
+    """Map the frozen current-race labels onto historical category labels."""
+    validate_market_free(frame.columns)
+    out = frame.copy()
+    if "racecourse" in out.columns:
+        out["racecourse"] = out["racecourse"].replace(RACECOURSE_ALIASES)
+    if "race_class" in out.columns:
+        out["race_class"] = out["race_class"].replace(RACE_CLASS_ALIASES)
+    return out
+
+
+def complete_race_subset(frame: pd.DataFrame) -> pd.DataFrame:
+    """Return races where the filtered cohort still contains every starter."""
+    required = {"race_id", "field_size"}
+    missing = required.difference(frame.columns)
+    if missing:
+        raise ValueError(f"Missing complete-race columns: {sorted(missing)}")
+    field_unique = frame.groupby("race_id")["field_size"].nunique()
+    if field_unique.gt(1).any():
+        raise ValueError("field_size is not constant within race")
+    counts = frame.groupby("race_id").size()
+    expected = frame.groupby("race_id")["field_size"].first().astype(int)
+    complete_ids = counts.index[counts.eq(expected)]
+    return frame.loc[frame["race_id"].isin(complete_ids)].copy()
 
 
 def validate_training_frame(frame: pd.DataFrame) -> None:
@@ -286,6 +343,20 @@ def enforce_race_top3_sum(
             np.asarray(raw_probability)[pos], race_slots
         )
     return adjusted
+
+
+def evaluate_binary(
+    frame: pd.DataFrame, probability: np.ndarray
+) -> BinaryEvaluation:
+    """Evaluate marginal P(top3) without requiring a complete race cohort."""
+    y = frame["top3_label"].astype(int).to_numpy()
+    p = np.clip(np.asarray(probability, dtype=float), 1e-12, 1 - 1e-12)
+    return BinaryEvaluation(
+        brier=float(brier_score_loss(y, p)),
+        log_loss=float(log_loss(y, p, labels=[0, 1])),
+        rows=len(frame),
+        races=int(frame["race_id"].nunique()),
+    )
 
 
 def evaluate(
