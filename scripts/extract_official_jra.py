@@ -48,9 +48,11 @@ RACE_HEADER_DATE = re.compile(
 )
 
 COMPACT_RACE_HEADER_DATE = re.compile(
-    # Whitespace/control removal can yield e.g. "3500112月6日".
-    # 35001 is the five-digit race serial (race 01); 12月6日 is the date.
-    r"\d{3}(?:0[1-9]|1[0-2])"
+    # Whitespace removal can concatenate a preceding line's trailing digit to
+    # the management serial, so do not require a left digit boundary here.
+    # Safety comes from _verified_compact_header_dates(), which requires the
+    # nearby official venue/meeting/day/race marker and serial race suffix.
+    r"(?P<serial>\d{5})"
     r"(?P<month>1[0-2]|[1-9])月"
     r"(?P<calday>3[01]|[12]\d|[1-9])日"
 )
@@ -112,6 +114,46 @@ def _valid_date_candidates(text: str, year: int) -> list[tuple[int, str]]:
     return out
 
 
+def _verified_compact_header_dates(info: dict, compact: str) -> list[str]:
+    """Return compact header dates whose adjacent official race marker agrees."""
+    year = int(info["year"])
+    out: list[str] = []
+    for match in COMPACT_RACE_HEADER_DATE.finditer(compact):
+        date = _valid_date(year, int(match["month"]), int(match["calday"]))
+        if date is None:
+            continue
+        tail = compact[match.end() : match.end() + 240]
+        markers = sorted(
+            [*MODERN_MARKER.finditer(tail), *LEGACY_MARKER.finditer(tail)],
+            key=lambda item: item.start(),
+        )
+        for marker in markers:
+            groups = marker.groupdict()
+            marker_year = groups.get("year")
+            marker_era = groups.get("era")
+            if marker_year is not None and int(marker_year) != year:
+                continue
+            if marker_era is not None and int(marker_era) not in {
+                year - 1988,
+                year - 2018,
+            }:
+                continue
+            if marker["venue"] != info["venue"]:
+                continue
+            if int(marker["meeting"]) != int(info["meeting_no"]):
+                continue
+            if int(marker["meetday"]) != int(info["day_no"]):
+                continue
+            race_no = int(marker["race"])
+            if not 1 <= race_no <= 12:
+                continue
+            if int(match["serial"][-2:]) != race_no:
+                continue
+            out.append(date)
+            break
+    return out
+
+
 def parse_race_days(
     info: dict, compact: str, raw_text: str | None = None
 ) -> list[dict]:
@@ -153,11 +195,9 @@ def parse_race_days(
         if raw_text is not None:
             unique = list(dict.fromkeys(header_candidates))
             if not unique:
-                compact_header_candidates: list[str] = []
-                for m in COMPACT_RACE_HEADER_DATE.finditer(compact):
-                    date = _valid_date(year, int(m["month"]), int(m["calday"]))
-                    if date is not None:
-                        compact_header_candidates.append(date)
+                compact_header_candidates = _verified_compact_header_dates(
+                    info, compact
+                )
                 unique = list(dict.fromkeys(compact_header_candidates))
             if not unique:
                 if override is None:
