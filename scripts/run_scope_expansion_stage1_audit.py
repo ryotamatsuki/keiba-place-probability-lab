@@ -189,8 +189,9 @@ def main() -> None:
         kind="stable",
     )
 
+    straight_rows = eligible_all.loc[eligible_all["is_straight_course"]].copy()
     straight_summary = (
-        eligible_all.loc[eligible_all["is_straight_course"]]
+        straight_rows
         .assign(year=lambda x: x["race_date"].dt.year)
         .groupby(["year", "distance_m", "racecourse"], dropna=False)
         .agg(
@@ -201,6 +202,11 @@ def main() -> None:
         .reset_index()
         .sort_values(["year", "distance_m", "racecourse"], kind="stable")
     )
+    straight_distance = pd.to_numeric(straight_rows["distance_m"], errors="coerce")
+    straight_non_round = straight_rows.loc[
+        straight_distance.notna() & straight_distance.mod(100).ne(0),
+        ["race_date", "race_id", "racecourse", "distance_m", "horse_id", "horse_no"],
+    ].copy()
 
     candidate_rows = []
     for candidate, lo, hi in [
@@ -262,6 +268,10 @@ def main() -> None:
         args.output_dir / "scope_stage1_candidate_training_sizes.csv",
         index=False,
     )
+    straight_non_round.to_csv(
+        args.output_dir / "scope_stage1_straight_non_round_distance_rows.csv",
+        index=False,
+    )
 
     manifest = {
         "status": "PASS",
@@ -291,6 +301,12 @@ def main() -> None:
                 eligible_all.loc[
                     eligible_all["is_straight_course"], "race_id"
                 ].nunique()
+            ),
+            "non_round_distance_rows": len(straight_non_round),
+            "non_round_distance_races": int(straight_non_round["race_id"].nunique()),
+            "data_quality_note": (
+                "Non-round source distances occur only in the separately excluded "
+                "straight-course subset; primary A/B/C scope has none."
             ),
         },
         "evaluation_1200_2023_2024": {
@@ -338,6 +354,9 @@ def main() -> None:
         f"- separately reported eligible straight-course rows: **{int(eligible_all['is_straight_course'].sum()):,}**",
         f"- separately reported straight-course races: **{eligible_all.loc[eligible_all['is_straight_course'], 'race_id'].nunique():,}**",
         "- straight-course races enter none of the A/B/C primary training populations",
+        f"- non-round source-distance rows inside excluded straight subset: **{len(straight_non_round):,}**",
+        f"- affected straight-course races: **{straight_non_round['race_id'].nunique():,}**",
+        "- primary A/B/C scope has no non-100m distance values",
         "",
         "## Highest missingness among frozen raw model inputs",
         "",
