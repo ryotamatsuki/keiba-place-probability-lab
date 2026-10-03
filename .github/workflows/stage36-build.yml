@@ -1,0 +1,74 @@
+name: Stage 3.6 build historical training panel
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/stage36-build.yml"
+      - "scripts/materialize_historical_training_panel.py"
+      - "src/keiba_place_lab/historical_panel.py"
+      - "tests/test_historical_panel.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install kagglehub pyarrow tabulate
+
+      - name: Fetch pinned 2025 race-date helper
+        run: |
+          git clone --depth 1 --filter=blob:none --no-checkout             https://github.com/yuyouyu80-sudo/netkeiba-nar-pipeline.git /tmp/date-helper
+          git -C /tmp/date-helper sparse-checkout init --cone
+          git -C /tmp/date-helper sparse-checkout set data/race_results/2025
+          git -C /tmp/date-helper fetch --depth 1 origin 3ca10446d8ae28a21ee67ceed6429bacc0ebba93
+          git -C /tmp/date-helper checkout 3ca10446d8ae28a21ee67ceed6429bacc0ebba93
+
+      - name: Materialize panel and run QA
+        id: materialize
+        continue-on-error: true
+        env:
+          DATE_HELPER_2025_ROOT: /tmp/date-helper/data/race_results/2025
+        run: python scripts/materialize_historical_training_panel.py
+
+      - name: Upload training dataset artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: data/historical_processed/stage36_v1/
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Commit QA and fingerprints
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             docs/HISTORICAL_PANEL_QA.md             docs/HISTORICAL_PANEL_FINGERPRINT.md             docs/HISTORICAL_PANEL_YEAR_COUNTS.csv || true
+          if git diff --cached --quiet; then
+            echo "No QA metadata changes."
+          else
+            git commit -m "data: freeze Stage 3.6 historical panel QA [skip ci]"
+            git push
+          fi
+
+      - name: Enforce Stage 3.6 QA gate
+        if: steps.materialize.outcome != 'success'
+        run: |
+          echo "Historical panel materialization or QA failed."
+          exit 1
