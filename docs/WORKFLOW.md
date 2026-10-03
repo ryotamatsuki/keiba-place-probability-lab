@@ -179,9 +179,12 @@ Timing caveat: this remains retrospective because Stage 6 was not committed befo
 - [x] Phase 1 common OOF: 495 races / 6,313 rows; race-macro Brier 0.153096
 - [x] field-size baseline比 Brier skill 10.68%; 2023/2024 performance stabilityを確認
 - [x] Phase 1 subgroup diagnosticsをfreeze（Class3 / career 11-20 / Kokura等は低skill仮説）
-- [ ] Phase 2 challenger registry / hyperparameter gridsを最終freeze
-- [ ] Phase 2 inner chronological tuning + outer 2023/2024 candidate predictionsを生成
-- [ ] paired date-clustered one-SE gateでStage 4 successorを選定
+- [x] Phase 2 challenger registry / hyperparameter gridsを最終freeze
+- [x] Phase 2 inner chronological tuning + outer 2023/2024 candidate predictionsを生成
+- [x] Phase 2 model-family winner: XGBoost (XGB01 in both outer folds)
+- [x] XGBoost race-macro Brier 0.151494 vs incumbent 0.153096; delta -0.001602
+- [x] incumbentはpaired date-clustered 1-SE gate外（delta / SE = 2.39）となり、Phase 2ではXGBoostへ交代
+- [x] Phase 2 evaluation fingerprintがPhase 1と完全一致（495 races / 6,313 rows）
 - [ ] Phase 3 relative-ability / recent-trend / interaction feature blocksをpre-registerして個別比較
 - [ ] time-matched market snapshotが得られるまではmorning-odds blendをhistorical final oddsで再最適化しない
 - [ ] 複数liveレースを発走前lockで蓄積
