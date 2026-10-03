@@ -18,7 +18,7 @@ P(top3)
 1. レース前に利用可能だった情報だけで確率を推定する
 2. 市場（オッズ）を強いベースラインとして比較する
 3. 予測をレース前に固定し、後知恵による修正を禁止する
-4. Brier score / log loss / calibrationで長期的に評価する
+4. race-macro Brierを主指標、log lossをguardrailとして長期的に評価する
 5. 最終的には馬券種ごとに別々の予想器を作らず、共通の順位確率モデルから各馬券確率を導出する
 
 ことを重視します。
@@ -62,6 +62,23 @@ P(rank_i = 1), P(rank_i = 2), ..., P(rank_i = N)
 - **Rights-clean**: 公開ページの画像・HTML・PAT画面・第三者データセットを無断転載しない。
 - **No hindsight**: 予測ロック後は結果を見て予測値を書き換えない。
 - **One latent race model**: 長期的には馬券種別ごとの独立予想器ではなく、共通の順位分布から確率を導出する。
+
+## Model-selection governance
+
+Future model improvements follow
+[`docs/MODEL_SELECTION_PROTOCOL_V2.md`](docs/MODEL_SELECTION_PROTOCOL_V2.md).
+
+The frozen winner rule is:
+
+- primary: equal-race-weighted (race-macro) Brier score;
+- secondary guardrail: race-macro log loss;
+- selection regularization: paired date-clustered one-standard-error incumbent gate;
+- diagnostics only: calibration intercept/slope, reliability curve, ECE, ROC-AUC;
+- forbidden as winner criteria: hit rate, F1, top-k hits, ROI;
+- ensemble default/reference: market-only, with a non-zero blend required to clear the same gate.
+
+Historical Stage 4/5 outputs remain immutable audit records; this rule governs future selection
+cycles.
 
 ## Repository layout
 
