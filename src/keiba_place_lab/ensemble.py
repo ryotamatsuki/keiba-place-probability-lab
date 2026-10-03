@@ -109,7 +109,7 @@ def evaluate_probability(
     return ProbabilityMetrics(
         brier=float(brier_score_loss(y, p)),
         log_loss=float(log_loss(y, p, labels=[0, 1])),
-        rows=int(len(frame)),
+        rows=len(frame),
         races=int(frame[race_col].nunique()),
     )
 
