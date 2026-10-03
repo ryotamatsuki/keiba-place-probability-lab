@@ -1,0 +1,100 @@
+{
+  "status": "PASS",
+  "stage": "scope_expansion_stage1_comparison",
+  "source_commit_sha": "32b2eca88c6be789b375f28c136052849bcc2d53",
+  "historical_panel_sha256": "cee9ae9a099f521f12b1bcdd371c25a3d7b9ba3555fbcf5a46f2c9098f59a33d",
+  "evaluation_fingerprint_sha256": "a72fa10cc9adcd1ceee4c5b5eacd0dfdcdfc33fc984bf0b7866ec70b617bfd85",
+  "evaluation_rows": 6313,
+  "evaluation_races": 495,
+  "outer_years": [
+    2023,
+    2024
+  ],
+  "uses_2025_rows": false,
+  "uses_market_fields": false,
+  "probability_sum_to_three_adjustment": false,
+  "feature_definition_changed": false,
+  "hyperparameters_changed": false,
+  "candidate_A_matches_frozen_phase3a_predictions_within_csv_rounding": true,
+  "candidate_A_max_abs_diff_vs_9dp_reference": 4.999999997368221e-10,
+  "candidate_A_race_macro_brier": 0.1489585929248138,
+  "incumbent": "A_current_1200",
+  "winner": "A_current_1200",
+  "point_brier_best": "B_turf_sprint_1000_1400",
+  "incumbent_retained": true,
+  "selection_reason": "incumbent retained: race-macro Brier is within one paired date-clustered SE of the point-Brier-best",
+  "candidate_training_populations": [
+    {
+      "candidate": "A_current_1200",
+      "outer_year": 2023,
+      "train_min_year": 2016,
+      "train_max_year": 2022,
+      "train_rows": 23656,
+      "train_races": 1822,
+      "train_context_rows": 27974,
+      "prior_mean": 0.20350016909029423,
+      "min_distance_m": 1200,
+      "max_distance_m": 1200
+    },
+    {
+      "candidate": "A_current_1200",
+      "outer_year": 2024,
+      "train_min_year": 2016,
+      "train_max_year": 2023,
+      "train_rows": 26850,
+      "train_races": 2072,
+      "train_context_rows": 31723,
+      "prior_mean": 0.20409683426443204,
+      "min_distance_m": 1200,
+      "max_distance_m": 1200
+    },
+    {
+      "candidate": "B_turf_sprint_1000_1400",
+      "outer_year": 2023,
+      "train_min_year": 2016,
+      "train_max_year": 2022,
+      "train_rows": 35179,
+      "train_races": 2800,
+      "train_context_rows": 42814,
+      "prior_mean": 0.20381477586059865,
+      "min_distance_m": 1000,
+      "max_distance_m": 1400
+    },
+    {
+      "candidate": "B_turf_sprint_1000_1400",
+      "outer_year": 2024,
+      "train_min_year": 2016,
+      "train_max_year": 2023,
+      "train_rows": 39994,
+      "train_races": 3192,
+      "train_context_rows": 48660,
+      "prior_mean": 0.2045306796019403,
+      "min_distance_m": 1000,
+      "max_distance_m": 1400
+    },
+    {
+      "candidate": "C_turf_global_1000_2600",
+      "outer_year": 2023,
+      "train_min_year": 2016,
+      "train_max_year": 2022,
+      "train_rows": 104673,
+      "train_races": 9469,
+      "train_context_rows": 132260,
+      "prior_mean": 0.2216617465822132,
+      "min_distance_m": 1000,
+      "max_distance_m": 2600
+    },
+    {
+      "candidate": "C_turf_global_1000_2600",
+      "outer_year": 2024,
+      "train_min_year": 2016,
+      "train_max_year": 2023,
+      "train_rows": 119366,
+      "train_races": 10815,
+      "train_context_rows": 150840,
+      "prior_mean": 0.22191411289646967,
+      "min_distance_m": 1000,
+      "max_distance_m": 2600
+    }
+  ]
+}

@@ -213,6 +213,12 @@ Timing caveat: this remains retrospective because Stage 6 was not committed befo
 - [x] time-matched market snapshotが得られるまではmorning-odds blendをhistorical final oddsで再最適化しない
 - [ ] 複数liveレースを発走前lockで蓄積
 - [ ] live walk-forward評価
+- [x] Scope Expansion Stage 1 audit: turf 1000-2600 primary 239,015 rows / 21,586 races; 1200m evaluation 6,313 rows / 495 races reproduced exactly
+- [x] Scope Expansion Stage 1 A/B/C comparison frozen before scoring
+- [x] A current 1200 Brier 0.148959 / B 1000-1400 Brier 0.148774 / C 1000-2600 Brier 0.149394
+- [x] B is point-best but A-B improvement 0.000184 < paired clustered SE 0.000325; current 1200 successor retained
+- [x] C worsens 1200m primary score; no cross-distance production authorization from Stage 1
+- [ ] Scope Expansion Stage 2: preregister distance-suitability feature blocks
 - [ ] calibrationをサンプル外で検証
 - [ ] market-only / model-only / blendedをpaired proper scoresで比較
 
