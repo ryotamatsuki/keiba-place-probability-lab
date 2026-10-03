@@ -47,6 +47,15 @@ RACE_HEADER_DATE = re.compile(
     r"(?P<calday>3[01]|[12]\d|[1-9])\s*日"
 )
 
+COMPACT_RACE_HEADER_DATE = re.compile(
+    # After whitespace/control removal the five-digit serial is immediately
+    # followed by the calendar month. The fixed five-digit width is the
+    # disambiguator: "3500112月6日" => serial 35001, date 12月6日.
+    r"(?<!\d)\d{5}"
+    r"(?P<month>1[0-2]|[1-9])月"
+    r"(?P<calday>3[01]|[12]\d|[1-9])日"
+)
+
 OFFICIAL_DATE_OVERRIDES = {
     "https://www.jra.go.jp/datafile/seiseki/report/2020/2020-1niigata1.pdf": "2020-05-09",
     "https://www.jra.go.jp/datafile/seiseki/report/2020/2020-2tokyo5.pdf": "2020-05-09",
@@ -144,6 +153,13 @@ def parse_race_days(
         override = OFFICIAL_DATE_OVERRIDES.get(info["url"])
         if raw_text is not None:
             unique = list(dict.fromkeys(header_candidates))
+            if not unique:
+                compact_header_candidates: list[str] = []
+                for m in COMPACT_RACE_HEADER_DATE.finditer(compact):
+                    date = _valid_date(year, int(m["month"]), int(m["calday"]))
+                    if date is not None:
+                        compact_header_candidates.append(date)
+                unique = list(dict.fromkeys(compact_header_candidates))
             if not unique:
                 if override is None:
                     raise ValueError(
