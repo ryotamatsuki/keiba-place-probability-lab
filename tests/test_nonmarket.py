@@ -3,10 +3,12 @@ import pandas as pd
 import pytest
 
 from keiba_place_lab.nonmarket import (
+    calibration_table,
     canonicalize_target_context,
     complete_race_subset,
     enforce_race_top3_sum,
     engineer_features,
+    expected_calibration_error,
     feature_columns,
     validate_market_free,
 )
@@ -78,3 +80,19 @@ def test_complete_race_subset_uses_field_size_not_outcome():
     out = complete_race_subset(frame)
     assert out["race_id"].unique().tolist() == ["A"]
     assert len(out) == 3
+
+
+def test_calibration_table_and_ece():
+    frame = pd.DataFrame(
+        {
+            "top3_label": [0, 0, 1, 1, 1, 0, 1, 0],
+            "race_id": ["A"] * 4 + ["B"] * 4,
+        }
+    )
+    p = np.array([0.05, 0.10, 0.20, 0.30, 0.60, 0.70, 0.80, 0.90])
+    table = calibration_table(frame, p, bins=4)
+    assert table["rows"].sum() == len(frame)
+    assert table["mean_predicted"].between(0, 1).all()
+    assert table["observed_top3_rate"].between(0, 1).all()
+    ece = expected_calibration_error(table)
+    assert 0.0 <= ece <= 1.0
