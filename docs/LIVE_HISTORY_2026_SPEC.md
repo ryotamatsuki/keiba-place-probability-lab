@@ -1,0 +1,126 @@
+# 2026 JRA live-history database specification
+
+Status: implementation specification for the fixed Stage-4 Scope V3 forward period.
+
+## Purpose
+
+Maintain a reusable, audited 2026 JRA flat-race history database for live feature generation.
+This database updates prediction-time history only. It does **not** retrain or mutate the frozen
+Scope V3 model, preprocessing, routing or model bundle.
+
+## Completeness contract
+
+A snapshot is publishable only when every expected JRA flat race through the requested cutoff is
+confirmed and independently field-checked.
+
+The manifest records:
+
+- `schema_version`
+- `snapshot_id`
+- `requested_through`
+- `complete_through`: calendar date through which no expected flat race is missing
+- `latest_race_date`: latest race date physically present in the starter history
+- `expected_races` / `confirmed_races`
+- `missing_race_ids`
+- `expected_race_days` / `confirmed_race_days`
+- row counts and SHA-256 hashes for history, entry audit and race ledger.
+
+`complete_through` and `latest_race_date` are intentionally distinct. A single newer race
+cannot advance completeness past an earlier missing race. Non-racing days are handled by the
+expected-race ledger rather than by a simple age-since-last-race heuristic.
+
+## Snapshot layout
+
+```
+data/live_history/2026/
+  current.json
+  snapshots/
+    SNAPSHOT_ID/
+      jra_flat_history.parquet
+      entry_audit.parquet
+      race_ledger.csv
+      manifest.json
+```
+
+`current.json` points to one immutable snapshot. Any corrected result creates a new snapshot ID
+and history hash. Existing snapshots remain usable to reproduce prior predictions.
+
+## Expected-race ledger
+
+Monthly published schedules enumerate JRA meeting-days. Each meeting-day race list enumerates all
+scheduled races. Obstacle races remain in the ledger but are marked outside the flat-history
+target; new-maiden races, unsupported prediction distances and other flat races remain in the
+history because they may contribute to later horse histories.
+
+## Result and full-field verification
+
+For every flat race, collection uses two separately parsed published views:
+
+1. confirmed result table;
+2. declared-entry / roster table including cancellation status.
+
+The result parser preserves:
+
+- `finished`
+- `dnf` (競走中止)
+- `disqualified` (失格)
+- `scratched` (取消)
+- `excluded` (除外).
+
+`jra_flat_history.parquet` contains actual starters only. `entry_audit.parquet` retains the
+declared field, including scratches/exclusions, so actual-starter completeness is checked
+independently from the result row count. The audit also stores declared field size, source URLs
+and retrieval timestamps.
+
+A result is accepted only when declared identities and cancellation/exclusion status reconcile and
+the starter history contains exactly the verified active field.
+
+## Update and correction policy
+
+An update does not merely append after the latest stored date.
+
+For every run:
+
+1. rebuild the expected-race ledger through the requested cutoff;
+2. refetch every missing race, even when the missing race is old;
+3. refetch a configurable recent window (default 14 calendar days) to detect result corrections;
+4. replace a corrected race atomically at race level;
+5. perform whole-snapshot QA;
+6. publish the new snapshot and advance `current.json` only after all QA passes.
+
+Any fetch, parse or reconciliation failure aborts publication and leaves the previous current
+snapshot unchanged.
+
+## Prediction-time as-of barrier
+
+When a fixed historical base and the live snapshot are combined, the caller explicitly applies:
+
+```python
+history = history.loc[history["race_date"] < target_date].copy()
+```
+
+before calling `build_live_context()`. The existing `build_live_context()` rejection of any
+on/after-target history remains in place as a second information barrier.
+
+Prediction manifests record the historical-base SHA, live `snapshot_id`, `schema_version`,
+live-history SHA and `complete_through`. A later correction therefore cannot silently change the
+input claimed for an earlier prediction.
+
+## Forward-model versioning
+
+Scope V3 remains trained through 2025 during its current prospective period. Updating confirmed
+2026 history is permitted and required for current features. Retraining is not technically
+forbidden, but any retrained model must be frozen as a new model/version and evaluated in a
+separate prospective period rather than silently replacing V3.
+
+## Reproduction gate
+
+Before this database is considered operational, the common DB must reproduce the already captured
+2026-10-04 Kyoto Daishoten and Mainichi Okan morning trial:
+
+- 35 runners;
+- prior feature context;
+- frozen V3 non-market probabilities;
+- unchanged model-bundle SHA.
+
+`scripts/qa_live_history_reproduction.py` performs this check.
