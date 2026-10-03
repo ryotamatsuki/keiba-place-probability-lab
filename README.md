@@ -18,7 +18,7 @@ P(top3)
 1. レース前に利用可能だった情報だけで確率を推定する
 2. 市場（オッズ）を強いベースラインとして比較する
 3. 予測をレース前に固定し、後知恵による修正を禁止する
-4. race-macro Brierを主指標、log lossをguardrailとして長期的に評価する
+4. race-macro Brierを主指標、log lossをsecondary diagnostic / tie-breakerとして長期的に評価する
 5. 最終的には馬券種ごとに別々の予想器を作らず、共通の順位確率モデルから各馬券確率を導出する
 
 ことを重視します。
@@ -71,7 +71,7 @@ Future model improvements follow
 The frozen winner rule is:
 
 - primary: equal-race-weighted (race-macro) Brier score;
-- secondary guardrail: race-macro log loss;
+- secondary diagnostic / tie-breaker: race-macro log loss;
 - selection regularization: paired date-clustered one-standard-error incumbent gate;
 - diagnostics only: calibration intercept/slope, reliability curve, ECE, ROC-AUC;
 - forbidden as winner criteria: hit rate, F1, top-k hits, ROI;
