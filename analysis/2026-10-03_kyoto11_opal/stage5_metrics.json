@@ -1,0 +1,78 @@
+{
+  "status": "PASS",
+  "source_results_sha256": "fb9345273b21a7c23d41260dc77e45134a1bc2fe756899f3416b24ac0dd51de3",
+  "market_source_semantics": "historical final win odds",
+  "target_market_as_of": "2026-10-03T08:35:00+09:00",
+  "stage4_spec": {
+    "cohort": "turf_1200",
+    "C": 0.1
+  },
+  "calibration_fit_2023": {
+    "market": {
+      "intercept": -0.19356620112727382,
+      "slope": 0.7946619288349391
+    },
+    "nonmarket": {
+      "intercept": -0.10048326762884942,
+      "slope": 0.9758137516596803
+    },
+    "rows": 3194,
+    "races": 250
+  },
+  "blend_selection_2024": {
+    "selected_nonmarket_weight": 0.05,
+    "selected_market_weight": 0.95,
+    "rows": 3119,
+    "races": 245
+  },
+  "final_calibration_fit_2023_2024": {
+    "market": {
+      "intercept": -0.18706532497040898,
+      "slope": 0.7983513767812473
+    },
+    "nonmarket": {
+      "intercept": -0.0659067080299654,
+      "slope": 1.0164226767723652
+    },
+    "rows": 6313,
+    "races": 495
+  },
+  "test_2025": {
+    "rows": 3070,
+    "races": 245,
+    "selected_blend_brier": 0.13966239392648083,
+    "selected_blend_log_loss": 0.43454430101859653,
+    "market_calibrated_brier": 0.13975282671887815,
+    "market_calibrated_log_loss": 0.43470119793365836,
+    "market_raw_brier": 0.14110252533352066,
+    "market_raw_log_loss": 0.43978901060614656,
+    "nonmarket_raw_brier": 0.1503875257125398,
+    "nonmarket_raw_log_loss": 0.4674301722768874
+  },
+  "historical_market_diagnostics": {
+    "requested_races": 743,
+    "complete_market_races": 740,
+    "incomplete_market_races": 3,
+    "malformed_requested_rows": 0,
+    "incomplete_reason_counts": {
+      "no_source_starters": 3
+    }
+  },
+  "target": {
+    "runners": 18,
+    "sum_p_top3": 3.0,
+    "selected_market_weight": 0.95,
+    "selected_nonmarket_weight": 0.05,
+    "target_outcome_loaded": false,
+    "final_target_odds_loaded": false,
+    "market_snapshot_replaced": false
+  },
+  "provenance": {
+    "workflow_run": 37108131492,
+    "artifact_id": 11269180077,
+    "artifact_digest": "sha256:ef7b6d93d20fa2b5762fec4329612b35f19ffe035d65230c832e98bea372ac44",
+    "stage5_ensemble_sha256": "560387ab264462af0421109f1f045f9335de3c6e030c91fba8837b0becad365f",
+    "stage5_metrics_artifact_sha256": "6a82a0f83dada780384415ba2d8f27b24e6fa91e50f6a181dfb219a8795f801d"
+  },
+  "transport_limit": "Historical source odds are final win odds while target market is the frozen 08:35 snapshot; historical blend performance is not perfectly time-matched."
+}

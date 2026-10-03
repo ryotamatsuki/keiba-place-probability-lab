@@ -99,9 +99,24 @@ Timing note: execution occurred after the scheduled target-race start. The Stage
 
 ## Stage 5 — Calibration / ensemble
 
-- [ ] 市場と独立モデルを比較
-- [ ] 必要ならブレンド
-- [ ] 不確実性レンジを付与
+- [x] compare frozen market-only and non-market-only probabilities on paired historical rows
+- [x] reconstruct historical market P(top3) on complete starter fields
+- [x] fit transparent market/non-market logit calibration on 2023 only
+- [x] select convex blend weight on 2024 only
+- [x] keep 2025 out of all Stage 5 selection and evaluate once after freeze
+- [x] compare Brier score / log loss for raw, calibrated, and blended variants
+- [x] retain the frozen 08:35 target market snapshot; do not substitute final target odds
+- [x] enforce exact target-race sum P(top3)=3
+- [x] add model-sensitivity uncertainty range
+- [x] document historical-final-odds vs 08:35 target timing mismatch
+- [x] freeze STAGE5_ENSEMBLE.md / stage5_ensemble.csv / metrics
+- [x] reproduce in GitHub Actions
+
+Status: COMPLETE / QA PASS — selected market/non-market weights 0.95 / 0.05; 2025 paired test Brier 0.139662 / log loss 0.434544; target 18-runner sum P(top3)=3.0
+
+Interpretation: the non-market component adds only a small incremental improvement; Stage 5 remains overwhelmingly market-led. Historical market odds are effectively final odds, while the target market input is the frozen 08:35 snapshot, so historical performance is not perfectly time-matched.
+
+Timing note: Stage 5 was executed after the target race's scheduled start. It is a blind retrospective reconstruction, not a pre-start lock.
 
 ## Stage 6 — Pre-race lock
 

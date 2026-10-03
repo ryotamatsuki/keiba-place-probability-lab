@@ -79,34 +79,43 @@ tests/      # 自動テスト
 
 ## Current status
 
-**Stage 4 non-market P(top3) baseline — COMPLETE / QA PASS**
+**Stage 5 calibration / ensemble — COMPLETE / QA PASS**
 
-Stage 3.6のleakage-safe historical panelを使い、market情報を一切入力しない透明な
-L2 logistic baselineをfitしました。2016-2022をtrain、2023-2024をvalidationとして
-predeclared cohortと正則化を選択し、選択された仕様は `turf_1200` / `C=0.1` です。
+Stage 2の08:35 win-market baselineとStage 4のnon-market baselineを、履歴JRA芝1200mで
+同一行に突合して比較しました。履歴市場はKaggle v1の単勝オッズを全starterで正規化し、
+Stage 2と同じHarville / Plackett-LuceでP(top3)へ変換しています。
 
-2025 held-out test（芝1200m、248 races / 3,100 eligible runner rows）は
-Brier `0.150537`、log loss `0.467970`、10-bin ECE `0.016938`。
-2025 outcomeはtarget-model fitには使用していません。
+Stage 5の時間分割は、2023 calibration fit / 2024 blend selection / 2025 held-out testです。
+2024で選択されたblendは **market 95% / non-market 5%**。2025 paired test
+(245 races / 3,070 eligible rows)では、selected blendが Brier `0.139662`,
+log loss `0.434544`、calibrated market-onlyが Brier `0.139753`,
+log loss `0.434701`でした。改善幅は小さく、Stage 5は市場主導モデルです。
 
-2026-10-03 京都11Rの18頭へ同一モデルを適用し、レース内共通logit interceptで
-`sum P(top3)=3` を厳密に満たす非市場確率を生成しました。Stage 4コードは
-odds / popularity / payout / Stage 2 market probability / target outcomeを読み込みません。
+2026-10-03 京都11Rの18頭には、凍結済み08:35 market snapshotとStage 4出力だけを使用し、
+final ensembleを `sum P(top3)=3` に整合化しています。上位は
+10 ヒシアイラ `0.342056`, 6 リリージョワ `0.311323`,
+18 ディアナザール `0.287488` です。
 
-結果:
-- `analysis/2026-10-03_kyoto11_opal/NONMARKET_BASELINE.md`
-- `analysis/2026-10-03_kyoto11_opal/nonmarket_baseline.csv`
-- reproducible runner: `scripts/run_stage4_nonmarket.py`
-- model helpers: `src/keiba_place_lab/nonmarket.py`
-- tests: `tests/test_nonmarket.py`
+Results:
+- `analysis/2026-10-03_kyoto11_opal/STAGE5_ENSEMBLE.md`
+- `analysis/2026-10-03_kyoto11_opal/stage5_ensemble.csv`
+- `analysis/2026-10-03_kyoto11_opal/stage5_metrics.json`
+- reproducible runner: `scripts/run_stage5_ensemble.py`
+- calibration/ensemble helpers: `src/keiba_place_lab/ensemble.py`
+- historical market reconstruction: `src/keiba_place_lab/historical_market.py`
 
-Final verified Actions execution: Stage 4 run #10 (run id `37106873451`) SUCCESS.
-Artifact ID `11267173870`, digest
-`sha256:72f395d8a5503cdc8a905053e331904133c33b6b3f9717f75f2ca795120cfcf7`.
+Final verified Stage 5 Actions run #2 (run id `37108131492`) was SUCCESS on
+head `79a885bf46c1c398e6cabc60ddb22e4cbfc3847e`.
+Artifact ID `11269180077`, digest
+`sha256:ef7b6d93d20fa2b5762fec4329612b35f19ffe035d65230c832e98bea372ac44`.
 
-Important: Stage 4 was generated after the scheduled target-race start, so it is documented as a
-blind retrospective reconstruction from the frozen pre-race matrix, not as a pre-start prediction lock.
-Stage 5 market comparison / calibration / ensemble has not started.
+Important transport limitation: historical Kaggle odds are effectively final win odds whereas the
+target market input is the frozen **08:35** snapshot. The historical Stage 5 test is therefore not
+perfectly time-matched to the target. Later/final target odds were not substituted.
+
+Stage 5 execution occurred after the scheduled target-race start, so this remains a blind
+retrospective reconstruction from frozen pre-race inputs, not a pre-start prediction lock.
+Stage 6 has not been performed.
 
 ## License
 
