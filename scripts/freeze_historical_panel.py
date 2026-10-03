@@ -67,6 +67,57 @@ RACE_DATE_OVERRIDES = {
     },
 }
 
+# Race-level official metadata recoveries for the handful of JRA result PDFs
+# whose machine-readable text loses the race heading. Every value below was
+# checked against the rendered official JRA result PDF; do not generalize these
+# facts to other races.
+OFFICIAL_RACE_METADATA_OVERRIDES = {
+    "201309010804": {
+        "race_kind": "obstacle",
+        "official_source_url": "https://www.jra.go.jp/datafile/seiseki/report/2013/2013-1hanshin8.pdf",
+    },
+    "201706020104": {
+        "race_kind": "obstacle",
+        "official_source_url": "https://www.jra.go.jp/datafile/seiseki/report/2017/2017-2nakayama1.pdf",
+    },
+    "201708050804": {
+        "race_kind": "obstacle",
+        "official_source_url": "https://www.jra.go.jp/datafile/seiseki/report/2017/2017-5kyoto8.pdf",
+    },
+    "201804020707": {
+        "race_kind": "flat",
+        "official_surface": "turf",
+        "official_distance_m": 1000,
+        "course_layout": "straight",
+        "official_turn": "straight",
+        "official_source_url": "https://www.jra.go.jp/datafile/seiseki/report/2018/2018-2niigata7.pdf",
+    },
+    "201804030611": {
+        "race_kind": "flat",
+        "official_surface": "turf",
+        "official_distance_m": 1000,
+        "course_layout": "straight",
+        "official_turn": "straight",
+        "official_source_url": "https://www.jra.go.jp/datafile/seiseki/report/2018/2018-3niigata6.pdf",
+    },
+    "202004010101": {
+        "race_kind": "obstacle",
+        "official_source_url": "https://www.jra.go.jp/datafile/seiseki/report/2020/2020-1niigata1.pdf",
+    },
+    "202004010104": {
+        "race_kind": "obstacle",
+        "official_source_url": "https://www.jra.go.jp/datafile/seiseki/report/2020/2020-1niigata1.pdf",
+    },
+    "202004010110": {
+        "race_kind": "flat",
+        "official_surface": "turf",
+        "official_distance_m": 1000,
+        "course_layout": "straight",
+        "official_turn": "straight",
+        "official_source_url": "https://www.jra.go.jp/datafile/seiseki/report/2020/2020-1niigata1.pdf",
+    },
+}
+
 
 def json_write(path: Path, data: object) -> None:
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2, default=str) + "\n")
@@ -269,6 +320,31 @@ def classify_and_standardize_races(
     ]:
         if col not in joined:
             joined[col] = np.nan
+
+    override_rows = []
+    for race_id, override in OFFICIAL_RACE_METADATA_OVERRIDES.items():
+        mask = joined.race_id.eq(race_id)
+        if not mask.any():
+            continue
+        for field in [
+            "race_kind",
+            "official_surface",
+            "official_distance_m",
+            "course_layout",
+            "official_turn",
+        ]:
+            if field in override:
+                joined.loc[mask, field] = override[field]
+        override_rows.append(
+            {
+                "race_id": race_id,
+                **override,
+                "verification_status": "official_pdf_visual_verified",
+            }
+        )
+    pd.DataFrame(override_rows).to_csv(
+        DOCS / "HISTORICAL_OFFICIAL_RACE_METADATA_OVERRIDES.csv", index=False
+    )
 
     source_surface = joined.course_type.map({"芝": "turf", "ダ": "dirt"})
     source_distance = pd.to_numeric(joined.distance, errors="coerce")
