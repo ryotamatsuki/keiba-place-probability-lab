@@ -158,6 +158,7 @@ class DayRecord:
     pdf_sha256: str
     pdf_url: str
     header_verified: bool
+    verification_level: str
 
 
 def sha256_file(path: Path) -> str:
@@ -211,6 +212,7 @@ def annual_pdf_links(year: int) -> list[dict]:
                     "venue_code": venue_code,
                     "venue": venue_jp,
                     "url": urljoin(page, href),
+                    "legacy": False,
                 }
             )
             continue
@@ -227,6 +229,7 @@ def annual_pdf_links(year: int) -> list[dict]:
                     "venue_code": venue_code,
                     "venue": venue_jp,
                     "url": urljoin(page, href),
+                    "legacy": True,
                 }
             )
 
@@ -240,7 +243,7 @@ def annual_pdf_links(year: int) -> list[dict]:
 
 
 def parse_result_pdf(info: dict) -> list[dict]:
-    """Extract race-day/date/race-number facts from one official JRA PDF."""
+    """Extract official calendar dates from modern or legacy JRA result PDFs."""
     data = get_bytes(info["url"])
     pdf_hash = hashlib.sha256(data).hexdigest()
     doc = fitz.open(stream=data, filetype="pdf")
@@ -254,7 +257,55 @@ def parse_result_pdf(info: dict) -> list[dict]:
     doc.close()
     compact = "".join(compact_parts)
 
-    extracted: list[dict] = []
+    if info.get("legacy", False):
+        # Legacy meeting-level PDFs (used on older annual pages) contain a
+        # summary table such as "第1日 1月5日（火）". The PDF filename provides
+        # year/venue/meeting; the table independently supplies meeting-day date.
+        legacy_day_re = re.compile(
+            r"第(?P<meetday>\d+)日(?P<month>\d+)月(?P<calday>\d+)日"
+        )
+        day_pairs: dict[int, tuple[int, int]] = {}
+        for match in legacy_day_re.finditer(compact):
+            meetday = int(match.group("meetday"))
+            month = int(match.group("month"))
+            calday = int(match.group("calday"))
+            pair = (month, calday)
+            if meetday in day_pairs and day_pairs[meetday] != pair:
+                raise RuntimeError(
+                    f"conflicting legacy date for {info['url']} day {meetday}: "
+                    f"{day_pairs[meetday]} vs {pair}"
+                )
+            day_pairs[meetday] = pair
+        if not day_pairs:
+            raise RuntimeError(f"no legacy meeting-day dates extracted from {info['url']}")
+
+        extracted: list[dict] = []
+        for meetday, (month, calday) in sorted(day_pairs.items()):
+            actual = pd.Timestamp(
+                year=info["year"], month=month, day=calday
+            ).date().isoformat()
+            key = (
+                f"{info['year']}{info['venue_code']}"
+                f"{info['meeting_no']:02d}{meetday:02d}"
+            )
+            extracted.append(
+                {
+                    "race_day_key": key,
+                    "year": info["year"],
+                    "venue_code": info["venue_code"],
+                    "venue": info["venue"],
+                    "meeting_no": info["meeting_no"],
+                    "day_no": meetday,
+                    "actual_date": actual,
+                    "race_number": np.nan,
+                    "pdf_sha256": pdf_hash,
+                    "pdf_url": info["url"],
+                    "verification_level": "official_legacy_day_summary",
+                }
+            )
+        return extracted
+
+    extracted = []
     for match in FULL_RACE_HEADER_RE.finditer(compact):
         year = int(match.group("year"))
         meeting = int(match.group("meeting"))
@@ -284,13 +335,13 @@ def parse_result_pdf(info: dict) -> list[dict]:
                 "race_number": race_no,
                 "pdf_sha256": pdf_hash,
                 "pdf_url": info["url"],
+                "verification_level": "official_exact_race_header",
             }
         )
 
     if not extracted:
         raise RuntimeError(f"no full race headers extracted from {info['url']}")
     return extracted
-
 
 def build_official_date_map() -> pd.DataFrame:
     tasks: list[dict] = []
@@ -300,35 +351,50 @@ def build_official_date_map() -> pd.DataFrame:
         tasks.extend(links)
 
     print(f"JRA result PDFs discovered: {len(tasks)}")
-    race_records: list[dict] = []
+    records: list[dict] = []
     workers = int(os.getenv("JRA_PDF_WORKERS", "12"))
     with ThreadPoolExecutor(max_workers=workers) as pool:
         futures = {pool.submit(parse_result_pdf, task): task for task in tasks}
         done = 0
         for future in as_completed(futures):
-            race_records.extend(future.result())
+            records.extend(future.result())
             done += 1
             if done % 100 == 0 or done == len(tasks):
                 print(f"JRA result PDFs parsed: {done}/{len(tasks)}")
 
-    races = pd.DataFrame(race_records)
-    race_ids = (
-        races["race_day_key"]
-        + races["race_number"].astype(int).astype(str).str.zfill(2)
-    )
-    if race_ids.duplicated().any():
-        dup = race_ids[race_ids.duplicated(False)].tolist()
-        raise RuntimeError(f"duplicate official race IDs extracted: {dup[:20]}")
+    facts = pd.DataFrame(records)
+    exact = facts.loc[facts["race_number"].notna()].copy()
+    if not exact.empty:
+        exact_ids = (
+            exact["race_day_key"]
+            + exact["race_number"].astype(int).astype(str).str.zfill(2)
+        )
+        if exact_ids.duplicated().any():
+            dup = exact_ids[exact_ids.duplicated(False)].tolist()
+            raise RuntimeError(f"duplicate official race IDs extracted: {dup[:20]}")
 
     day_rows: list[DayRecord] = []
-    for key, group in races.groupby("race_day_key", sort=False):
+    for key, group in facts.groupby("race_day_key", sort=False):
         dates = group["actual_date"].drop_duplicates().tolist()
         if len(dates) != 1:
             raise RuntimeError(f"multiple actual dates for {key}: {dates}")
         first = group.iloc[0]
-        nums = sorted(group["race_number"].astype(int).unique().tolist())
+        nums = sorted(
+            group.loc[group["race_number"].notna(), "race_number"]
+            .astype(int)
+            .unique()
+            .tolist()
+        )
         urls = sorted(group["pdf_url"].drop_duplicates().tolist())
         hashes = sorted(group["pdf_sha256"].drop_duplicates().tolist())
+        levels = sorted(group["verification_level"].drop_duplicates().tolist())
+        level = (
+            "official_exact_race_headers"
+            if nums
+            else "official_legacy_day_summary"
+        )
+        if nums and "official_exact_race_header" not in levels:
+            raise RuntimeError(f"inconsistent verification level for {key}")
         day_rows.append(
             DayRecord(
                 race_day_key=key,
@@ -343,6 +409,7 @@ def build_official_date_map() -> pd.DataFrame:
                 pdf_sha256=";".join(hashes),
                 pdf_url=";".join(urls),
                 header_verified=True,
+                verification_level=level,
             )
         )
 
@@ -353,7 +420,6 @@ def build_official_date_map() -> pd.DataFrame:
     return df.sort_values(
         ["actual_date", "venue_code", "meeting_no", "day_no"]
     ).reset_index(drop=True)
-
 
 def official_race_id_set(date_map: pd.DataFrame) -> set[str]:
     out: set[str] = set()
@@ -776,15 +842,20 @@ def render_qa(
         "## Official race-date reconstruction",
         "",
         f"- official JRA daily PDFs parsed: {len(date_map):,}",
-        f"- official race IDs reconstructed from PDF race headings: {len(official_ids):,}",
+        f"- official race IDs reconstructed from exact PDF race headings: {len(official_ids):,}",
         f"- primary-source JRA race IDs: {len(source_jra_ids):,}",
-        f"- official IDs missing from primary source: {len(official_missing):,}",
-        f"- primary-source JRA IDs absent from official archive: {len(source_extra):,}",
-        f"- PDF meeting/day header verification failures: {int((~date_map['header_verified']).sum()):,}",
+        f"- exact-era official IDs missing from primary source: {len(official_missing):,}",
+        f"- exact-era primary-source IDs absent from official archive: {len(source_extra):,}",
+        f"- official day mappings: {len(date_map):,}",
+        f"- legacy day-summary mappings: {int(date_map['verification_level'].eq('official_legacy_day_summary').sum()):,}",
+        f"- source race days without official date mapping: {len({x[:10] for x in source_jra_ids} - set(date_map['race_day_key'].astype(str))):,}",
+        f"- PDF date verification failures: {int((~date_map['header_verified']).sum()):,}",
         "",
         "The source dataset pseudo-date column is not used. Each JRA race receives its actual",
-        "calendar date from the official daily-results PDF identified by year, venue, meeting",
-        "number and day number encoded in the race ID.",
+        "calendar date from the official JRA results archive. Modern daily PDFs are verified",
+        "against individual race headings; legacy meeting-level PDFs are verified against their",
+        "official meeting-day/date summary tables. Every source race-day key must map to one",
+        "official date before panel construction.",
         "",
         "## Race normalization",
         "",
@@ -925,14 +996,35 @@ def main() -> None:
     source_jra = source_jra.loc[source_year.between(START_YEAR, END_YEAR)]
     source_jra_ids = set(source_jra["race_id"].astype(str))
 
-    official_missing = official_ids - source_jra_ids
-    source_extra = source_jra_ids - official_ids
+    official_day_keys = set(date_map["race_day_key"].astype(str))
+    source_day_keys = {race_id[:10] for race_id in source_jra_ids}
+    source_days_without_official_date = source_day_keys - official_day_keys
+    if source_days_without_official_date:
+        raise RuntimeError(
+            "source JRA race days missing from official date map: "
+            f"{len(source_days_without_official_date)} "
+            f"{sorted(source_days_without_official_date)[:20]}"
+        )
+
+    exact_years = set(
+        date_map.loc[
+            date_map["verification_level"].eq("official_exact_race_headers"),
+            "year",
+        ].astype(int)
+    )
+    source_exact_ids = {
+        race_id for race_id in source_jra_ids
+        if int(race_id[:4]) in exact_years
+    }
+    official_missing = official_ids - source_exact_ids
+    source_extra = source_exact_ids - official_ids
     if official_missing or source_extra:
         raise RuntimeError(
-            "official/source JRA race-ID reconciliation failed: "
+            "exact-era official/source JRA race-ID reconciliation failed: "
             f"official_missing={len(official_missing)}, source_extra={len(source_extra)}; "
             f"examples={sorted(official_missing)[:10]} / {sorted(source_extra)[:10]}"
         )
+
     if race_diag["jra_missing_official_date"]:
         raise RuntimeError("missing official dates remain")
     if race_diag["jra_venue_code_mismatch"] or race_diag["jra_race_number_mismatch"]:
