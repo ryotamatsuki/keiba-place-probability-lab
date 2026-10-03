@@ -1,0 +1,76 @@
+{
+  "status": "PASS",
+  "stage": "stage5_v2",
+  "historical_panel_sha256": "cee9ae9a099f521f12b1bcdd371c25a3d7b9ba3555fbcf5a46f2c9098f59a33d",
+  "historical_market_sha256": "fb9345273b21a7c23d41260dc77e45134a1bc2fe756899f3416b24ac0dd51de3",
+  "historical_market_semantics": "final win odds",
+  "stage4_successor": "XGB01 + full-field relative ability",
+  "oof_contract": {
+    "2023_train_through": 2022,
+    "2024_train_through": 2023,
+    "2025_train_through": 2024,
+    "production_2016_2025_model_used_for_backprediction": false
+  },
+  "calibration_fit_2023": {
+    "fit_period": "2023",
+    "market": {
+      "intercept": -0.19356620112727374,
+      "slope": 0.7946619288349391
+    },
+    "nonmarket": {
+      "intercept": -0.049372201840940926,
+      "slope": 0.9853195366969464
+    },
+    "rows": 3194,
+    "races": 250,
+    "paired_row_fingerprint": "6022e2ec92b49d863cadbc3d3c76752460a8a141e52c002ee7fce16bbb45eb9e"
+  },
+  "market_gate_2024": {
+    "winner": "market_calibrated",
+    "point_brier_best": "market_calibrated",
+    "incumbent_retained": false,
+    "reason": "point-Brier-best selected: no incumbent was supplied or the incumbent fell outside the paired one-SE Brier retention band"
+  },
+  "blend_selection_2024": {
+    "winner": "blend_w0.00",
+    "point_brier_best": "blend_w0.05",
+    "market_only_retained": true,
+    "selected_nonmarket_weight": 0.0,
+    "reason": "market-only retained: improvement to point-Brier-best does not exceed one paired race-date-clustered SE",
+    "market_only_race_macro_brier": 0.13808455717089324,
+    "selected_race_macro_brier": 0.13808455717089324,
+    "paired_rows": 3119,
+    "paired_races": 245,
+    "paired_row_fingerprint": "5e8bacbaba3781966e6d964901ab92d6b7166c8dfbafa31c2220cddb0b97ca67"
+  },
+  "known_outcome_audit_2025": {
+    "selection_use": false,
+    "label": "KNOWN_OUTCOME_AUDIT_NOT_TEST",
+    "market_race_macro_brier": 0.1429378312077544,
+    "selected_blend_race_macro_brier": 0.1429378312077544,
+    "paired_rows": 3070,
+    "paired_races": 245,
+    "paired_row_fingerprint": "96c5820e899fd60275d19bfc47e5e2f9dfc0a9aa43eeb411c87fd35f66ef529f"
+  },
+  "target_policy": {
+    "canonical_live_output": "raw market-only",
+    "historical_domain_shadow_blend_reported": true,
+    "historical_domain_nonmarket_weight": 0.0,
+    "market_snapshot_as_of": "2026-10-03T08:35:00+09:00",
+    "canonical_market_sum": 3.0,
+    "stage4_v2_raw_sum": 3.4792343519999998,
+    "shadow_blend_sum": 3.2306629306419463,
+    "sum_to_three_adjustment_applied_to_shadow": false,
+    "target_outcome_loaded": false
+  },
+  "market_diagnostics": {
+    "requested_races": 743,
+    "complete_market_races": 740,
+    "incomplete_market_races": 3,
+    "malformed_requested_rows": 0,
+    "incomplete_reason_counts": {
+      "no_source_starters": 3
+    }
+  },
+  "transport_limit": "Historical market uses final odds while live target market is an 08:35 snapshot. Historical-domain blend selection cannot authorize live-morning adoption."
+}

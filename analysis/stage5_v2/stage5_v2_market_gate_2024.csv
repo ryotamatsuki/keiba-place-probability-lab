@@ -1,0 +1,3 @@
+name,race_macro_brier,race_macro_log_loss,runner_micro_brier,runner_micro_log_loss,races,rows,point_brier_best,mean_brier_delta_vs_best,se_brier_delta_vs_best,mean_log_loss_delta_vs_best,se_log_loss_delta_vs_best,within_one_se_brier,within_one_se_log_loss,calibration_intercept,calibration_slope,ece_10bin
+market_calibrated,0.13808455717089324,0.4288225422849463,0.13373223232454567,0.4193516180685042,245,3119,True,0.0,0.0,0.0,0.0,True,True,0.014532989591617359,1.0088046047373045,0.01526000510097277
+market_raw,0.13948560698800833,0.4328515020232597,0.1348533738409484,0.423193029546335,245,3119,False,0.0014010498171150717,0.0006652961949008147,0.004028959738313437,0.001994077977332721,False,False,-0.18056527067625522,0.8019528113054718,0.03028026832633541
