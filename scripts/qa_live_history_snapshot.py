@@ -72,6 +72,11 @@ def audit_snapshot(root: Path, ledger_path: Path, snapshot_id: str | None = None
         finished = race.loc[race.finish_status.eq("finished")]
         if finished.race_time_seconds.isna().any() or not finished.race_time_seconds.gt(0).all():
             raise ValueError(f"Invalid confirmed race time: {race_id}")
+        # JRA publishes these result times to one decimal second. More digits
+        # are a signal of the numeric-margin concatenation bug, not precision.
+        tenths = finished.race_time_seconds * 10
+        if (tenths - tenths.round()).abs().gt(1e-8).any():
+            raise ValueError(f"Race time includes unexpected sub-tenth digits: {race_id}")
         if not race.finish_position.eq(1).any():
             raise ValueError(f"No winning starter: {race_id}")
     counts = {"expected_races": len(expected), "confirmed_races": history.race_id.nunique(),

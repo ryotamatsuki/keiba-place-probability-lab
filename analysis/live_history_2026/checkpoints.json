@@ -1,22 +1,65 @@
 [
   {
-    "complete_through": "2026-02-28",
-    "latest_race_date": "2026-02-28",
-    "expected_races": 536,
-    "confirmed_races": 536,
+    "complete_through": "2026-03-31",
+    "latest_race_date": "2026-03-29",
+    "expected_races": 827,
+    "confirmed_races": 827,
     "missing_race_ids": [],
-    "expected_race_days": 19,
-    "confirmed_race_days": 19,
-    "rows": 7712,
-    "entry_rows": 7738,
-    "snapshot_id": "jra_flat_live_history_v1-20260228-7ca588d6d9df",
-    "history_sha256": "5a5b4dcb3f510561f2f74b6f155f3bef99c055cb55839668e94445c700a3f7f8",
+    "expected_race_days": 28,
+    "confirmed_race_days": 28,
+    "rows": 11819,
+    "entry_rows": 11862,
+    "snapshot_id": "jra_flat_live_history_v1-20260331-2174e97394e7",
+    "history_sha256": "2be32fa46a3c47b454512da157af1a97253ecb3ad4ee05ebbdcbb40493356d9a",
     "abandoned_race_ids": [
       "202605010308",
       "202605010309",
       "202605010310",
       "202605010311",
-      "202605010312"
+      "202605010312",
+      "202610010604"
+    ]
+  },
+  {
+    "complete_through": "2026-04-30",
+    "latest_race_date": "2026-04-26",
+    "expected_races": 1083,
+    "confirmed_races": 1083,
+    "missing_race_ids": [],
+    "expected_race_days": 36,
+    "confirmed_race_days": 36,
+    "rows": 15443,
+    "entry_rows": 15500,
+    "snapshot_id": "jra_flat_live_history_v1-20260430-9709b30c489b",
+    "history_sha256": "4d741da2db77e6ecabcdbc45ddd9056a864aa3e0d973b76b70e1450feb405c88",
+    "abandoned_race_ids": [
+      "202605010308",
+      "202605010309",
+      "202605010310",
+      "202605010311",
+      "202605010312",
+      "202610010604"
+    ]
+  },
+  {
+    "complete_through": "2026-05-31",
+    "latest_race_date": "2026-05-31",
+    "expected_races": 1405,
+    "confirmed_races": 1405,
+    "missing_race_ids": [],
+    "expected_race_days": 46,
+    "confirmed_race_days": 46,
+    "rows": 20023,
+    "entry_rows": 20091,
+    "snapshot_id": "jra_flat_live_history_v1-20260531-57bd13693b25",
+    "history_sha256": "04c8b3a37cda435660a7e6ee1887a9ba48710dd3655952400bbeb7c7d8816729",
+    "abandoned_race_ids": [
+      "202605010308",
+      "202605010309",
+      "202605010310",
+      "202605010311",
+      "202605010312",
+      "202610010604"
     ]
   }
 ]

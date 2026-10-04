@@ -4,6 +4,7 @@ import pandas as pd
 import pytest
 
 from keiba_place_lab.live_history import (
+    CachedFetcher,
     _parse_race_time,
     _status_from_rank,
     apply_confirmed_events,
@@ -22,6 +23,23 @@ def test_unknown_legacy_base_cannot_be_marked_confirmed(tmp_path):
     pd.DataFrame({"race_date": ["2025-01-01"]}).to_parquet(path)
     with pytest.raises(ValueError, match="Unrecognized frozen"):
         load_frozen_history(path)
+
+
+def test_cached_capture_tampering_cannot_be_used(tmp_path):
+    import hashlib
+    import json
+    url = "https://example.com/result"
+    key = hashlib.sha256(url.encode()).hexdigest()
+    html = tmp_path / f"{key}.html"
+    html.write_text("original")
+    (tmp_path / f"{key}.json").write_text(json.dumps({
+        "url": url, "sha256": sha256_file(html), "retrieved_at": "2026-10-04T00:00:00Z",
+        "cache_path": str(html)}))
+    fetcher = CachedFetcher(tmp_path)
+    assert fetcher.fetch(url)[0] == "original"
+    html.write_text("changed")
+    with pytest.raises(ValueError, match="checksum mismatch"):
+        fetcher.fetch(url)
 
 
 def test_independent_inventory_cannot_certify_a_later_cutoff(tmp_path):
