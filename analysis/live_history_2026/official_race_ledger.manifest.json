@@ -3,7 +3,7 @@
   "rows": 2640,
   "meeting_days": 220,
   "calendar_days": 83,
-  "conditions_sha256": "3233cca2063ff0f14696281716575682bee5a75cab7e5e02cf414b99c9f9402d",
-  "ledger_sha256": "41ef16a367af6c37504355cfa0b8a347b4862ce9a7c4190c148d52f144cbd2dd",
+  "conditions_sha256": "c29ca268b1caf94bbc9cb92df2c65883c14d0b0d9d9819b3e591690f5b98171e",
+  "ledger_sha256": "d3083e4de4c5d567eb5825f57086a21d1857bfd26f990538b3bc1ffc9434fc29",
   "latest_race_date": "2026-10-03"
 }

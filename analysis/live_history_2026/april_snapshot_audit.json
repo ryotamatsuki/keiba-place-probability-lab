@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "snapshot_id": "jra_flat_live_history_v1-20260430-9709b30c489b",
+  "complete_through": "2026-04-30",
+  "expected_races": 1083,
+  "confirmed_races": 1083,
+  "expected_race_days": 36,
+  "confirmed_race_days": 36,
+  "rows": 15443,
+  "entry_rows": 15500,
+  "missing_race_ids": [],
+  "latest_race_date": "2026-04-26",
+  "starter_status_counts": {
+    "finished": 15402,
+    "dnf": 41
+  },
+  "entry_status_counts": {
+    "finished": 15402,
+    "dnf": 41,
+    "excluded": 36,
+    "scratched": 21
+  },
+  "source_race_counts": {
+    "umanity.jp": 653,
+    "sports.yahoo.co.jp": 430
+  },
+  "history_sha256": "4d741da2db77e6ecabcdbc45ddd9056a864aa3e0d973b76b70e1450feb405c88",
+  "entry_audit_sha256": "0daa4fc0330cb9acb0e12d4a4f2dda8ff19823c4571557f230950d598f14a006",
+  "race_ledger_sha256": "b3b5ac0f4cc97d3d4c243b039b4049afece5188a2a055659e881b706ddb252a1",
+  "independent_inventory_sha256": "d3083e4de4c5d567eb5825f57086a21d1857bfd26f990538b3bc1ffc9434fc29",
+  "auditor_sha256": "7372301ffdce5e01c886d1b40e56fc437ae3111eb6455c780f4e9924af18e75d"
+}

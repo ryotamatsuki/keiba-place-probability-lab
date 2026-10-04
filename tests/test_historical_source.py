@@ -24,6 +24,8 @@ def test_runner_name_jump_does_not_change_flat_race_kind():
         "本賞5900000円 711ミッキージャンプ牡3栗57"
     )
     assert conditions["race_kind"] == "flat"
+    assert conditions["official_distance_m"] == 2000
+    assert parse_conditions("12003歳未勝利(ダート・右)本賞4815000円")["official_distance_m"] == 1200
 
 
 def test_official_result_cname_roundtrips_race_id():

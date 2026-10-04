@@ -21,6 +21,7 @@ def main() -> None:
     parser.add_argument("--max-workers", type=int, default=6)
     parser.add_argument("--source", choices=("yahoo", "umanity"), default="yahoo")
     parser.add_argument("--ledger", type=Path)
+    parser.add_argument("--reparse-all", action="store_true", help="Reparse all captured pages after a parser correction; use --recheck-days 0 to avoid forced refresh")
     args = parser.parse_args()
     manifest = update_live_history(
         year=args.year,
@@ -31,6 +32,7 @@ def main() -> None:
         max_workers=args.max_workers,
         source=args.source,
         ledger_path=args.ledger,
+        reparse_all=args.reparse_all,
     )
     print(json.dumps(manifest, ensure_ascii=False, indent=2))
 

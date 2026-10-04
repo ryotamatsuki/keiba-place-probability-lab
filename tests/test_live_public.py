@@ -50,6 +50,17 @@ def test_full_results_exclude_nonstarter_and_preserve_confirmed_dnf():
     assert frame.assigned_weight_kg.eq(52).all()
 
 
+@pytest.mark.parametrize("time,expected", [("1:32.1", 92.1), ("58.9", 58.9)])
+def test_numeric_margin_is_not_part_of_race_time(time, expected):
+    html = META + '<table><tr><th>着順 馬名 通過順位 騎手名</th></tr>'
+    html += f'<tr><td>1</td><td>1</td><td>1</td><td>{horse()}</td>'
+    html += f'<td>{time}<p>2</p></td><td>02-02</td><td>騎手<p>52.0</p></td></tr></table>'
+    assert parse_results(html, "2605030211").race_time_seconds.iloc[0] == expected
+    from keiba_place_lab.live_history import parse_result_audited
+    audited, _ = parse_result_audited(html, "2605030211", source_url="test", retrieved_at="test")
+    assert audited.race_time_seconds.iloc[0] == expected
+
+
 def test_inventory_keeps_other_distance_but_excludes_future_and_nonstarter():
     html = '<table><tr><th>日付 通過順位</th></tr>'
     for date, rid, rank in [("2026/06/07", "2605030211", "1"), ("2026/10/04", "2605040211", "1"), ("2025/11/30", "2505050812", "取消")]:

@@ -11,6 +11,7 @@ import joblib
 import numpy as np
 import pandas as pd
 
+from keiba_place_lab.live_history import load_frozen_history
 from keiba_place_lab.stage4_production_v3 import (
     build_live_context,
     score_scope_target,
@@ -86,6 +87,10 @@ def compare_context(actual: pd.DataFrame, expected: pd.DataFrame) -> float:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--live-root", type=Path, default=ROOT / "data/live_history/2026")
+    parser.add_argument("--historical-base", type=Path,
+                        help="Also verify against the exact audited full 2010–2025 source")
+    parser.add_argument("--reference-dir", type=Path, default=TRIAL,
+                        help="Captured morning reference, or separately audited corrected reference")
     parser.add_argument(
         "--output",
         type=Path,
@@ -95,9 +100,12 @@ def main() -> None:
 
     old_target_history = pd.read_parquet(TRIAL / "target_history.parquet")
     old_target_history["race_date"] = pd.to_datetime(old_target_history["race_date"])
-    historical_base = old_target_history.loc[
-        old_target_history["race_date"] < pd.Timestamp("2026-01-01")
-    ].copy()
+    if args.historical_base is not None:
+        historical_base = load_frozen_history(args.historical_base)
+    else:
+        historical_base = old_target_history.loc[
+            old_target_history["race_date"] < pd.Timestamp("2026-01-01")
+        ].copy()
 
     live, live_manifest = load_live(args.live_root)
     live["race_date"] = pd.to_datetime(live["race_date"])
@@ -108,11 +116,11 @@ def main() -> None:
         raise ValueError("Historical base/live DB overlap")
 
     expected_context = pd.read_csv(
-        TRIAL / "morning_feature_context.csv",
+        args.reference_dir / "morning_feature_context.csv",
         dtype={"race_id": "string", "horse_id": "string"},
     )
     expected_predictions = pd.read_csv(
-        TRIAL / "morning_nonmarket_predictions.csv",
+        args.reference_dir / "morning_nonmarket_predictions.csv",
         dtype={"race_id": "string", "horse_id": "string"},
     )
     frozen_manifest = json.loads((BUNDLE.parent / "manifest.json").read_text())
@@ -168,6 +176,11 @@ def main() -> None:
         "prediction_max_abs_error": prediction_error,
         "model_bundle_sha256": bundle_sha,
         "model_changed": False,
+        "historical_base_mode": "full_frozen_base" if args.historical_base else "trial_prior_race_subset",
+        "historical_base_sha256": sha256(args.historical_base) if args.historical_base else sha256(TRIAL / "target_history.parquet"),
+        "reference_directory": str(args.reference_dir.relative_to(ROOT)) if args.reference_dir.is_relative_to(ROOT) else str(args.reference_dir),
+        "reference_context_sha256": sha256(args.reference_dir / "morning_feature_context.csv"),
+        "reference_predictions_sha256": sha256(args.reference_dir / "morning_nonmarket_predictions.csv"),
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")

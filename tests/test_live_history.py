@@ -8,12 +8,20 @@ from keiba_place_lab.live_history import (
     _status_from_rank,
     apply_confirmed_events,
     expected_results,
+    load_frozen_history,
     parse_monthly_schedule,
     parse_race_list,
     sha256_file,
     update_live_history,
     verify_full_field,
 )
+
+
+def test_unknown_legacy_base_cannot_be_marked_confirmed(tmp_path):
+    path = tmp_path / "unknown.parquet"
+    pd.DataFrame({"race_date": ["2025-01-01"]}).to_parquet(path)
+    with pytest.raises(ValueError, match="Unrecognized frozen"):
+        load_frozen_history(path)
 
 
 def test_independent_inventory_cannot_certify_a_later_cutoff(tmp_path):

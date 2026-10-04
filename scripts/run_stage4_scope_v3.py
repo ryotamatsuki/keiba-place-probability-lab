@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 from run_scope_expansion_completion import ROOT, cohort, digest, json_write
 
+from keiba_place_lab.live_history import load_frozen_history
 from keiba_place_lab.scope_expansion import full_context_for_races
 from keiba_place_lab.scope_features import fit_scope_candidate, predict_scope_candidate
 from keiba_place_lab.stage4_production_v3 import (
@@ -136,11 +137,7 @@ def _prediction_history(args, roster):
             raise ValueError(
                 "Supported scope needs either --history or both --historical-base and --live-history-root"
             )
-        base = (
-            pd.read_parquet(args.historical_base)
-            if args.historical_base.suffix == ".parquet"
-            else pd.read_csv(args.historical_base)
-        )
+        base = load_frozen_history(args.historical_base)
         live, live_manifest, live_path = _load_live_snapshot(args.live_history_root)
         complete_through = pd.Timestamp(live_manifest["complete_through"])
         required_through = target_date - pd.Timedelta(days=1)

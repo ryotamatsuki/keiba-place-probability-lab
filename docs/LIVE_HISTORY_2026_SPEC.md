@@ -168,3 +168,36 @@ Before this database is considered operational, the common DB must reproduce the
 - unchanged model-bundle SHA.
 
 `scripts/qa_live_history_reproduction.py` performs this check.
+
+## Source-parser correction discovered during backfill
+
+The original Yahoo parser joined a time and numeric margin from one HTML cell
+without whitespace (`1:32.1<p>2</p>` became `1:32.12`). Both public-result and
+audited-history adapters now insert a separator, including races under one minute.
+Original snapshots and the morning lock are preserved. Reparse captured source
+pages into a new immutable snapshot; do not round stored values without evidence.
+
+`scripts/correct_live_trial_time_reference.py` independently reparses all 87
+captured 2026 full-field result pages used by the original trial and changes only
+time values. Other identities, outcomes, weights, positions and field sizes must
+match. It writes a distinct corrected reference and records the difference from
+the original locked forecast. The original forecast does not pass the `1e-7`
+reproduction gate: the maximum probability difference is 0.008888885378837613.
+Only `recent3_relative_time_mean` changes in the feature context. The frozen V3
+bundle remains unchanged. Operational reproduction must pass against the separately
+audited corrected reference; the original-gate failure remains explicit.
+
+```bash
+PYTHONPATH=src python scripts/update_live_history.py \
+  --through 2026-10-03 --source umanity --max-workers 3 --recheck-days 0 \
+  --reparse-all --ledger analysis/live_history_2026/official_race_ledger.csv
+PYTHONPATH=src python scripts/correct_live_trial_time_reference.py
+PYTHONPATH=src python scripts/qa_live_history_snapshot.py
+PYTHONPATH=src python scripts/qa_live_history_reproduction.py \
+  --historical-base /path/to/standardized_jra_flat_source_v1.parquet \
+  --reference-dir analysis/live_history_2026/corrected_trial_reference
+```
+
+The exact registered full 2010–2025 base predates `outcome_confirmed`. Its SHA and
+confirmed finish-status/date range are validated before the loader supplies that
+flag. An unknown legacy file cannot be silently marked confirmed.

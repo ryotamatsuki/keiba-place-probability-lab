@@ -38,6 +38,7 @@ LIST_URL = "https://sports.yahoo.co.jp/keiba/race/list/{meeting_day_id}"
 RESULT_URL = "https://sports.yahoo.co.jp/keiba/race/result/{provider_id}"
 DENMA_URL = "https://sports.yahoo.co.jp/keiba/race/denma/{provider_id}"
 EVENTS_PATH = Path(__file__).resolve().parents[2] / "data/live_history/2026/meeting_events.json"
+FROZEN_HISTORY_SHA256 = "d8bf137d851a241bb29be7518f1ea6bbcda4aa3dcc350ae03c081ee93d099127"
 
 
 def apply_confirmed_events(ledger: pd.DataFrame, events: list[dict]) -> pd.DataFrame:
@@ -86,6 +87,26 @@ def sha256_bytes(data: bytes) -> str:
 
 def sha256_file(path: Path) -> str:
     return sha256_bytes(path.read_bytes())
+
+
+def load_frozen_history(path: Path) -> pd.DataFrame:
+    """Load the audited 2010–2025 base and interpret its confirmed result statuses.
+
+    The frozen standardized source predates the live feed's outcome_confirmed
+    column. Only the exact registered artifact is eligible for this conversion.
+    """
+    if sha256_file(path) != FROZEN_HISTORY_SHA256:
+        raise ValueError("Unrecognized frozen historical-base checksum")
+    base = pd.read_parquet(path)
+    dates = pd.to_datetime(base.race_date, errors="raise")
+    if dates.isna().any() or not dates.dt.year.between(2010, 2025).all():
+        raise ValueError("Frozen historical-base date range changed")
+    if not base.finish_status.isin(["finished", "dnf", "disqualified"]).all():
+        raise ValueError("Frozen base contains unresolved/nonstarter statuses")
+    if "outcome_confirmed" in base and not base.outcome_confirmed.eq(True).all():
+        raise ValueError("Frozen base contains unconfirmed outcomes")
+    base["outcome_confirmed"] = True
+    return base
 
 
 class CachedFetcher:
@@ -166,6 +187,8 @@ class CachedFetcher:
             else:  # pragma: no cover
                 raise RuntimeError(f"Fetch retries exhausted: {url}") from last_error
         record = FetchRecord(**json.loads(meta_path.read_text()))
+        if record.url != url or sha256_file(html_path) != record.sha256:
+            raise ValueError("Source capture provenance/checksum mismatch")
         return html_path.read_text(errors="replace"), record
 
 
@@ -291,7 +314,7 @@ def parse_result_audited(
         finish_status, is_starter, finish_position = _status_from_rank(rank)
         hid, name = _identity(c[3])
         sex, age = _sex_age(c[3])
-        race_time_seconds = _parse_race_time(c[4].get_text())
+        race_time_seconds = _parse_race_time(c[4].get_text(" ", strip=True))
         early = re.match(r"\s*(\d+)", c[5].get_text())
         if finish_status == "finished" and pd.isna(race_time_seconds):
             raise ValueError("Finished runner has no race time")
@@ -630,6 +653,7 @@ def update_live_history(
     max_workers: int = 6,
     source: str = "yahoo",
     ledger_path: Path | None = None,
+    reparse_all: bool = False,
 ) -> dict[str, object]:
     """Build/reconcile the year-to-date JRA flat history and publish only on full QA."""
     from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -669,7 +693,7 @@ def update_live_history(
     flat = expected_results(expected)
     tasks = []
     for row in flat.itertuples(index=False):
-        need = str(row.race_id) not in current_races or (
+        need = reparse_all or str(row.race_id) not in current_races or (
             recheck_days > 0 and pd.Timestamp(row.race_date) >= refresh_from)
         if need:
             tasks.append(row)

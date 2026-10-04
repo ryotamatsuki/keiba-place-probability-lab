@@ -308,7 +308,9 @@ def parse_conditions(text: str) -> dict:
     grade = bool(re.search(r"\(G(?:III|II|I|1|2|3)\)", s))
     if grade:
         klass = "Open"
-    dist = re.search(r"(?<!\d)(\d{4})(?!\d)", s)
+    # Whitespace removal can join 1,200 and 3歳 into 12003歳. Do not
+    # skip the leading distance and accidentally select a result-row number.
+    dist = re.search(r"(?<!\d)(\d{4})", head)
     return {
         "official_distance_m": int(dist[1]) if dist else None,
         "race_kind": kind,
