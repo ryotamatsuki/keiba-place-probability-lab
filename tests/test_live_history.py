@@ -4,6 +4,7 @@ import pandas as pd
 import pytest
 
 from keiba_place_lab.live_history import (
+    _parse_race_time,
     _status_from_rank,
     parse_monthly_schedule,
     parse_race_list,
@@ -162,4 +163,6 @@ def test_parse_race_time_accepts_sub_minute_and_minute_formats():
     assert _parse_race_time("58.9") == 58.9
     assert _parse_race_time("1:00.1") == 60.1
     assert _parse_race_time("2:34.5") == 154.5
+    assert _parse_race_time("1:56.4 -") == 116.4
+    assert _parse_race_time("58.9 -") == 58.9
     assert pd.isna(_parse_race_time(""))
