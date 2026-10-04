@@ -1,0 +1,38 @@
+{
+  "source_panel_sha256": "cee9ae9a099f521f12b1bcdd371c25a3d7b9ba3555fbcf5a46f2c9098f59a33d",
+  "stored_oof_sha256": "6840d753fab2aa2e426a2ffd3b1ee5490415b420a160dc54407d6ed07fd7fd65",
+  "max_abs_prediction_error": 9.8879238130678e-17,
+  "evaluation_rows": 28926,
+  "evaluation_races": 2651,
+  "evaluation_dates": 213,
+  "years": [
+    2023,
+    2024
+  ],
+  "routes": {
+    "sprint_other_1000_1400": {
+      "rows": 3165,
+      "races": 275
+    },
+    "turf_1200": {
+      "rows": 6313,
+      "races": 495
+    },
+    "middle_1401_2000": {
+      "rows": 15526,
+      "races": 1535
+    },
+    "long_2001_2600": {
+      "rows": 3922,
+      "races": 346
+    }
+  },
+  "importance_definition": "Transformed XGBoost contributions are summed per original source feature within each row before taking absolute values; mean absolute grouped contribution is averaged over strict OOF rows in log-odds space.",
+  "commit": "d984bacf59f3cacbd8034e0387037bb54b166f07",
+  "versions": {
+    "python": "3.11.16 (main, Aug 13 2026, 02:46:14) [GCC 13.3.0]",
+    "numpy": "2.4.6",
+    "pandas": "3.0.6",
+    "xgboost": "3.2.0"
+  }
+}
