@@ -5,6 +5,7 @@ import pytest
 
 from keiba_place_lab.live_history import (
     CachedFetcher,
+    _parse_early_position,
     _parse_race_time,
     _status_from_rank,
     apply_confirmed_events,
@@ -220,6 +221,12 @@ def test_archived_entry_may_leave_late_scratch_marked_active():
     qa = verify_full_field(result, roster)
     assert qa["actual_starters"] == 2
     assert qa["declared_entries"] == 3
+
+
+def test_early_position_ignores_final_3f_on_straight_course():
+    assert pd.isna(_parse_early_position("33.1", "straight"))
+    assert _parse_early_position("03-03 36.9", "left") == 3.0
+    assert _parse_early_position("15-10 36.3", "right") == 15.0
 
 
 def test_parse_race_time_accepts_sub_minute_and_minute_formats():
