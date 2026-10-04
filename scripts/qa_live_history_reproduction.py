@@ -111,6 +111,18 @@ def main() -> None:
 
     live, live_manifest = load_live(args.live_root)
     live["race_date"] = pd.to_datetime(live["race_date"])
+    reference_history_error = None
+    reference_history_rows = None
+    reference_history_path = args.reference_dir / "target_history.parquet"
+    if args.reference_dir != TRIAL and reference_history_path.exists():
+        reference_history = pd.read_parquet(reference_history_path)
+        reference_history = reference_history.loc[pd.to_datetime(reference_history.race_date).dt.year.eq(2026)]
+        physical = ["race_id", "horse_id", "race_date", "horse_no", "racecourse", "surface", "distance_m",
+                    "race_class", "is_open_plus", "is_graded", "sex", "age", "finish_position", "finish_status",
+                    "race_time_seconds", "early_position", "field_size", "assigned_weight_kg"]
+        subset = live.loc[live.race_id.astype(str).isin(reference_history.race_id.astype(str))]
+        reference_history_error = compare_context(subset[physical], reference_history[physical])
+        reference_history_rows = len(reference_history)
     history = pd.concat([historical_base, live], ignore_index=True, sort=False)
     history["race_id"] = history["race_id"].astype("string")
     history["horse_id"] = history["horse_id"].astype("string")
@@ -129,6 +141,16 @@ def main() -> None:
     bundle_sha = sha256(BUNDLE)
     if bundle_sha != frozen_manifest["bundle_sha256"]:
         raise ValueError("Frozen V3 model checksum changed")
+    correction_path = args.reference_dir / "correction_audit.json"
+    correction = json.loads(correction_path.read_text()) if correction_path.exists() else None
+    if correction:
+        for filename, key in (("target_history.parquet", "corrected_history_sha256"),
+                              ("morning_feature_context.csv", "corrected_context_sha256"),
+                              ("morning_nonmarket_predictions.csv", "corrected_prediction_sha256")):
+            if sha256(args.reference_dir / filename) != correction[key]:
+                raise ValueError("Audited corrected reference checksum changed")
+        if correction["model_bundle_sha256"] != bundle_sha:
+            raise ValueError("Corrected reference used another frozen model")
     bundle = joblib.load(BUNDLE)
 
     contexts = []
@@ -183,6 +205,11 @@ def main() -> None:
         "reference_directory": str(args.reference_dir.relative_to(ROOT)) if args.reference_dir.is_relative_to(ROOT) else str(args.reference_dir),
         "reference_context_sha256": sha256(args.reference_dir / "morning_feature_context.csv"),
         "reference_predictions_sha256": sha256(args.reference_dir / "morning_nonmarket_predictions.csv"),
+        "independent_reference_history_rows": reference_history_rows,
+        "independent_reference_history_max_abs_error": reference_history_error,
+        "reference_correction_audit_sha256": sha256(correction_path) if correction else None,
+        "original_locked_reference_gate_passed": correction["original_1e_minus7_reproduction_gate_passed"] if correction else True,
+        "original_locked_prediction_max_abs_delta": correction["original_prediction_max_abs_delta"] if correction else prediction_error,
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")

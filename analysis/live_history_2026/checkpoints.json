@@ -124,5 +124,26 @@
       "202605010312",
       "202610010604"
     ]
+  },
+  {
+    "complete_through": "2026-09-30",
+    "latest_race_date": "2026-09-27",
+    "expected_races": 2521,
+    "confirmed_races": 2521,
+    "missing_race_ids": [],
+    "expected_race_days": 82,
+    "confirmed_race_days": 82,
+    "rows": 34811,
+    "entry_rows": 34942,
+    "snapshot_id": "jra_flat_live_history_v1-20260930-028a8e91ace6",
+    "history_sha256": "2195246af1c04f55ff186d49765438f7bdb99b00a963f15f47cbb31706006ada",
+    "abandoned_race_ids": [
+      "202605010308",
+      "202605010309",
+      "202605010310",
+      "202605010311",
+      "202605010312",
+      "202610010604"
+    ]
   }
 ]
