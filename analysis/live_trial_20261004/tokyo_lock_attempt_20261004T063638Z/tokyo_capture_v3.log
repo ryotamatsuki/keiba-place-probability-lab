@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/cdf01ce17afb/keiba-place-probability-lab/scripts/run_stage4_scope_v3.py", line 13, in <module>
+    from run_scope_expansion_completion import ROOT, cohort, digest, json_write
+ModuleNotFoundError: No module named 'run_scope_expansion_completion'
+Traceback (most recent call last):
+  File "/workspace/scratch/cdf01ce17afb/keiba-place-probability-lab/scripts/capture_live_trial.py", line 97, in <module>
+    main()
+  File "/workspace/scratch/cdf01ce17afb/keiba-place-probability-lab/scripts/capture_live_trial.py", line 62, in main
+    subprocess.run([sys.executable, "scripts/run_stage4_scope_v3.py", "predict", "--roster", str(roster_path),
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python', 'scripts/run_stage4_scope_v3.py', 'predict', '--roster', 'analysis/live_trial_20261004/tokyo_lock_inputs_20261004T063530Z/roster.csv', '--history', 'analysis/live_trial_20261004/target_history.parquet', '--output', 'analysis/live_trial_20261004/tokyo_lock_inputs_20261004T063530Z/shadow.csv']' returned non-zero exit status 1.

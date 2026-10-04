@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/cdf01ce17afb/keiba-place-probability-lab/scripts/capture_live_trial.py", line 13, in <module>
+    import requests
+ModuleNotFoundError: No module named 'requests'

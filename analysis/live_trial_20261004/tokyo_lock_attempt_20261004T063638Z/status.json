@@ -1,0 +1,43 @@
+{
+  "schema_version": "live_trial_automation_attempt_v1",
+  "race_id": "202605040211",
+  "status": "failed",
+  "formal_lock": false,
+  "observed_at": "2026-10-04T06:36:38.094706+00:00",
+  "scheduled_off_at": "2026-10-04T15:45:00+09:00",
+  "formal_lock_window": [
+    "2026-10-04T15:35:00+09:00",
+    "2026-10-04T15:36:00+09:00"
+  ],
+  "main_sha_checked": "2062b4db1ebd64feabcf3c5dd8fd0aa45623b8e0",
+  "reason": "Fresh workspace clone failed authentication. Latest-main required files were materialized and verified against Git blob IDs; pinned dependencies installed. Timed capture fetched fresh roster but prediction subprocess failed because required helper script had not been materialized. After adding helper scripts, retry was rejected outside the permitted clock window. This was local setup incompleteness, not a repository model failure.",
+  "fresh_roster_captured": true,
+  "roster_url": "https://sports.yahoo.co.jp/keiba/race/denma/2605040211",
+  "roster_html_sha256": "d11025c3d5e586221f7d11144547ee7025546b6e60bdda23f35f7fa42f572d75",
+  "roster_csv_sha256": "22f4ec3f541845a3ccdc1f5f07da5b3a719226fcb7be9c2eae28c6cad8018915",
+  "fresh_odds_captured": false,
+  "formal_lock_count_at_checked_main": 0,
+  "publication_proof_created": false,
+  "production": "market-only",
+  "model_retrained": false,
+  "betting_performed": false,
+  "interim_scores_computed": false,
+  "attempts": [
+    {
+      "name": "tokyo_capture.log",
+      "failure": "requests not yet installed"
+    },
+    {
+      "name": "tokyo_capture_v2.log",
+      "failure": "requests installation not yet completed"
+    },
+    {
+      "name": "tokyo_capture_v3.log",
+      "failure": "missing local helper script run_scope_expansion_completion"
+    },
+    {
+      "name": "tokyo_capture_v4.log",
+      "failure": "outside eleven-to-nine-minute invocation window"
+    }
+  ]
+}
