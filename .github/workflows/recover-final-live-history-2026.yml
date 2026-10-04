@@ -222,7 +222,7 @@ jobs:
           }
           if record["model_bundle_sha256"] != "2135442ac31e6489bd209ca338694455b3b887569392f045b5228fc58c59321b":
               raise SystemExit("Frozen model SHA changed")
-          if record["historical_base_mode"] != "full_frozen_base":
+          if record["reproduction"]["historical_base_mode"] != "full_frozen_base":
               raise SystemExit("Full 2010-2025 base was not used")
           (root / "completion_record.json").write_text(json.dumps(record, ensure_ascii=False, indent=2) + "\n")
           print(json.dumps(record, ensure_ascii=False, indent=2))
