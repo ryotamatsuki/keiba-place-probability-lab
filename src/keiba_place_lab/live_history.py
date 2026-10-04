@@ -338,17 +338,30 @@ def verify_full_field(
         validate="one_to_one",
         suffixes=("_entry", "_result"),
     )
+    effective_scratched = 0
+    effective_excluded = 0
     for row in merged.itertuples(index=False):
         if pd.isna(row.finish_status):
-            raise ValueError("Declared horse missing from confirmed result/status table")
+            # Some result tables omit a horse already marked cancelled/excluded on
+            # the archived entry page.  That is a confirmed non-starter, not a gap.
+            if row.entry_status == "scratched":
+                effective_scratched += 1
+                continue
+            if row.entry_status == "excluded":
+                effective_excluded += 1
+                continue
+            raise ValueError("Declared active horse missing from confirmed result/status table")
         if row.finish_status in ("scratched", "excluded"):
-            # Archived entry pages may preserve the original declared roster without
-            # retroactively marking a later cancellation/exclusion.  Identity comes
-            # from the independent entry view; actual starter status comes from result.
+            # Conversely, the archived entry page may preserve the original active
+            # declaration while the result page records the later non-starter event.
             if bool(row.is_starter_result):
                 raise ValueError("Cancelled/excluded result row flagged as starter")
             if row.entry_status in ("scratched", "excluded") and row.entry_status != row.finish_status:
                 raise ValueError("Cancellation/exclusion type conflicts across published views")
+            if row.finish_status == "scratched":
+                effective_scratched += 1
+            else:
+                effective_excluded += 1
         else:
             if row.finish_status not in ("finished", "dnf", "disqualified"):
                 raise ValueError("Unsupported actual-starter result status")
@@ -363,8 +376,8 @@ def verify_full_field(
         "declared_entries": len(roster_entries),
         "actual_starters": result_starters,
         "declared_field_size": declared,
-        "scratched": int(roster_entries.entry_status.eq("scratched").sum()),
-        "excluded": int(roster_entries.entry_status.eq("excluded").sum()),
+        "scratched": effective_scratched,
+        "excluded": effective_excluded,
         "dnf": int(result_entries.finish_status.eq("dnf").sum()),
         "disqualified": int(result_entries.finish_status.eq("disqualified").sum()),
     }
