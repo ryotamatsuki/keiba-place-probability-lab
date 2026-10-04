@@ -96,6 +96,16 @@ tests/      # 自動テスト
 
 ## Current status
 
+**2026 common live-history database — FINALIZED / QA PASS through 2026-10-03.**
+
+The audited JRA flat-race live-history snapshot is complete through October 3, 2026:
+2,544/2,544 expected races across 83/83 race days, 35,148 starter rows, zero missing race IDs.
+The corrected snapshot is `jra_flat_live_history_v1-20261003-f6ef42cd4ce3`
+(history SHA256 `1acbdfd7654f48ad97903df64bbfbd2a13b31179d2a3c203d70034b44d2b9f02`).
+Whole-snapshot QA, the full frozen 2010–2025-base reproduction for the 35 October 4 runners,
+the production CLI smoke test for both target races, and live-history regression tests all pass.
+The frozen Scope V3 model bundle is unchanged.
+
 **Scope expansion V3 — development, turf/dirt refitting and forward-evaluation infrastructure complete.**
 
 芝1200mはSprint＋距離帯履歴、その他の芝1000–2000mはGlobal、芝2000m超–2600mは長距離帯モデル。ダート1000–2600mは独立Globalを採用候補としてfreezeし、2025年までで4構成を再学習済みです。Stage 4の新しい予測入口は `scripts/run_stage4_scope_v3.py predict`。Stage 5は実際の前向きgate通過までmarket-onlyを維持します。
