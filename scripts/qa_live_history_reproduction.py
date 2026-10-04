@@ -31,6 +31,8 @@ def load_live(root: Path):
     pointer = json.loads((root / "current.json").read_text())
     snap = root / "snapshots" / pointer["snapshot_id"]
     manifest = json.loads((snap / "manifest.json").read_text())
+    if manifest.get("source_parser_contract") != "time_margin_separated_v1":
+        raise ValueError("Live-history snapshot requires corrected time-parser reparse")
     history_path = snap / "jra_flat_history.parquet"
     if manifest["snapshot_id"] != pointer["snapshot_id"]:
         raise ValueError("Snapshot pointer mismatch")

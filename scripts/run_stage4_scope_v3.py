@@ -112,6 +112,8 @@ def _load_live_snapshot(root: Path):
     if not manifest_path.exists() or not history_path.exists():
         raise ValueError("Live-history snapshot files are incomplete")
     live_manifest = json.loads(manifest_path.read_text())
+    if live_manifest.get("source_parser_contract") != "time_margin_separated_v1":
+        raise ValueError("Live-history snapshot requires corrected time-parser reparse")
     if live_manifest["snapshot_id"] != pointer["snapshot_id"]:
         raise ValueError("Live-history pointer/manifest snapshot mismatch")
     if live_manifest["schema_version"] != pointer["schema_version"]:

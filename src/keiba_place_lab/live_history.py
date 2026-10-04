@@ -590,6 +590,8 @@ def publish_snapshot(
         ledger_sha = sha256_file(ledger_path)
         payload_sha = sha256_bytes((history_sha + entries_sha + ledger_sha).encode())
         snapshot_id = f"{SCHEMA_VERSION}-{pd.Timestamp(through).strftime('%Y%m%d')}-{payload_sha[:12]}"
+        tenths = starters.race_time_seconds.dropna() * 10
+        separated_times = (tenths - tenths.round()).abs().le(1e-8).all()
         manifest = {
             "schema_version": SCHEMA_VERSION,
             "snapshot_id": snapshot_id,
@@ -611,6 +613,11 @@ def publish_snapshot(
             ].astype(str).tolist(),
             "race_qa": race_qas,
             "source_fetches": [r.__dict__ for r in provenance],
+            "parser_source_sha256": {
+                name: sha256_file(Path(__file__).parent / name)
+                for name in ("live_history.py", "live_public.py", "live_umanity.py")
+            },
+            "source_parser_contract": "time_margin_separated_v1" if separated_times else "legacy_time_margin_unverified",
             "generated_at": datetime.now(UTC).isoformat(),
         }
         if missing:

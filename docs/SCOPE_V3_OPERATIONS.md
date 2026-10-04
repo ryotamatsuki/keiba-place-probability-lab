@@ -23,7 +23,9 @@ maintained separately as versioned live-history snapshots; see
 Build or reconcile the common 2026 database through a confirmed cutoff:
 
 ```bash
-python scripts/update_live_history.py --year 2026 --through 2026-10-03
+python scripts/update_live_history.py --year 2026 --through 2026-10-03 \
+  --source umanity --max-workers 3 \
+  --ledger analysis/live_history_2026/official_race_ledger.csv
 ```
 
 The updater rebuilds the expected-race ledger, retries old gaps, rechecks the
@@ -60,11 +62,23 @@ declared draw positions after cancellation. Ineligible runners retain missing
 nonmarket probabilities. Unsupported scopes return explicit market-only routing.
 The prediction CSV and adjacent `.manifest.json` are versioned; no overwrite.
 
-Reproduce the captured 2026-10-04 35-runner morning trial from the common DB with:
+The original morning trial contained a source-parser time/margin concatenation
+bug. Preserve its locked forecast and inspect the correction audit in
+`analysis/live_history_2026/corrected_trial_reference/`. Reproduce the separately
+audited corrected 35-runner reference from the full frozen base and common DB:
 
 ```bash
-python scripts/qa_live_history_reproduction.py
+python scripts/qa_live_history_snapshot.py
+python scripts/qa_live_history_reproduction.py \
+  --historical-base /path/to/standardized_jra_flat_source_v1.parquet \
+  --reference-dir analysis/live_history_2026/corrected_trial_reference
 ```
+
+When the cutoff advances, first rerun `extract_official_jra.py --year 2026
+--compact-excerpts` and `build_live_history_ledger.py --conditions
+data/derived/jra_official_conditions_2026.csv --through YYYY-MM-DD`. An old
+inventory cannot certify a new cutoff. The **Build 2026 live history** workflow
+uses explicit dispatch, monthly checkpoints and the same inventory/QA gates.
 
 ## Prospective collection
 

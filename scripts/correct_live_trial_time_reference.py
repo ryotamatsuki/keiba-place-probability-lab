@@ -99,7 +99,7 @@ def main():
               "original_prediction_sha256": sha(TRIAL / "morning_nonmarket_predictions.csv"),
               "changed_history_times": int(original.race_time_seconds.fillna(-999).ne(history.race_time_seconds.fillna(-999)).sum()),
               "changed_context_columns": changes, "original_prediction_max_abs_delta": error,
-              "original_1e7_reproduction_gate_passed": error <= 1e-7,
+              "original_1e_minus7_reproduction_gate_passed": error <= 1e-7,
               "runners": len(prediction), "model_bundle_sha256": sha(bundle_path), "source_captures": evidence}
     args.output.mkdir(parents=True, exist_ok=True)
     context.to_csv(args.output / "morning_feature_context.csv", index=False)

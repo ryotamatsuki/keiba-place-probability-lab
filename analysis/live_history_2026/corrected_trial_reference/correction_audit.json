@@ -9,7 +9,6 @@
     "recent3_relative_time_mean": 0.00014479443562746136
   },
   "original_prediction_max_abs_delta": 0.008888885378837613,
-  "original_1e7_reproduction_gate_passed": false,
   "runners": 35,
   "model_bundle_sha256": "2135442ac31e6489bd209ca338694455b3b887569392f045b5228fc58c59321b",
   "source_captures": [
@@ -538,5 +537,6 @@
   ],
   "corrected_history_sha256": "56274b965d4ee05e110c4bb8a1d781d0caba06fa71e7c037071a49d12fad27fa",
   "corrected_context_sha256": "b72ea0ad58d73acafa0b0c829c4e27d0f01838ecabe0a297f0dea6ccc58feeca",
-  "corrected_prediction_sha256": "3371a05c7cb41eac468d7b7d24d97803b4772b847aec0fe32c357bd864b3cf37"
+  "corrected_prediction_sha256": "3371a05c7cb41eac468d7b7d24d97803b4772b847aec0fe32c357bd864b3cf37",
+  "original_1e_minus7_reproduction_gate_passed": false
 }

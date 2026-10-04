@@ -61,5 +61,47 @@
       "202605010312",
       "202610010604"
     ]
+  },
+  {
+    "complete_through": "2026-06-30",
+    "latest_race_date": "2026-06-28",
+    "expected_races": 1661,
+    "confirmed_races": 1661,
+    "missing_race_ids": [],
+    "expected_race_days": 54,
+    "confirmed_race_days": 54,
+    "rows": 23496,
+    "entry_rows": 23581,
+    "snapshot_id": "jra_flat_live_history_v1-20260630-231d9ce3a75d",
+    "history_sha256": "2b0582d8479bc57a44232c0fb6527d8bf78ba5f0f2418b59eea8addfe345229f",
+    "abandoned_race_ids": [
+      "202605010308",
+      "202605010309",
+      "202605010310",
+      "202605010311",
+      "202605010312",
+      "202610010604"
+    ]
+  },
+  {
+    "complete_through": "2026-07-31",
+    "latest_race_date": "2026-07-26",
+    "expected_races": 1940,
+    "confirmed_races": 1940,
+    "missing_race_ids": [],
+    "expected_race_days": 62,
+    "confirmed_race_days": 62,
+    "rows": 27127,
+    "entry_rows": 27223,
+    "snapshot_id": "jra_flat_live_history_v1-20260731-f8a6c00f0fcd",
+    "history_sha256": "733b7e3c4e6f4638a327b513c11dbdffd75d3af4cd3bd2a8a24c2775850ff044",
+    "abandoned_race_ids": [
+      "202605010308",
+      "202605010309",
+      "202605010310",
+      "202605010311",
+      "202605010312",
+      "202610010604"
+    ]
   }
 ]

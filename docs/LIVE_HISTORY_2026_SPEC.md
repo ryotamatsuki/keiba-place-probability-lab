@@ -187,6 +187,11 @@ Only `recent3_relative_time_mean` changes in the feature context. The frozen V3
 bundle remains unchanged. Operational reproduction must pass against the separately
 audited corrected reference; the original-gate failure remains explicit.
 
+Prediction requires `source_parser_contract=time_margin_separated_v1` in the
+common snapshot manifest. An old or uncorrected snapshot is rejected. A fresh
+reparse records parser source hashes, and the final audit checks published
+one-decimal-second time resolution in addition to full-field identities.
+
 ```bash
 PYTHONPATH=src python scripts/update_live_history.py \
   --through 2026-10-03 --source umanity --max-workers 3 --recheck-days 0 \
