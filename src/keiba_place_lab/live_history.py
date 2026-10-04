@@ -339,25 +339,25 @@ def verify_full_field(
         suffixes=("_entry", "_result"),
     )
     for row in merged.itertuples(index=False):
-        if row.entry_status in ("scratched", "excluded"):
-            if pd.notna(row.finish_status) and (
-                row.finish_status != row.entry_status or bool(row.is_starter_result)
-            ):
-                raise ValueError("Cancellation/exclusion mismatch between result and roster")
+        if pd.isna(row.finish_status):
+            raise ValueError("Declared horse missing from confirmed result/status table")
+        if row.finish_status in ("scratched", "excluded"):
+            # Archived entry pages may preserve the original declared roster without
+            # retroactively marking a later cancellation/exclusion.  Identity comes
+            # from the independent entry view; actual starter status comes from result.
+            if bool(row.is_starter_result):
+                raise ValueError("Cancelled/excluded result row flagged as starter")
+            if row.entry_status in ("scratched", "excluded") and row.entry_status != row.finish_status:
+                raise ValueError("Cancellation/exclusion type conflicts across published views")
         else:
-            if pd.isna(row.finish_status):
-                raise ValueError("Declared active starter missing from confirmed result")
             if row.finish_status not in ("finished", "dnf", "disqualified"):
-                raise ValueError("Active roster horse has non-starter result status")
+                raise ValueError("Unsupported actual-starter result status")
             if not bool(row.is_starter_result):
                 raise ValueError("Confirmed starter flagged non-starter in result")
+            if row.entry_status in ("scratched", "excluded"):
+                raise ValueError("Entry page marks a confirmed starter as non-starter")
 
-    roster_starters = int(roster_entries.is_starter.sum())
     result_starters = int(result_entries.is_starter.sum())
-    if roster_starters != result_starters:
-        raise ValueError(
-            f"Actual starter count mismatch: roster={roster_starters}, result={result_starters}"
-        )
     declared = int(roster_entries.declared_field_size.iloc[0])
     return {
         "declared_entries": len(roster_entries),
