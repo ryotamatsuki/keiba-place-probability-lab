@@ -176,6 +176,7 @@ def _assert_preexisting_facts_stable(old: pd.DataFrame, new: pd.DataFrame, cutof
 
     ignored = {
         "race_time_seconds",
+        "early_position",
         "result_source_url",
         "result_retrieved_at",
         "entry_source_url",
@@ -184,34 +185,27 @@ def _assert_preexisting_facts_stable(old: pd.DataFrame, new: pd.DataFrame, cutof
     stable = [c for c in old.columns if c in new.columns and c not in ignored]
     changed = [c for c in stable if not _same_values(old[c], new[c])]
     if changed:
-        diagnostic = {"changed_columns": changed, "rows": []}
-        for col in changed:
-            a = old[col]
-            b = new[col]
-            if pd.api.types.is_numeric_dtype(a) or pd.api.types.is_numeric_dtype(b):
-                av = pd.to_numeric(a, errors="coerce").to_numpy(float)
-                bv = pd.to_numeric(b, errors="coerce").to_numpy(float)
-                same = np.isclose(av, bv, rtol=0.0, atol=1e-10, equal_nan=True)
-            else:
-                same = (
-                    a.fillna("<NA>").astype(str).to_numpy()
-                    == b.fillna("<NA>").astype(str).to_numpy()
-                )
-            for idx in np.flatnonzero(~same):
-                diagnostic["rows"].append({
-                    "column": col,
-                    "race_id": str(old.at[idx, "race_id"]),
-                    "horse_id": str(old.at[idx, "horse_id"]),
-                    "race_date": str(old.at[idx, "race_date"]),
-                    "horse_name": str(old.at[idx, "horse_name"]) if "horse_name" in old.columns else None,
-                    "old_value": None if pd.isna(old.at[idx, col]) else old.at[idx, col],
-                    "new_value": None if pd.isna(new.at[idx, col]) else new.at[idx, col],
-                    "old_result_source_url": str(old.at[idx, "result_source_url"]) if "result_source_url" in old.columns else None,
-                    "new_result_source_url": str(new.at[idx, "result_source_url"]) if "result_source_url" in new.columns else None,
-                })
-        print(json.dumps({"preexisting_non_time_diff": diagnostic}, ensure_ascii=False, default=str, indent=2), flush=True)
         raise ValueError(f"Reparse changed non-time starter facts: {changed}")
 
+    # Yahoo's straight-course result cell contains only the final 3F (for example
+    # 33.1) under the combined passage/final-3F heading.  The legacy parser could
+    # misread that as passage rank 33.  Straight courses have no corner passage
+    # rank, so corrected history must store early_position as missing there.
+    old_ep = pd.to_numeric(old.early_position, errors="coerce").to_numpy(float)
+    new_ep = pd.to_numeric(new.early_position, errors="coerce").to_numpy(float)
+    ep_same = np.isclose(old_ep, new_ep, rtol=0.0, atol=1e-10, equal_nan=True)
+    ep_changed = ~ep_same
+    straight = new.turn_direction.astype(str).eq("straight").to_numpy()
+    if np.isfinite(new_ep[straight]).any():
+        raise ValueError("Corrected reparse contains passage ranks on straight courses")
+    invalid_ep_change = ep_changed & ~(straight & np.isnan(new_ep))
+    if invalid_ep_change.any():
+        sample = new.loc[invalid_ep_change, ["race_id", "horse_id", "turn_direction"]].head(20)
+        raise ValueError(
+            "Reparse changed early_position outside the audited straight-course correction: "
+            + sample.to_dict("records").__repr__()
+        )
+    legacy_straight_finite = straight & np.isfinite(old_ep)
     old_t = pd.to_numeric(old.race_time_seconds, errors="coerce").to_numpy(float)
     new_t = pd.to_numeric(new.race_time_seconds, errors="coerce").to_numpy(float)
     missing_changed = ~np.equal(np.isnan(old_t), np.isnan(new_t))
@@ -230,7 +224,11 @@ def _assert_preexisting_facts_stable(old: pd.DataFrame, new: pd.DataFrame, cutof
         "legacy_subtenth_rows": int(old_bad.sum()),
         "corrected_subtenth_rows": int(new_bad.sum()),
         "max_abs_time_delta_seconds": float(delta.max()) if len(delta) else 0.0,
-        "non_time_columns_changed": [],
+        "changed_early_position_rows": int(ep_changed.sum()),
+        "changed_early_position_races": int(old.loc[ep_changed, "race_id"].nunique()),
+        "legacy_straight_early_position_finite_rows": int(legacy_straight_finite.sum()),
+        "corrected_straight_early_position_finite_rows": int(np.isfinite(new_ep[straight]).sum()),
+        "non_time_columns_changed": ["early_position"] if ep_changed.any() else [],
     }
 
 
