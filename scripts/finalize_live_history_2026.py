@@ -184,6 +184,32 @@ def _assert_preexisting_facts_stable(old: pd.DataFrame, new: pd.DataFrame, cutof
     stable = [c for c in old.columns if c in new.columns and c not in ignored]
     changed = [c for c in stable if not _same_values(old[c], new[c])]
     if changed:
+        diagnostic = {"changed_columns": changed, "rows": []}
+        for col in changed:
+            a = old[col]
+            b = new[col]
+            if pd.api.types.is_numeric_dtype(a) or pd.api.types.is_numeric_dtype(b):
+                av = pd.to_numeric(a, errors="coerce").to_numpy(float)
+                bv = pd.to_numeric(b, errors="coerce").to_numpy(float)
+                same = np.isclose(av, bv, rtol=0.0, atol=1e-10, equal_nan=True)
+            else:
+                same = (
+                    a.fillna("<NA>").astype(str).to_numpy()
+                    == b.fillna("<NA>").astype(str).to_numpy()
+                )
+            for idx in np.flatnonzero(~same):
+                diagnostic["rows"].append({
+                    "column": col,
+                    "race_id": str(old.at[idx, "race_id"]),
+                    "horse_id": str(old.at[idx, "horse_id"]),
+                    "race_date": str(old.at[idx, "race_date"]),
+                    "horse_name": str(old.at[idx, "horse_name"]) if "horse_name" in old.columns else None,
+                    "old_value": None if pd.isna(old.at[idx, col]) else old.at[idx, col],
+                    "new_value": None if pd.isna(new.at[idx, col]) else new.at[idx, col],
+                    "old_result_source_url": str(old.at[idx, "result_source_url"]) if "result_source_url" in old.columns else None,
+                    "new_result_source_url": str(new.at[idx, "result_source_url"]) if "result_source_url" in new.columns else None,
+                })
+        print(json.dumps({"preexisting_non_time_diff": diagnostic}, ensure_ascii=False, default=str, indent=2), flush=True)
         raise ValueError(f"Reparse changed non-time starter facts: {changed}")
 
     old_t = pd.to_numeric(old.race_time_seconds, errors="coerce").to_numpy(float)
