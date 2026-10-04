@@ -17,7 +17,7 @@ on:
       max_workers:
         description: Concurrent race fetches
         required: true
-        default: "6"
+        default: "2"
 
 permissions:
   contents: write
@@ -28,33 +28,72 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: live-history-2026-db
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: pip
       - name: Install verified environment
         run: python -m pip install -e ".[dev,historical,modeldev]" -c requirements-scope.txt
-      - name: Build and verify immutable snapshot
+      - name: Build month checkpoints and publish each verified snapshot
+        shell: bash
         run: |
+          set -euo pipefail
           THROUGH="${{ inputs.through }}"
           RECHECK_DAYS="${{ inputs.recheck_days }}"
           MAX_WORKERS="${{ inputs.max_workers }}"
           [ -n "$THROUGH" ] || THROUGH="2026-10-03"
           [ -n "$RECHECK_DAYS" ] || RECHECK_DAYS="14"
-          [ -n "$MAX_WORKERS" ] || MAX_WORKERS="6"
-          python scripts/update_live_history.py \
-            --year 2026 \
-            --through "$THROUGH" \
-            --recheck-days "$RECHECK_DAYS" \
-            --max-workers "$MAX_WORKERS"
+          [ -n "$MAX_WORKERS" ] || MAX_WORKERS="2"
+
+          checkpoints=(
+            2026-01-31 2026-02-28 2026-03-31 2026-04-30
+            2026-05-31 2026-06-30 2026-07-31 2026-08-31
+            2026-09-30 "$THROUGH"
+          )
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          for cutoff in "${checkpoints[@]}"; do
+            if [[ "$cutoff" > "$THROUGH" ]]; then
+              continue
+            fi
+            current=$(python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("data/live_history/2026/current.json")
+          print(json.loads(p.read_text())["complete_through"] if p.exists() else "")
+          PY
+          )
+            if [[ -n "$current" && ( "$current" == "$cutoff" || "$current" > "$cutoff" ) ]]; then
+              echo "Checkpoint $cutoff already covered by $current"
+              continue
+            fi
+
+            echo "=== Building complete snapshot through $cutoff ==="
+            python scripts/update_live_history.py               --year 2026               --through "$cutoff"               --recheck-days "$RECHECK_DAYS"               --max-workers "$MAX_WORKERS"
+
+            git add data/live_history/2026
+            if ! git diff --cached --quiet; then
+              git commit -m "data: publish 2026 live history through $cutoff"
+              git pull --rebase origin live-history-2026-db
+              git push origin HEAD:live-history-2026-db
+            fi
+          done
       - name: Reproduce Oct 4 captured trial
         run: |
           THROUGH="${{ inputs.through }}"
           [ -n "$THROUGH" ] || THROUGH="2026-10-03"
           if [ "$THROUGH" = "2026-10-03" ]; then
             python scripts/qa_live_history_reproduction.py
-          else
-            echo "Reproduction gate skipped for cutoff $THROUGH"
+            git add analysis/live_trial_20261004/common_live_history_reproduction.json
+            if ! git diff --cached --quiet; then
+              git commit -m "qa: reproduce Oct 4 trial from common 2026 history"
+              git pull --rebase origin live-history-2026-db
+              git push origin HEAD:live-history-2026-db
+            fi
           fi
       - name: Show current manifest
         run: |
@@ -72,17 +111,3 @@ jobs:
           )}
           print(json.dumps(keep, ensure_ascii=False, indent=2))
           PY
-      - name: Commit verified snapshot
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/live_history/2026
-          if [ -f analysis/live_trial_20261004/common_live_history_reproduction.json ]; then
-            git add analysis/live_trial_20261004/common_live_history_reproduction.json
-          fi
-          if ! git diff --cached --quiet; then
-            git commit -m "data: publish 2026 live history through ${{ inputs.through }}"
-            git pull --rebase origin "${{ github.ref_name }}"
-            git push origin "HEAD:${{ github.ref_name }}"
-          fi
-
