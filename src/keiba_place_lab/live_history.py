@@ -188,6 +188,17 @@ def parse_race_list(html: str, *, meeting_day_id: str) -> pd.DataFrame:
     return frame
 
 
+def _parse_race_time(text: str) -> float:
+    text = text.strip()
+    minute = re.fullmatch(r"(\d+):(\d+(?:\.\d+)?)", text)
+    if minute:
+        return int(minute[1]) * 60 + float(minute[2])
+    seconds = re.fullmatch(r"(\d+(?:\.\d+)?)", text)
+    if seconds:
+        return float(seconds[1])
+    return float("nan")
+
+
 def _status_from_rank(rank: str) -> tuple[str, bool, float]:
     rank = rank.strip()
     if rank.isdigit():
@@ -231,9 +242,9 @@ def parse_result_audited(
         finish_status, is_starter, finish_position = _status_from_rank(rank)
         hid, name = _identity(c[3])
         sex, age = _sex_age(c[3])
-        tm = re.match(r"\s*(\d+):(\d+\.\d+)", c[4].get_text())
+        race_time_seconds = _parse_race_time(c[4].get_text())
         early = re.match(r"\s*(\d+)", c[5].get_text())
-        if finish_status == "finished" and not tm:
+        if finish_status == "finished" and pd.isna(race_time_seconds):
             raise ValueError("Finished runner has no race time")
         row = {k: v for k, v in meta.items() if k != "off_at"}
         row.update(
@@ -246,7 +257,7 @@ def parse_result_audited(
             finish_position=finish_position,
             finish_status=finish_status,
             is_starter=is_starter,
-            race_time_seconds=(int(tm[1]) * 60 + float(tm[2])) if tm else float("nan"),
+            race_time_seconds=race_time_seconds,
             early_position=float(early[1]) if early else float("nan"),
             outcome_confirmed=True,
             declared_field_size=declared_field_size,  # fixed below after full scan
