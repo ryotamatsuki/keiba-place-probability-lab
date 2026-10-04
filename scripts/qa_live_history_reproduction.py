@@ -115,6 +115,10 @@ def main() -> None:
         TRIAL / "morning_nonmarket_predictions.csv",
         dtype={"race_id": "string", "horse_id": "string"},
     )
+    frozen_manifest = json.loads((BUNDLE.parent / "manifest.json").read_text())
+    bundle_sha = sha256(BUNDLE)
+    if bundle_sha != frozen_manifest["bundle_sha256"]:
+        raise ValueError("Frozen V3 model checksum changed")
     bundle = joblib.load(BUNDLE)
 
     contexts = []
@@ -162,7 +166,7 @@ def main() -> None:
         "races": int(got.race_id.nunique()),
         "feature_max_abs_error": feature_error,
         "prediction_max_abs_error": prediction_error,
-        "model_bundle_sha256": sha256(BUNDLE),
+        "model_bundle_sha256": bundle_sha,
         "model_changed": False,
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)

@@ -12,6 +12,7 @@ import json
 import re
 import shutil
 import tempfile
+import threading
 import time
 from collections.abc import Iterable
 from dataclasses import dataclass
@@ -36,6 +37,32 @@ MONTHLY_URL = "https://sports.yahoo.co.jp/keiba/schedule/monthly/?year={year}&mo
 LIST_URL = "https://sports.yahoo.co.jp/keiba/race/list/{meeting_day_id}"
 RESULT_URL = "https://sports.yahoo.co.jp/keiba/race/result/{provider_id}"
 DENMA_URL = "https://sports.yahoo.co.jp/keiba/race/denma/{provider_id}"
+EVENTS_PATH = Path(__file__).resolve().parents[2] / "data/live_history/2026/meeting_events.json"
+
+
+def apply_confirmed_events(ledger: pd.DataFrame, events: list[dict]) -> pd.DataFrame:
+    """Exclude only enumerated, officially evidenced abandoned races, not parse failures."""
+    ledger = ledger.copy()
+    ledger["race_status"] = "expected_result"
+    ledger["status_source_url"] = ""
+    ledger["status_reason"] = ""
+    for event in events:
+        if event["status"] != "abandoned" or not event["source_url"].startswith(
+            ("https://jra.jp/", "https://www.jra.go.jp/")
+        ):
+            raise ValueError("Unsupported or unverified meeting event")
+        mask = ledger.race_id.astype(str).isin(event["race_ids"])
+        if not pd.to_datetime(ledger.loc[mask, "race_date"]).eq(pd.Timestamp(event["race_date"])).all():
+            raise ValueError("Meeting event race/date mismatch")
+        ledger.loc[mask, "race_status"] = "abandoned"
+        ledger.loc[mask, "status_source_url"] = event["source_url"]
+        ledger.loc[mask, "status_reason"] = event["reason"]
+    return ledger
+
+
+def expected_results(ledger: pd.DataFrame) -> pd.DataFrame:
+    status = ledger["race_status"] if "race_status" in ledger else pd.Series("expected_result", index=ledger.index)
+    return ledger.loc[ledger.target_flat & status.eq("expected_result")].copy()
 
 _RESULT_STATUSES = {
     "中止": ("dnf", True),
@@ -79,6 +106,25 @@ class CachedFetcher:
         self.pause_seconds = pause_seconds
         self.timeout = timeout
         self.max_attempts = max_attempts
+        self._local = threading.local()
+        self._rate_lock = threading.Lock()
+        self._next_request = 0.0
+
+    def _throttle(self) -> None:
+        # Rate applies to the whole fetcher, not independently to each worker.
+        with self._rate_lock:
+            delay = max(0.0, self._next_request - time.monotonic())
+            if delay:
+                time.sleep(delay)
+            self._next_request = time.monotonic() + self.pause_seconds
+
+    def _session(self) -> requests.Session:
+        # One keep-alive session per worker: reuse connections without sharing
+        # mutable request state across threads or increasing request concurrency.
+        if not hasattr(self._local, "session"):
+            self._local.session = requests.Session()
+            self._local.session.headers.update({"User-Agent": self.user_agent})
+        return self._local.session
 
     def fetch(self, url: str, *, force: bool = False) -> tuple[str, FetchRecord]:
         key = hashlib.sha256(url.encode("utf-8")).hexdigest()
@@ -88,10 +134,10 @@ class CachedFetcher:
             last_error = None
             for attempt in range(1, self.max_attempts + 1):
                 try:
-                    response = requests.get(
+                    self._throttle()
+                    response = self._session().get(
                         url,
                         timeout=self.timeout,
-                        headers={"User-Agent": self.user_agent},
                     )
                     response.raise_for_status()
                     data = response.content
@@ -105,13 +151,15 @@ class CachedFetcher:
                     meta_path.write_text(
                         json.dumps(record, ensure_ascii=False, indent=2) + "\n"
                     )
-                    if self.pause_seconds:
-                        time.sleep(self.pause_seconds)
                     break
                 except requests.RequestException as exc:
                     last_error = exc
                     status = getattr(exc.response, "status_code", None)
                     retryable = status in {429, 500, 502, 503, 504} or status is None
+                    print(json.dumps({"fetch_retry": url, "status": status,
+                                      "attempt": attempt}), flush=True)
+                    self._session().close()
+                    del self._local.session
                     if not retryable or attempt == self.max_attempts:
                         raise
                     time.sleep(min(2 ** (attempt - 1), 16))
@@ -441,7 +489,8 @@ def build_expected_ledger(
     ledger = ledger.sort_values(["race_date", "meeting_day_id", "race_no"]).reset_index(drop=True)
     if ledger.race_id.duplicated().any():
         raise ValueError("Duplicate expected race ids across schedule")
-    return ledger, provenance
+    events = json.loads(EVENTS_PATH.read_text()) if EVENTS_PATH.exists() else []
+    return apply_confirmed_events(ledger, events), provenance
 
 
 def _read_current_snapshot(root: Path) -> tuple[dict | None, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
@@ -451,6 +500,13 @@ def _read_current_snapshot(root: Path) -> tuple[dict | None, pd.DataFrame, pd.Da
     current = json.loads(pointer.read_text())
     snap = root / "snapshots" / current["snapshot_id"]
     manifest = json.loads((snap / "manifest.json").read_text())
+    if manifest["snapshot_id"] != current["snapshot_id"]:
+        raise ValueError("Current snapshot identity mismatch")
+    for filename, key in (("jra_flat_history.parquet", "history_sha256"),
+                          ("entry_audit.parquet", "entry_audit_sha256"),
+                          ("race_ledger.csv", "race_ledger_sha256")):
+        if sha256_file(snap / filename) != manifest[key]:
+            raise ValueError(f"Stored snapshot checksum mismatch: {filename}")
     history = pd.read_parquet(snap / "jra_flat_history.parquet")
     entries = pd.read_parquet(snap / "entry_audit.parquet")
     ledger = pd.read_csv(snap / "race_ledger.csv", dtype={"race_id": "string", "provider_id": "string"})
@@ -479,7 +535,7 @@ def publish_snapshot(
     starters = starters.sort_values(["race_date", "race_id", "horse_no"]).reset_index(drop=True)
     entries = entries.sort_values(["race_date", "race_id", "horse_no"]).reset_index(drop=True)
     assert_full_field_context(starters)
-    expected_flat = expected_ledger.loc[expected_ledger.target_flat].copy()
+    expected_flat = expected_results(expected_ledger)
     confirmed_ids = set(starters.race_id.astype(str).unique())
     expected_ids = set(expected_flat.race_id.astype(str))
     missing = sorted(expected_ids - confirmed_ids)
@@ -509,7 +565,8 @@ def publish_snapshot(
         history_sha = sha256_file(history_path)
         entries_sha = sha256_file(entries_path)
         ledger_sha = sha256_file(ledger_path)
-        snapshot_id = f"{SCHEMA_VERSION}-{pd.Timestamp(through).strftime('%Y%m%d')}-{history_sha[:12]}"
+        payload_sha = sha256_bytes((history_sha + entries_sha + ledger_sha).encode())
+        snapshot_id = f"{SCHEMA_VERSION}-{pd.Timestamp(through).strftime('%Y%m%d')}-{payload_sha[:12]}"
         manifest = {
             "schema_version": SCHEMA_VERSION,
             "snapshot_id": snapshot_id,
@@ -526,6 +583,9 @@ def publish_snapshot(
             "history_sha256": history_sha,
             "entry_audit_sha256": entries_sha,
             "race_ledger_sha256": ledger_sha,
+            "abandoned_race_ids": expected_ledger.loc[
+                expected_ledger.race_status.eq("abandoned"), "race_id"
+            ].astype(str).tolist(),
             "race_qa": race_qas,
             "source_fetches": [r.__dict__ for r in provenance],
             "generated_at": datetime.now(UTC).isoformat(),
@@ -540,8 +600,13 @@ def publish_snapshot(
         destination = root / "snapshots" / snapshot_id
         destination.parent.mkdir(parents=True, exist_ok=True)
         if destination.exists():
-            shutil.rmtree(destination)
-        shutil.move(str(payload), str(destination))
+            existing = json.loads((destination / "manifest.json").read_text())
+            for key in ("history_sha256", "entry_audit_sha256", "race_ledger_sha256"):
+                if existing[key] != manifest[key]:
+                    raise ValueError("Immutable snapshot collision")
+            manifest = existing
+        else:
+            shutil.move(str(payload), str(destination))
 
     pointer = {
         "schema_version": SCHEMA_VERSION,
@@ -578,7 +643,7 @@ def update_live_history(
     current_races = set(current_history.race_id.astype(str)) if len(current_history) else set()
     refresh_from = through - pd.Timedelta(days=max(recheck_days - 1, 0))
 
-    flat = expected.loc[expected.target_flat].copy()
+    flat = expected_results(expected)
     tasks = []
     for row in flat.itertuples(index=False):
         need = str(row.race_id) not in current_races or pd.Timestamp(row.race_date) >= refresh_from
@@ -593,8 +658,9 @@ def update_live_history(
     def collect(row):
         result_url = RESULT_URL.format(provider_id=row.provider_id)
         denma_url = DENMA_URL.format(provider_id=row.provider_id)
-        result_html, result_rec = fetcher.fetch(result_url, force=True)
-        roster_html, roster_rec = fetcher.fetch(denma_url, force=True)
+        refresh = str(row.race_id) in current_races and pd.Timestamp(row.race_date) >= refresh_from
+        result_html, result_rec = fetcher.fetch(result_url, force=refresh)
+        roster_html, roster_rec = fetcher.fetch(denma_url, force=refresh)
         starters, result_entries = parse_result_audited(
             result_html,
             row.provider_id,
@@ -662,6 +728,12 @@ def update_live_history(
                     fetch_records.extend(recs)
                 except Exception as exc:  # noqa: BLE001 - batch must record any per-race failure
                     failures[str(row.race_id)] = f"{type(exc).__name__}: {exc}"
+                    print(json.dumps({"race_failure": str(row.race_id),
+                                      "error": failures[str(row.race_id)]}), flush=True)
+                done = len(collected_history) + len(failures)
+                if done % 25 == 0 or done == len(tasks):
+                    print(json.dumps({"through": through.date().isoformat(), "completed": done,
+                                      "total": len(tasks), "failures": len(failures)}), flush=True)
     if failures:
         failure_path = Path(root) / "last_failure.json"
         failure_path.parent.mkdir(parents=True, exist_ok=True)
@@ -709,9 +781,13 @@ def update_live_history(
 
     # Reconstruct QA for preserved races from stored audit rows when no refresh occurred.
     all_qas = []
+    preserved_qas = {qa["race_id"]: qa for qa in current_manifest["race_qa"]} if current_manifest else {}
     for rid in sorted(expected_flat_ids):
         if rid in race_qas:
             all_qas.append(race_qas[rid])
+            continue
+        if rid in preserved_qas:
+            all_qas.append({**preserved_qas[rid], "reused_from_snapshot": current_manifest["snapshot_id"]})
             continue
         h = history.loc[history.race_id.astype(str).eq(rid)]
         e = entries.loc[entries.race_id.astype(str).eq(rid)]

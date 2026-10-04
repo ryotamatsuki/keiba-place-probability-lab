@@ -6,10 +6,34 @@ import pytest
 from keiba_place_lab.live_history import (
     _parse_race_time,
     _status_from_rank,
+    apply_confirmed_events,
+    expected_results,
     parse_monthly_schedule,
     parse_race_list,
     verify_full_field,
 )
+
+
+def test_abandoned_race_is_audited_but_does_not_require_a_result():
+    ledger = pd.DataFrame({
+        "race_id": ["202605010307", "202605010308", "202605010309"],
+        "race_date": pd.to_datetime(["2026-02-07"] * 3),
+        "target_flat": [True, True, False],
+    })
+    event = {"race_date": "2026-02-07", "race_ids": ["202605010308"],
+             "status": "abandoned", "source_url": "https://jra.jp/news/202602/020707.html",
+             "reason": "積雪により取りやめ"}
+    got = apply_confirmed_events(ledger, [event])
+    assert len(got) == 3
+    assert expected_results(got).race_id.tolist() == ["202605010307"]
+    assert got.loc[1, "status_source_url"] == event["source_url"]
+    assert expected_results(apply_confirmed_events(ledger, [])).race_id.tolist() == [
+        "202605010307", "202605010308"
+    ]
+    with pytest.raises(ValueError, match="date mismatch"):
+        apply_confirmed_events(ledger, [{**event, "race_date": "2026-02-08"}])
+    with pytest.raises(ValueError, match="unverified"):
+        apply_confirmed_events(ledger, [{**event, "source_url": "https://example.com"}])
 
 
 def test_monthly_schedule_and_race_list_enumeration():

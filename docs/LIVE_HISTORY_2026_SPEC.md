@@ -52,6 +52,17 @@ scheduled races. Obstacle races remain in the ledger but are marked outside the 
 target; new-maiden races, unsupported prediction distances and other flat races remain in the
 history because they may contribute to later horse histories.
 
+Abandoned races remain in the ledger as `race_status=abandoned`, with an explicit
+race/date list, official JRA source URL and reason in `meeting_events.json`. They require
+no result and contribute no horse starts. A missing or malformed result alone never
+authorizes exclusion. On 2026-02-07, Tokyo 8R–12R were abandoned due to snow:
+https://jra.jp/news/202602/020707.html . Rescheduled meeting-days are retained under
+their actual published dates; they are not inferred from the original calendar.
+
+Snapshot identity includes the history, entry-audit and ledger hashes. An existing
+snapshot is never deleted or overwritten. Missing-race retries can reuse captured
+HTML; deliberate recent-result reconciliation refreshes both published views.
+
 ## Result and full-field verification
 
 For every flat race, collection uses two separately parsed published views:
