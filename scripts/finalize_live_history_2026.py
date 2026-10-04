@@ -52,7 +52,7 @@ def _filtered_ledger(full: pd.DataFrame, start: pd.Timestamp, through: pd.Timest
     subset.to_csv(path, index=False)
     manifest = {
         "through": through.date().isoformat(),
-        "rows": int(len(subset)),
+        "rows": len(subset),
         "ledger_sha256": sha256_file(path),
     }
     path.with_suffix(".manifest.json").write_text(
@@ -224,7 +224,7 @@ def _assert_preexisting_facts_stable(old: pd.DataFrame, new: pd.DataFrame, cutof
     if new_bad.any():
         raise ValueError("Corrected reparse still contains sub-tenth race times")
     return {
-        "preexisting_rows": int(len(old)),
+        "preexisting_rows": len(old),
         "changed_time_rows": int(changed_mask.sum()),
         "changed_time_races": int(old.loc[changed_mask, "race_id"].nunique()),
         "legacy_subtenth_rows": int(old_bad.sum()),
