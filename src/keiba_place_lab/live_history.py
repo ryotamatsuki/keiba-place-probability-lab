@@ -275,7 +275,7 @@ def _parse_early_position(text: str, turn_direction: str) -> float:
     """Parse the first passage rank; straight courses have no corner passage rank."""
     if turn_direction == "straight":
         return float("nan")
-    early = re.match(r"\\s*(\\d+)", text)
+    early = re.match(r"\s*(\d+)", text)
     return float(early[1]) if early else float("nan")
 
 
