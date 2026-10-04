@@ -7,7 +7,7 @@ Status: PASS
 - source lastUpdated: 2025-12-28T07:41:37.95Z
 - adapter: jra-historical-adapter-v2
 - feature spec: historical-v1.1
-- panel-builder commit: 1f6f25def8076cd4a20302bc31ce878a451b9b34
+- panel-builder commit: ceca84aeee5704c323e89f34bd6555bbb313b4f2
 - date-map SHA256: f75a44b593f5f9fff3fd49e9d7c1083b30ec550024f29b3b19b61689518a3ce3
 - panel file: jra_flat_historical_panel_v1.parquet
 - panel SHA256: cee9ae9a099f521f12b1bcdd371c25a3d7b9ba3555fbcf5a46f2c9098f59a33d
