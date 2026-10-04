@@ -1,0 +1,30 @@
+{
+  "schema_version": "live_trial_automation_attempt_v1",
+  "race_id": "202608040211",
+  "status": "failed_preflight",
+  "formal_lock": false,
+  "observed_at": "2026-10-04 06:21:13 UTC",
+  "scheduled_off_at": "2026-10-04T15:30:00+09:00",
+  "formal_lock_window": [
+    "2026-10-04T15:20:00+09:00",
+    "2026-10-04T15:21:00+09:00"
+  ],
+  "main_sha_checked": "85f00e4403ba1500e8cfca84ab42849ee4b65883",
+  "reason": "Fresh workspace git clone failed: could not read Username for https://github.com. Connected GitHub can read latest private main, but a verified runnable checkout was not established before the lock deadline. Old working copies were not substituted.",
+  "capture_command_executed": false,
+  "fresh_roster_captured": false,
+  "fresh_odds_captured": false,
+  "formal_lock_inventory_at_checked_main": [],
+  "production": "market-only",
+  "model_retrained": false,
+  "betting_performed": false,
+  "interim_scores_computed": false,
+  "failure_details": {
+    "clone_exit_code": 128,
+    "clone_error": "fatal: could not read Username for 'https://github.com': No such device or address",
+    "latest_main_access_via_connected_github": true,
+    "history_or_model_files_modified": false,
+    "lock_or_publication_proof_created": false
+  },
+  "follow_up": "Retrieve confirmed official outcomes in the subsequent post-off execution; no retrospective lock."
+}
