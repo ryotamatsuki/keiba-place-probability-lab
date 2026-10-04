@@ -1,5 +1,5 @@
 name: Build 2026 live history
-# Monthly checkpoint backfill with strict completeness QA.
+# Monthly checkpoint backfill with strict completeness QA; parser gate v2.
 
 on:
   push:
