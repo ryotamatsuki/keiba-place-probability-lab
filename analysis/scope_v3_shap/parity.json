@@ -28,7 +28,7 @@
     }
   },
   "importance_definition": "Transformed XGBoost contributions are summed per original source feature within each row before taking absolute values; mean absolute grouped contribution is averaged over strict OOF rows in log-odds space.",
-  "commit": "a36d5260e1d1db73e3eae49ed8b2190f697868e0",
+  "commit": "d984bacf59f3cacbd8034e0387037bb54b166f07",
   "versions": {
     "python": "3.11.16 (main, Aug 13 2026, 02:46:14) [GCC 13.3.0]",
     "numpy": "2.4.6",

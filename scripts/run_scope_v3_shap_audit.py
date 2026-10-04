@@ -99,8 +99,12 @@ def source_feature(transformed: str, numeric_sources: list[str], categorical_sou
 class Aggregator:
     def __init__(self) -> None:
         self.data: dict[tuple[str, str, str, str], list[float]] = defaultdict(
-            lambda: [0.0, 0.0, 0.0, 0.0]
+            lambda: [0.0, 0.0, 0.0]
         )
+        self.total_rows: dict[tuple[str, str], int] = defaultdict(int)
+
+    def mark_rows(self, *, scope: str, year: str, rows: int) -> None:
+        self.total_rows[(scope, year)] += int(rows)
 
     def add(self, *, scope: str, year: str, level: str, names: list[str], matrix: np.ndarray) -> None:
         if matrix.shape[1] != len(names):
@@ -111,13 +115,15 @@ class Aggregator:
             rec[0] += float(np.abs(values).sum())
             rec[1] += float(values.sum())
             rec[2] += float(np.count_nonzero(values))
-            rec[3] += float(len(values))
 
     def frame(self, level: str) -> pd.DataFrame:
         rows = []
-        for (scope, year, lev, name), (sum_abs, sum_signed, nonzero, count) in self.data.items():
+        for (scope, year, lev, name), (sum_abs, sum_signed, nonzero) in self.data.items():
             if lev != level:
                 continue
+            count = self.total_rows[(scope, year)]
+            if count <= 0:
+                raise ValueError(f"Missing total row count for {scope}/{year}")
             rows.append({
                 "scope": scope,
                 "year": year,
@@ -179,6 +185,7 @@ def add_chunk(agg: Aggregator, *, scope: str, year: int, model, engineered: pd.D
 
     for y in (str(year), "ALL"):
         for s in (scope, "ALL_ROUTED"):
+            agg.mark_rows(scope=s, year=y, rows=len(engineered))
             agg.add(scope=s, year=y, level="transformed", names=transformed, matrix=contrib)
             agg.add(scope=s, year=y, level="source", names=source_names, matrix=source_matrix)
             agg.add(scope=s, year=y, level="family", names=family_names, matrix=family_matrix)
