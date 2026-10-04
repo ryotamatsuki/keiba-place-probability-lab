@@ -26,7 +26,7 @@ def fetch(url: str) -> tuple[str, str]:
 
 
 def main() -> None:
-    for provider_id in ("2608040101", "2608040111", "2605040101", "2605040111"):
+    for provider_id in ("2606010302", "2608040101", "2608040111", "2605040101", "2605040111"):
         print("\nRACE", provider_id, flush=True)
         try:
             result_url = RESULT_URL.format(provider_id=provider_id)
