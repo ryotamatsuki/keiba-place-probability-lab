@@ -69,37 +69,54 @@ class CachedFetcher:
         cache_dir: Path,
         *,
         user_agent: str = "keiba-place-probability-lab research/0.1",
-        pause_seconds: float = 0.10,
+        pause_seconds: float = 0.50,
         timeout: tuple[int, int] = (15, 45),
+        max_attempts: int = 6,
     ) -> None:
         self.cache_dir = Path(cache_dir)
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.user_agent = user_agent
         self.pause_seconds = pause_seconds
         self.timeout = timeout
+        self.max_attempts = max_attempts
 
     def fetch(self, url: str, *, force: bool = False) -> tuple[str, FetchRecord]:
         key = hashlib.sha256(url.encode("utf-8")).hexdigest()
         html_path = self.cache_dir / f"{key}.html"
         meta_path = self.cache_dir / f"{key}.json"
         if force or not html_path.exists() or not meta_path.exists():
-            response = requests.get(
-                url,
-                timeout=self.timeout,
-                headers={"User-Agent": self.user_agent},
-            )
-            response.raise_for_status()
-            data = response.content
-            html_path.write_bytes(data)
-            record = {
-                "url": url,
-                "retrieved_at": datetime.now(UTC).isoformat(),
-                "sha256": sha256_bytes(data),
-                "cache_path": str(html_path),
-            }
-            meta_path.write_text(json.dumps(record, ensure_ascii=False, indent=2) + "\n")
-            if self.pause_seconds:
-                time.sleep(self.pause_seconds)
+            last_error = None
+            for attempt in range(1, self.max_attempts + 1):
+                try:
+                    response = requests.get(
+                        url,
+                        timeout=self.timeout,
+                        headers={"User-Agent": self.user_agent},
+                    )
+                    response.raise_for_status()
+                    data = response.content
+                    html_path.write_bytes(data)
+                    record = {
+                        "url": url,
+                        "retrieved_at": datetime.now(UTC).isoformat(),
+                        "sha256": sha256_bytes(data),
+                        "cache_path": str(html_path),
+                    }
+                    meta_path.write_text(
+                        json.dumps(record, ensure_ascii=False, indent=2) + "\n"
+                    )
+                    if self.pause_seconds:
+                        time.sleep(self.pause_seconds)
+                    break
+                except requests.RequestException as exc:
+                    last_error = exc
+                    status = getattr(exc.response, "status_code", None)
+                    retryable = status in {429, 500, 502, 503, 504} or status is None
+                    if not retryable or attempt == self.max_attempts:
+                        raise
+                    time.sleep(min(2 ** (attempt - 1), 16))
+            else:  # pragma: no cover
+                raise RuntimeError(f"Fetch retries exhausted: {url}") from last_error
         record = FetchRecord(**json.loads(meta_path.read_text()))
         return html_path.read_text(errors="replace"), record
 
