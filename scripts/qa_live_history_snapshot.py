@@ -92,6 +92,8 @@ def audit_snapshot(root: Path, ledger_path: Path, snapshot_id: str | None = None
             "source_race_counts": history.groupby("race_id").result_source_url.first().str.extract(r"https://([^/]+)")[0].value_counts().to_dict(),
             "history_sha256": manifest["history_sha256"], "entry_audit_sha256": manifest["entry_audit_sha256"],
             "race_ledger_sha256": manifest["race_ledger_sha256"], "independent_inventory_sha256": coverage["ledger_sha256"],
+            "source_parser_contract": manifest.get("source_parser_contract"),
+            "parser_source_sha256": manifest.get("parser_source_sha256"),
             "auditor_sha256": sha256_file(Path(__file__))}
 
 
