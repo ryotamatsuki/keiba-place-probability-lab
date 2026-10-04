@@ -2,7 +2,7 @@ name: Scope V3 strict OOF SHAP audit
 
 on:
   push:
-    branches: [scope-v3-shap-audit]
+    branches: [scope-v3-shap-audit, scope-v3-shap-audit-fix]
     paths:
       - scripts/run_scope_v3_shap_audit.py
       - .github/workflows/scope-v3-shap-audit.yml
@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: scope-v3-shap-audit
+          ref: ${{ github.ref_name }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -61,6 +61,6 @@ jobs:
           git add analysis/scope_v3_shap/
           if ! git diff --cached --quiet; then
             git commit -m 'analysis: record Scope V3 strict OOF SHAP audit'
-            git pull --rebase origin scope-v3-shap-audit
-            git push origin HEAD:scope-v3-shap-audit
+            git pull --rebase origin "${{ github.ref_name }}"
+            git push origin "HEAD:${{ github.ref_name }}"
           fi
