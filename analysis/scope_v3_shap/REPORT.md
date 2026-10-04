@@ -11,34 +11,34 @@ Prediction parity max absolute error: 9.89e-17.
 
 | name                           |   mean_abs_shap_logodds | share_of_total_abs   |
 |:-------------------------------|------------------------:|:---------------------|
-| rel_recent3_finish_vs_others   |                0.341301 | 15.7%                |
-| rel_career_top3_vs_others      |                0.251924 | 11.6%                |
-| field_size                     |                0.212693 | 9.8%                 |
-| rel_recent3_time_vs_others     |                0.182051 | 8.4%                 |
-| recent3_graded_count           |                0.086344 | 4.0%                 |
-| recent3_relative_time_mean     |                0.075801 | 3.5%                 |
-| recent4_early_pos_pct_mean     |                0.0727   | 3.3%                 |
-| turf_top3_shrunk               |                0.071813 | 3.3%                 |
-| log_career_starts              |                0.067797 | 3.1%                 |
-| log_days_since_prev            |                0.063117 | 2.9%                 |
-| rel_same_course_top3_vs_others |                0.056514 | 2.6%                 |
-| draw_pct                       |                0.052612 | 2.4%                 |
-| recent3_finish_pct_mean        |                0.05217  | 2.4%                 |
-| distance_change_from_prev_m    |                0.048626 | 2.2%                 |
-| race_class                     |                0.046387 | 2.1%                 |
+| rel_recent3_finish_vs_others   |                0.341301 | 16.6%                |
+| rel_career_top3_vs_others      |                0.251924 | 12.3%                |
+| field_size                     |                0.212693 | 10.3%                |
+| rel_recent3_time_vs_others     |                0.182051 | 8.9%                 |
+| recent3_graded_count           |                0.086344 | 4.2%                 |
+| recent3_relative_time_mean     |                0.075801 | 3.7%                 |
+| recent4_early_pos_pct_mean     |                0.0727   | 3.5%                 |
+| turf_top3_shrunk               |                0.071813 | 3.5%                 |
+| log_career_starts              |                0.067797 | 3.3%                 |
+| log_days_since_prev            |                0.063117 | 3.1%                 |
+| rel_same_course_top3_vs_others |                0.056514 | 2.7%                 |
+| draw_pct                       |                0.052612 | 2.6%                 |
+| recent3_finish_pct_mean        |                0.05217  | 2.5%                 |
+| distance_change_from_prev_m    |                0.048626 | 2.4%                 |
+| race_class                     |                0.046387 | 2.3%                 |
 
 ### Feature families
 
 | name                     |   mean_abs_shap_logodds | share_of_total_abs   |
 |:-------------------------|------------------------:|:---------------------|
-| relative_ability         |                0.672071 | 46.4%                |
-| race_context             |                0.228018 | 15.7%                |
-| recent_form              |                0.169533 | 11.7%                |
-| entry_condition          |                0.144892 | 10.0%                |
-| history                  |                0.118711 | 8.2%                 |
-| distance_regime          |                0.056886 | 3.9%                 |
-| distance_near            |                0.042124 | 2.9%                 |
-| distance_course_distance |                0.017607 | 1.2%                 |
+| relative_ability         |                0.672071 | 49.4%                |
+| race_context             |                0.228018 | 16.7%                |
+| recent_form              |                0.169533 | 12.5%                |
+| entry_condition          |                0.144892 | 10.6%                |
+| history                  |                0.118711 | 8.7%                 |
+| distance_regime          |                0.020128 | 1.5%                 |
+| distance_near            |                0.005711 | 0.4%                 |
+| distance_course_distance |                0.002387 | 0.2%                 |
 
 ## Turf 1000-1400m except 1200m
 
