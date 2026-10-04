@@ -39,7 +39,7 @@ jobs:
           THROUGH="${{ inputs.through }}"
           RECHECK_DAYS="${{ inputs.recheck_days }}"
           MAX_WORKERS="${{ inputs.max_workers }}"
-          [ -n "$THROUGH" ] || THROUGH="2026-01-05"
+          [ -n "$THROUGH" ] || THROUGH="2026-10-03"
           [ -n "$RECHECK_DAYS" ] || RECHECK_DAYS="14"
           [ -n "$MAX_WORKERS" ] || MAX_WORKERS="6"
           python scripts/update_live_history.py \
@@ -47,6 +47,15 @@ jobs:
             --through "$THROUGH" \
             --recheck-days "$RECHECK_DAYS" \
             --max-workers "$MAX_WORKERS"
+      - name: Reproduce Oct 4 captured trial
+        run: |
+          THROUGH="${{ inputs.through }}"
+          [ -n "$THROUGH" ] || THROUGH="2026-10-03"
+          if [ "$THROUGH" = "2026-10-03" ]; then
+            python scripts/qa_live_history_reproduction.py
+          else
+            echo "Reproduction gate skipped for cutoff $THROUGH"
+          fi
       - name: Show current manifest
         run: |
           python - <<'PY'
@@ -68,10 +77,12 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add data/live_history/2026
+          if [ -f analysis/live_trial_20261004/common_live_history_reproduction.json ]; then
+            git add analysis/live_trial_20261004/common_live_history_reproduction.json
+          fi
           if ! git diff --cached --quiet; then
             git commit -m "data: publish 2026 live history through ${{ inputs.through }}"
             git pull --rebase origin "${{ github.ref_name }}"
             git push origin "HEAD:${{ github.ref_name }}"
           fi
 
-# smoke-retry: archived-entry reconciliation
