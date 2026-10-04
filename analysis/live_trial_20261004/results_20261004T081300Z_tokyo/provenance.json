@@ -1,0 +1,19 @@
+{
+  "official": {
+    "race_id": "202605040211",
+    "actual_date": "2026-10-04",
+    "racecourse": "東京",
+    "race_number": 11,
+    "race_kind": "flat",
+    "declared_field_size": 17,
+    "starter_rows": 17,
+    "official_source_url": "https://www.jra.go.jp/JRADB/accessS.html?CNAME=pw01sde0105202604021120261004/81",
+    "page_sha256": "8febe5153b04a43b69d40f1ef8330fdf9aa696f78edec440eceb9507a29f9db3"
+  },
+  "provider_url": "https://sports.yahoo.co.jp/keiba/race/result/2605040211",
+  "verified_at": "2026-10-04T08:14:52.357581+00:00",
+  "reconciliation": "all starter IDs and finishing ranks matched",
+  "event_time_semantics": "first_observed_at",
+  "interim_scores_computed": false,
+  "stage5_canonical": "market-only"
+}

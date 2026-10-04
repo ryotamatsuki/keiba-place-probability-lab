@@ -1,0 +1,40 @@
+{
+  "schema_version": "live_trial_result_collection_v1",
+  "observed_at": "2026-10-04T08:16:14Z",
+  "main_sha_inventory_checked": "462db7a480060807a17bce87b4ec0b2a3e9153cc",
+  "formal_lock_count": 0,
+  "publication_proof_count": 0,
+  "evaluation_eligible_races": 0,
+  "reason_not_evaluation_eligible": "No pre-off formal locks or publication proofs exist on main for either race.",
+  "results": [
+    {
+      "race_id": "202605040211",
+      "name": "毎日王冠",
+      "status": "confirmed_reconciled_non_evaluable",
+      "official_starters": 17,
+      "official_url": "https://www.jra.go.jp/JRADB/accessS.html?CNAME=pw01sde0105202604021120261004/81",
+      "official_page_sha256": "8febe5153b04a43b69d40f1ef8330fdf9aa696f78edec440eceb9507a29f9db3",
+      "provider_url": "https://sports.yahoo.co.jp/keiba/race/result/2605040211",
+      "provider_page_sha256_recheck": "5d2a6733bfd59f28f4a584eacc440a1ca498e50fa105bf19daddd777bc017b9c",
+      "reconciliation": "all 17 starter IDs and finishing ranks matched",
+      "post_lock_events": 0
+    },
+    {
+      "race_id": "202608040211",
+      "name": "京都大賞典",
+      "status": "confirmed_reconciled_non_evaluable",
+      "official_starters": 18,
+      "official_url": "https://www.jra.go.jp/JRADB/accessS.html?CNAME=pw01sde0108202604021120261004/5F",
+      "official_page_sha256": "1c0179a71a0be9eb98bfb7df00f17bd006b1e850ae21b489f60dce1dd0d7f738",
+      "provider_url": "https://sports.yahoo.co.jp/keiba/race/result/2608040211",
+      "provider_page_sha256_recheck": "b1616318699c0acc7f88f6c900c1d189baf1ab01cfc80c77fc5fc7122d0df662",
+      "reconciliation": "all 18 starter IDs and finishing ranks matched",
+      "post_lock_events": 0
+    }
+  ],
+  "race_or_runner_exclusions": 0,
+  "interim_scores_computed": false,
+  "mixture_weight_selected": false,
+  "model_promoted": false,
+  "stage5_canonical": "market-only"
+}
