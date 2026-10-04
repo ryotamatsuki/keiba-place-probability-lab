@@ -1,3 +1,4 @@
+# parser-fix-rerun: straight-course early_position is undefined
 name: Finalize 2026 live history through Oct 3
 
 on:
