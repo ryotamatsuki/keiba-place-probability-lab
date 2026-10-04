@@ -156,3 +156,10 @@ def test_archived_entry_may_leave_late_scratch_marked_active():
     qa = verify_full_field(result, roster)
     assert qa["actual_starters"] == 2
     assert qa["declared_entries"] == 3
+
+
+def test_parse_race_time_accepts_sub_minute_and_minute_formats():
+    assert _parse_race_time("58.9") == 58.9
+    assert _parse_race_time("1:00.1") == 60.1
+    assert _parse_race_time("2:34.5") == 154.5
+    assert pd.isna(_parse_race_time(""))
