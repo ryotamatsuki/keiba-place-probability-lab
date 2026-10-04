@@ -21,13 +21,19 @@ def fetch(url: str) -> tuple[str, str]:
 
 
 def main():
-    for provider_id in ("2608040101","2608040111","2605040101","2605040111"):
+    for provider_id in ("2606010302",):
         print("\nRACE",provider_id,flush=True)
         try:
             ru=RESULT_URL.format(provider_id=provider_id)
             du=DENMA_URL.format(provider_id=provider_id)
             rh,rt=fetch(ru)
             dh,dt=fetch(du)
+            from bs4 import BeautifulSoup
+            soup=BeautifulSoup(rh,"html.parser")
+            table=[t for t in soup.select("table") if all(s in t.get_text() for s in ("着順","馬名","通過順位","騎手名"))][0]
+            first=[tr.find_all("td",recursive=False) for tr in table.select("tr")]
+            first=[x for x in first if x][0]
+            print("cells",[(i,repr(x.get_text(" ",strip=True))) for i,x in enumerate(first)],flush=True)
             starters,result_entries=parse_result_audited(rh,provider_id,source_url=ru,retrieved_at=rt)
             print("result",len(starters),len(result_entries),result_entries.finish_status.value_counts(dropna=False).to_dict(),flush=True)
             roster=parse_declared_entry_audit(dh,provider_id,source_url=du,retrieved_at=dt)
