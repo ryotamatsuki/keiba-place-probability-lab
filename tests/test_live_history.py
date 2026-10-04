@@ -129,3 +129,30 @@ def test_full_field_verification_allows_result_to_omit_scratched_horse():
     assert qa["declared_field_size"] == 3
     assert qa["actual_starters"] == 2
     assert qa["scratched"] == 1
+
+
+def test_archived_entry_may_leave_late_scratch_marked_active():
+    result = pd.DataFrame(
+        {
+            "horse_no": [1, 2, 3],
+            "horse_id": ["a", "b", "c"],
+            "horse_name": ["A", "B", "C"],
+            "finish_status": ["finished", "dnf", "scratched"],
+            "is_starter": [True, True, False],
+            "field_size": [2, 2, 2],
+            "declared_field_size": [3, 3, 3],
+        }
+    )
+    roster = pd.DataFrame(
+        {
+            "horse_no": [1, 2, 3],
+            "horse_id": ["a", "b", "c"],
+            "horse_name": ["A", "B", "C"],
+            "entry_status": ["active", "active", "active"],
+            "is_starter": [True, True, True],
+            "declared_field_size": [3, 3, 3],
+        }
+    )
+    qa = verify_full_field(result, roster)
+    assert qa["actual_starters"] == 2
+    assert qa["declared_entries"] == 3
