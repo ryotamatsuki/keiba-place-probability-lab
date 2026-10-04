@@ -1,0 +1,67 @@
+{
+  "source_run_id": 37173601815,
+  "shards": [
+    {
+      "dir": "live-history-reparse-2026-01",
+      "straight_history_rows": 0,
+      "history_rows_changed": 0,
+      "entry_rows_changed": 0
+    },
+    {
+      "dir": "live-history-reparse-2026-02",
+      "straight_history_rows": 0,
+      "history_rows_changed": 0,
+      "entry_rows_changed": 0
+    },
+    {
+      "dir": "live-history-reparse-2026-03",
+      "straight_history_rows": 0,
+      "history_rows_changed": 0,
+      "entry_rows_changed": 0
+    },
+    {
+      "dir": "live-history-reparse-2026-04",
+      "straight_history_rows": 0,
+      "history_rows_changed": 0,
+      "entry_rows_changed": 0
+    },
+    {
+      "dir": "live-history-reparse-2026-05",
+      "straight_history_rows": 128,
+      "history_rows_changed": 127,
+      "entry_rows_changed": 0
+    },
+    {
+      "dir": "live-history-reparse-2026-06",
+      "straight_history_rows": 0,
+      "history_rows_changed": 0,
+      "entry_rows_changed": 0
+    },
+    {
+      "dir": "live-history-reparse-2026-07",
+      "straight_history_rows": 33,
+      "history_rows_changed": 33,
+      "entry_rows_changed": 0
+    },
+    {
+      "dir": "live-history-reparse-2026-08",
+      "straight_history_rows": 129,
+      "history_rows_changed": 129,
+      "entry_rows_changed": 0
+    },
+    {
+      "dir": "live-history-reparse-2026-09",
+      "straight_history_rows": 0,
+      "history_rows_changed": 0,
+      "entry_rows_changed": 0
+    },
+    {
+      "dir": "live-history-reparse-2026-10",
+      "straight_history_rows": 0,
+      "history_rows_changed": 0,
+      "entry_rows_changed": 0
+    }
+  ],
+  "changed_history_rows": 289,
+  "changed_entry_rows": 0
+}

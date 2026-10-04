@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "snapshot_id": "jra_flat_live_history_v1-20261003-f6ef42cd4ce3",
+  "schema_version": "jra_flat_live_history_v1",
+  "complete_through": "2026-10-03",
+  "live_history_sha256": "1acbdfd7654f48ad97903df64bbfbd2a13b31179d2a3c203d70034b44d2b9f02",
+  "runners": 35,
+  "races": 2,
+  "feature_max_abs_error": 1.1102230246251565e-16,
+  "prediction_max_abs_error": 8.326672684688674e-17,
+  "model_bundle_sha256": "2135442ac31e6489bd209ca338694455b3b887569392f045b5228fc58c59321b",
+  "model_changed": false,
+  "historical_base_mode": "full_frozen_base",
+  "historical_base_sha256": "d8bf137d851a241bb29be7518f1ea6bbcda4aa3dcc350ae03c081ee93d099127",
+  "reference_directory": "analysis/live_history_2026/corrected_trial_reference",
+  "reference_context_sha256": "b72ea0ad58d73acafa0b0c829c4e27d0f01838ecabe0a297f0dea6ccc58feeca",
+  "reference_predictions_sha256": "3371a05c7cb41eac468d7b7d24d97803b4772b847aec0fe32c357bd864b3cf37",
+  "independent_reference_history_rows": 1267,
+  "independent_reference_history_max_abs_error": 0.0,
+  "reference_correction_audit_sha256": "2ae09ffa21956736b98d677f9c78c465b6b71e189b0410528f26087f1753a6bd",
+  "original_locked_reference_gate_passed": false,
+  "original_locked_prediction_max_abs_delta": 0.008888885378837613
+}

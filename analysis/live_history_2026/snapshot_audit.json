@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "snapshot_id": "jra_flat_live_history_v1-20261003-f6ef42cd4ce3",
+  "complete_through": "2026-10-03",
+  "expected_races": 2544,
+  "confirmed_races": 2544,
+  "expected_race_days": 83,
+  "confirmed_race_days": 83,
+  "rows": 35148,
+  "entry_rows": 35279,
+  "missing_race_ids": [],
+  "latest_race_date": "2026-10-03",
+  "starter_status_counts": {
+    "finished": 35044,
+    "dnf": 104
+  },
+  "entry_status_counts": {
+    "finished": 35044,
+    "dnf": 104,
+    "excluded": 92,
+    "scratched": 39
+  },
+  "source_race_counts": {
+    "sports.yahoo.co.jp": 2257,
+    "umanity.jp": 287
+  },
+  "history_sha256": "1acbdfd7654f48ad97903df64bbfbd2a13b31179d2a3c203d70034b44d2b9f02",
+  "entry_audit_sha256": "27b6c4d4b793fe652d348700abd03220e4996b05588a1bdd7ab0676b0700179a",
+  "race_ledger_sha256": "d3083e4de4c5d567eb5825f57086a21d1857bfd26f990538b3bc1ffc9434fc29",
+  "independent_inventory_sha256": "d3083e4de4c5d567eb5825f57086a21d1857bfd26f990538b3bc1ffc9434fc29",
+  "source_parser_contract": "time_margin_separated_v1",
+  "parser_source_sha256": {
+    "live_history.py": "0df1e7ee932ca1645f1d603e7a1e5168c717b5db1703c48cc4e4d66bc3daf87e",
+    "live_public.py": "7316586f16ade9c3235cbe51a4743a8b8be161828960c6c60ca8e0569c334281",
+    "live_umanity.py": "e823bf16b58c95b3056015ffc3bc72b2cc942eb24d7bb3286d2241a4242c06d0"
+  },
+  "auditor_sha256": "26900ffddbd98170a536470a270c499d9f63518267b7371edcf475e38d8c74ed"
+}

@@ -1,0 +1,46 @@
+{
+  "status": "PASS",
+  "complete_through": "2026-10-03",
+  "snapshot_id": "jra_flat_live_history_v1-20261003-f6ef42cd4ce3",
+  "expected_races": 2544,
+  "confirmed_races": 2544,
+  "expected_race_days": 83,
+  "confirmed_race_days": 83,
+  "rows": 35148,
+  "entry_rows": 35279,
+  "missing_race_ids": [],
+  "history_sha256": "1acbdfd7654f48ad97903df64bbfbd2a13b31179d2a3c203d70034b44d2b9f02",
+  "source_parser_contract": "time_margin_separated_v1",
+  "time_correction_impact": {
+    "preexisting_rows": 34811,
+    "changed_time_rows": 3769,
+    "changed_time_races": 430,
+    "legacy_subtenth_rows": 3769,
+    "corrected_subtenth_rows": 0,
+    "max_abs_time_delta_seconds": 0.09000000000000341,
+    "changed_early_position_rows": 0,
+    "changed_early_position_races": 0,
+    "legacy_straight_early_position_finite_rows": 0,
+    "corrected_straight_early_position_finite_rows": 0,
+    "non_time_columns_changed": []
+  },
+  "reproduction": {
+    "status": "PASS",
+    "runners": 35,
+    "races": 2,
+    "feature_max_abs_error": 1.1102230246251565e-16,
+    "prediction_max_abs_error": 8.326672684688674e-17,
+    "historical_base_mode": "full_frozen_base",
+    "historical_base_sha256": "d8bf137d851a241bb29be7518f1ea6bbcda4aa3dcc350ae03c081ee93d099127"
+  },
+  "cli_smoke": {
+    "status": "PASS",
+    "runners": 35,
+    "races": 2,
+    "prediction_max_abs_error": 0.0
+  },
+  "model_bundle_sha256": "2135442ac31e6489bd209ca338694455b3b887569392f045b5228fc58c59321b",
+  "model_changed": false,
+  "original_locked_reference_gate_passed": false,
+  "original_locked_prediction_max_abs_delta": 0.008888885378837613
+}

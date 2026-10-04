@@ -1,0 +1,21 @@
+{
+  "prediction_sha256": "b65a9de18a72715de52f71cca65da047689fda8199734231a5231e47cc76b499",
+  "model_sha256": "2135442ac31e6489bd209ca338694455b3b887569392f045b5228fc58c59321b",
+  "roster_sha256": "39dc010b8237b72301ced7377f65c68d06ad560267f3f6dcf441df3b635330d8",
+  "history_sources": {
+    "mode": "historical_base_plus_live_snapshot",
+    "base_history_sha256": "d8bf137d851a241bb29be7518f1ea6bbcda4aa3dcc350ae03c081ee93d099127",
+    "live_history_snapshot_id": "jra_flat_live_history_v1-20261003-f6ef42cd4ce3",
+    "live_history_schema_version": "jra_flat_live_history_v1",
+    "live_history_sha256": "1acbdfd7654f48ad97903df64bbfbd2a13b31179d2a3c203d70034b44d2b9f02",
+    "live_history_complete_through": "2026-10-03",
+    "live_history_latest_race_date": "2026-10-03",
+    "live_history_path": "data/live_history/2026/snapshots/jra_flat_live_history_v1-20261003-f6ef42cd4ce3/jra_flat_history.parquet",
+    "rows_before_asof_filter": 788535,
+    "rows_after_asof_filter": 788535,
+    "asof_exclusive": "2026-10-04"
+  },
+  "history_date_max": "2026-10-03",
+  "stage5_canonical": "market-only",
+  "shadow_only": true
+}
