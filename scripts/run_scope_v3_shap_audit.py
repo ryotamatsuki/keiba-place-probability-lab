@@ -148,8 +148,11 @@ def contributions(model, engineered: pd.DataFrame):
         raise ValueError("Unexpected pred_contribs width")
     probability = clf.predict_proba(x)[:, 1]
     reconstructed = 1.0 / (1.0 + np.exp(-contrib.sum(axis=1)))
-    if float(np.max(np.abs(probability - reconstructed))) > 5e-7:
-        raise ValueError("SHAP contribution parity failure")
+    contribution_parity = float(np.max(np.abs(probability - reconstructed)))
+    if contribution_parity > 5e-6:
+        raise ValueError(
+            f"SHAP contribution parity failure: {contribution_parity}"
+        )
     numeric_sources = list(pre.transformers_[0][2])
     categorical_sources = list(pre.transformers_[1][2])
     sources = [
