@@ -191,10 +191,10 @@ def parse_race_list(html: str, *, meeting_day_id: str) -> pd.DataFrame:
 def _parse_race_time(text: str) -> float:
     """Parse the leading race time even when Yahoo groups margin in the same td."""
     text = text.strip()
-    minute = re.match(r"^(\d+):(\d+(?:\.\d+)?)(?:\s|$)", text)
+    minute = re.match(r"^(\d+):(\d+(?:\.\d+)?)", text)
     if minute:
         return int(minute[1]) * 60 + float(minute[2])
-    seconds = re.match(r"^(\d+(?:\.\d+)?)(?:\s|$)", text)
+    seconds = re.match(r"^(\d+(?:\.\d+)?)", text)
     if seconds:
         return float(seconds[1])
     return float("nan")
