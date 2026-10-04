@@ -17,7 +17,12 @@ import xgboost as xgb
 from keiba_place_lab.historical_panel import select_phase_a_cohort
 from keiba_place_lab.nonmarket import CATEGORICAL_BLOCKS, NUMERIC_BLOCKS
 from keiba_place_lab.scope_expansion import full_context_for_races, straight_course_mask
-from keiba_place_lab.scope_features import BLOCKS, augment_distance_history, fit_scope_candidate, scope_features
+from keiba_place_lab.scope_features import (
+    BLOCKS,
+    augment_distance_history,
+    fit_scope_candidate,
+    scope_features,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 KEYS = ["race_id", "horse_id"]
