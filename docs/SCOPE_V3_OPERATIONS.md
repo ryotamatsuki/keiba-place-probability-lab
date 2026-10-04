@@ -16,28 +16,69 @@ search against 2025. Reproduction of historical comparisons never uses these
 full-history production weights. XGBoost 3.2.0 is required: 3.4.1 failed the
 frozen A/B/C prediction check, and was rejected before any feature selection.
 
-The current 2025 source is a refitting dataset, not a current live history feed.
-Prepare a complete standardized history file through the most recent confirmed
-JRA flat races, with outcomes but no market fields. Columns follow Stage 3.6's
-`standardized_jra_flat_source_v1.parquet`. Confirmed DNF with no finish position
-requires an explicit `outcome_confirmed=true` field for all history rows. Horse
-identities must match the real roster. Keep other distances/surfaces as history.
+The frozen 2010–2025 source remains the model/refit base. Current-year results are
+maintained separately as versioned live-history snapshots; see
+`LIVE_HISTORY_2026_SPEC.md`.
+
+Build or reconcile the common 2026 database through a confirmed cutoff:
+
+```bash
+python scripts/update_live_history.py --year 2026 --through 2026-10-03 \
+  --source umanity --max-workers 3 \
+  --ledger analysis/live_history_2026/official_race_ledger.csv
+```
+
+The updater rebuilds the expected-race ledger, retries old gaps, rechecks the
+recent correction window, verifies the complete starter field against the
+published entry page, and advances `data/live_history/2026/current.json` only
+after all expected flat races pass QA. A failed update leaves the previous
+snapshot current.
 
 Roster CSV has one row per active starter and the following entry columns:
 race_id, race_date, horse_id, horse_no, horse_name, field_size,
 declared_field_size, surface, distance_m, racecourse, race_class, age, sex,
 assigned_weight_kg, turn_direction. It must contain no outcomes/market fields.
 
+For the common database path, pass the frozen pre-2026 history and the live
+snapshot separately:
+
 ```bash
-python scripts/run_stage4_scope_v3.py predict --roster /path/to/roster.csv \
-  --history /path/to/updated_standardized_history.parquet --output /path/to/shadow_v1.csv
+python scripts/run_stage4_scope_v3.py predict \
+  --roster /path/to/roster.csv \
+  --historical-base /path/to/standardized_jra_flat_source_v1.parquet \
+  --live-history-root data/live_history/2026 \
+  --output /path/to/shadow_v1.csv
 ```
 
-Prediction recomputes histories strictly before race date, checks freshness
-(default 7 days), includes every active starter in LOO context and preserves
+The caller concatenates the two sources and explicitly keeps
+`race_date < target_date` before invoking `build_live_context()`; the latter's
+strict on/after-target rejection remains active as a second barrier. The prediction
+manifest records the base SHA plus live snapshot id/schema/SHA/completeness date.
+
+The legacy `--history` argument remains available for a separately audited,
+already-complete as-of history file. Prediction recomputes histories strictly
+before race date, includes every active starter in LOO context and preserves
 declared draw positions after cancellation. Ineligible runners retain missing
 nonmarket probabilities. Unsupported scopes return explicit market-only routing.
 The prediction CSV and adjacent `.manifest.json` are versioned; no overwrite.
+
+The original morning trial contained a source-parser time/margin concatenation
+bug. Preserve its locked forecast and inspect the correction audit in
+`analysis/live_history_2026/corrected_trial_reference/`. Reproduce the separately
+audited corrected 35-runner reference from the full frozen base and common DB:
+
+```bash
+python scripts/qa_live_history_snapshot.py
+python scripts/qa_live_history_reproduction.py \
+  --historical-base /path/to/standardized_jra_flat_source_v1.parquet \
+  --reference-dir analysis/live_history_2026/corrected_trial_reference
+```
+
+When the cutoff advances, first rerun `extract_official_jra.py --year 2026
+--compact-excerpts` and `build_live_history_ledger.py --conditions
+data/derived/jra_official_conditions_2026.csv --through YYYY-MM-DD`. An old
+inventory cannot certify a new cutoff. The **Build 2026 live history** workflow
+uses explicit dispatch, monthly checkpoints and the same inventory/QA gates.
 
 ## Prospective collection
 

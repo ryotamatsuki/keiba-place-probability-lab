@@ -1,0 +1,542 @@
+{
+  "status": "CORRECTED_REFERENCE",
+  "reason": "Numeric margin text was concatenated to race time without a separator",
+  "original_trial_preserved": true,
+  "original_history_sha256": "8cf68c669cd763d9c9d69694feb6cf9d33aba1bf7cd56e71941c89d8bb8954b5",
+  "original_prediction_sha256": "26315573f03ca1a01a6f690738e2ee1c42fbeff8bfc9e929a34b3d027c959c3c",
+  "changed_history_times": 696,
+  "changed_context_columns": {
+    "recent3_relative_time_mean": 0.00014479443562746136
+  },
+  "original_prediction_max_abs_delta": 0.008888885378837613,
+  "runners": 35,
+  "model_bundle_sha256": "2135442ac31e6489bd209ca338694455b3b887569392f045b5228fc58c59321b",
+  "source_captures": [
+    {
+      "race_id": "202601010811",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2601010811",
+      "sha256": "7cce82845930ca99f64893bd8d052c8f61416b038a1bc8fef2356afa7f43b121",
+      "retrieved_at": "2026-10-03T22:36:14.578317+00:00"
+    },
+    {
+      "race_id": "202602010611",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2602010611",
+      "sha256": "a1cc3eb09990616e4e78ff534b55dfa5540ff73adba05ee13a8ee87a537ec44c",
+      "retrieved_at": "2026-10-03T22:36:14.698714+00:00"
+    },
+    {
+      "race_id": "202602011011",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2602011011",
+      "sha256": "2682037b3dabc79edf0d112c3abad757052e8e6b7fde3c800918019bb0c4545e",
+      "retrieved_at": "2026-10-03T22:36:23.297769+00:00"
+    },
+    {
+      "race_id": "202603010211",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2603010211",
+      "sha256": "1644dab24edbc806f4f4c4774093173fa233dc3a3d28011fdf5c63a258fe4388",
+      "retrieved_at": "2026-10-03T22:36:23.434966+00:00"
+    },
+    {
+      "race_id": "202603020611",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2603020611",
+      "sha256": "6cf8beccede7cf8fffdf8dae658f4920c86b888efab72126a8f8c623f6c24a81",
+      "retrieved_at": "2026-10-03T22:36:31.656205+00:00"
+    },
+    {
+      "race_id": "202604010411",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2604010411",
+      "sha256": "98c1974730a835ac43ae89c4d0f6bdb5df8a4e6b304d520d32dba47883f33e48",
+      "retrieved_at": "2026-10-03T22:36:31.920404+00:00"
+    },
+    {
+      "race_id": "202604010511",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2604010511",
+      "sha256": "61f1ca43a632a000e21062ffce63e794825dee440f3df1fe1b55d354c64a89b4",
+      "retrieved_at": "2026-10-03T22:36:40.467275+00:00"
+    },
+    {
+      "race_id": "202604020207",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2604020207",
+      "sha256": "8eb82ba4f73a97f635ecd2df212340a759f33525b43c7815d3d897c9765cb16d",
+      "retrieved_at": "2026-10-03T22:36:40.591100+00:00"
+    },
+    {
+      "race_id": "202604020507",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2604020507",
+      "sha256": "5cb1c93528d807838dc254aff4f0a89e313b3ed32f71d7faa7b5d2a6e1b8e289",
+      "retrieved_at": "2026-10-03T22:36:49.488890+00:00"
+    },
+    {
+      "race_id": "202604020606",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2604020606",
+      "sha256": "9d8d2fdb6a20b3c6611fb794aaa8d366171b02f1a012fe684210ce4543a7709e",
+      "retrieved_at": "2026-10-03T22:36:49.393174+00:00"
+    },
+    {
+      "race_id": "202604030107",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2604030107",
+      "sha256": "a6b12e04eda7f24fa37501b800c9b389b5e1684d3904eaa0e46a071603cd87ba",
+      "retrieved_at": "2026-10-03T22:36:57.274214+00:00"
+    },
+    {
+      "race_id": "202604030408",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2604030408",
+      "sha256": "e403fe2ab041b5a30ca0994f2a699d7429f82d820191c02940f433be73b7ecd9",
+      "retrieved_at": "2026-10-03T22:36:57.183930+00:00"
+    },
+    {
+      "race_id": "202605010111",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605010111",
+      "sha256": "b544ea5daa95ee59d017b421177ab8c69c2a8e2f25b24b07a7d36536eb386380",
+      "retrieved_at": "2026-10-03T22:37:03.842931+00:00"
+    },
+    {
+      "race_id": "202605010411",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605010411",
+      "sha256": "2ff1fa6032e2d796e327e05e7205ca6991192255f8e89acf20b486afce748939",
+      "retrieved_at": "2026-10-03T22:37:03.958330+00:00"
+    },
+    {
+      "race_id": "202605010611",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605010611",
+      "sha256": "5b9da1b870bbdc82cbbf03390f9933be8f70067ae73f10a60fda2b86ca97c9d9",
+      "retrieved_at": "2026-10-03T22:37:11.350041+00:00"
+    },
+    {
+      "race_id": "202605010711",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605010711",
+      "sha256": "c77a63b5eab84cebe3ee59bdca7dc05c1715a89fe6b4c44858224180d465059e",
+      "retrieved_at": "2026-10-03T22:37:11.598677+00:00"
+    },
+    {
+      "race_id": "202605010810",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605010810",
+      "sha256": "19604e38e39ea161e203e58f66603ace3a0a2a8720786103ee481870d127bba4",
+      "retrieved_at": "2026-10-03T22:37:21.529434+00:00"
+    },
+    {
+      "race_id": "202605010811",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605010811",
+      "sha256": "69bfe0e96cb84a6f452c01d8f96532fab41d00560a9bfc2effa52fef6df00564",
+      "retrieved_at": "2026-10-03T22:37:21.797312+00:00"
+    },
+    {
+      "race_id": "202605020511",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605020511",
+      "sha256": "9fbfb578db5c0da6bc75e9346e2655ab45f771cccded5ffb3cc9955d4fd0451c",
+      "retrieved_at": "2026-10-03T22:37:29.479898+00:00"
+    },
+    {
+      "race_id": "202605020610",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605020610",
+      "sha256": "78024998761017145ba3e5dd69f8bff06ee626fff7b25360675f105144944c36",
+      "retrieved_at": "2026-10-03T22:37:29.318173+00:00"
+    },
+    {
+      "race_id": "202605020611",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605020611",
+      "sha256": "13b03a1d5ecfa240d2e830eb8b23ceca61c9cc05b6f3539b4eec6d8c218bf094",
+      "retrieved_at": "2026-10-03T22:37:37.855920+00:00"
+    },
+    {
+      "race_id": "202605020711",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605020711",
+      "sha256": "c733b7062d2146bf24c6367d607c8af70d5fbf8659729e86479245d509e1d08a",
+      "retrieved_at": "2026-10-03T22:37:37.857256+00:00"
+    },
+    {
+      "race_id": "202605021210",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605021210",
+      "sha256": "03a4de1bda22cb8b63505650dce2a09a84b1910f6c9ab31618666af19a5f552f",
+      "retrieved_at": "2026-10-03T22:37:45.877418+00:00"
+    },
+    {
+      "race_id": "202605021211",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605021211",
+      "sha256": "c7631025ba59e3049848724d568a05808fc13621fefeef402103544ead6e2b64",
+      "retrieved_at": "2026-10-03T22:37:45.724011+00:00"
+    },
+    {
+      "race_id": "202605021212",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605021212",
+      "sha256": "ce0e9515da1e6749acf35723ea3589f3a9be3fc79e83f6ddd6510073fbc1bc1e",
+      "retrieved_at": "2026-10-03T22:37:53.789267+00:00"
+    },
+    {
+      "race_id": "202605030211",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605030211",
+      "sha256": "1d0dbdbf20791266816c2b8abeee7d4bcb229e8ca8217f658e5d5f1498551b4a",
+      "retrieved_at": "2026-10-03T22:37:53.745768+00:00"
+    },
+    {
+      "race_id": "202605030311",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605030311",
+      "sha256": "c97798ee3edcaafa0989612c78744b6bba8a0402df2e4c9b186add489c8d736b",
+      "retrieved_at": "2026-10-03T22:38:01.011488+00:00"
+    },
+    {
+      "race_id": "202605030411",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605030411",
+      "sha256": "9d6af77ffaaa28680a776abf82a7c47a8ecff5eabc177aba32bf24225f61e560",
+      "retrieved_at": "2026-10-03T22:38:01.306674+00:00"
+    },
+    {
+      "race_id": "202605040101",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605040101",
+      "sha256": "63785749d200ef0570eddea679430cc5680f3c3e50b5137c6c796261b0b22c1e",
+      "retrieved_at": "2026-10-03T22:38:08.750314+00:00"
+    },
+    {
+      "race_id": "202605040102",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605040102",
+      "sha256": "6576bf24c0affd2d65e11b5c3dacbb02b67bd4ff60ac699ef6649789d576e9ba",
+      "retrieved_at": "2026-10-03T22:38:08.456029+00:00"
+    },
+    {
+      "race_id": "202605040103",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605040103",
+      "sha256": "f5f4a9657ee12a4f08ce4b57c5974d742c06f3d8a87052892c5577296035e60d",
+      "retrieved_at": "2026-10-03T22:38:15.631213+00:00"
+    },
+    {
+      "race_id": "202605040105",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605040105",
+      "sha256": "2a1d924349e3c6084714505a18ec7a61f7eb7a69ffbd474b9d4223b5c72bec3c",
+      "retrieved_at": "2026-10-03T22:39:06.272168+00:00"
+    },
+    {
+      "race_id": "202605040106",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605040106",
+      "sha256": "78142d9d2e2864571b1045cca11c4b7a7658db019ec5905d50f826a2aa30e184",
+      "retrieved_at": "2026-10-03T22:39:06.531280+00:00"
+    },
+    {
+      "race_id": "202605040107",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605040107",
+      "sha256": "bdb41b6af3d52e8ae79dc68305d8b82e9850d2b18d0c8d6b9a3d16c850aa5337",
+      "retrieved_at": "2026-10-03T22:39:15.171796+00:00"
+    },
+    {
+      "race_id": "202605040108",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605040108",
+      "sha256": "8a8996a6f5f63e2ba9039ecd1be769cb8fc1a2139df0c4353db9b79c18daf8ea",
+      "retrieved_at": "2026-10-03T22:39:15.337000+00:00"
+    },
+    {
+      "race_id": "202605040109",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605040109",
+      "sha256": "8b147543a2bbefcb788788ce4b742dca6dfa3583869dcb7136d02b1aca08360b",
+      "retrieved_at": "2026-10-03T22:39:22.247995+00:00"
+    },
+    {
+      "race_id": "202605040110",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605040110",
+      "sha256": "3291f1abe01c5026f84f1052ad254dfa972f2d7f58675f2ee668bc28f5473a6b",
+      "retrieved_at": "2026-10-03T22:39:22.362136+00:00"
+    },
+    {
+      "race_id": "202605040111",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605040111",
+      "sha256": "e5162261a89a6916a9d6fa06e077b95de00672301a6a04609795a97efcab9f0b",
+      "retrieved_at": "2026-10-03T22:39:30.368743+00:00"
+    },
+    {
+      "race_id": "202605040112",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2605040112",
+      "sha256": "69ffa0170711b7bf60cd18657f02bb2ddcb22803368a348737c92f191e0b6169",
+      "retrieved_at": "2026-10-03T22:39:30.233745+00:00"
+    },
+    {
+      "race_id": "202606010111",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010111",
+      "sha256": "3739cfeb2aa8494239da14d1707d211bc0f38a5f6420abfe8e00b9f5dcc94c3b",
+      "retrieved_at": "2026-10-03T22:39:37.658388+00:00"
+    },
+    {
+      "race_id": "202606010410",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010410",
+      "sha256": "dcd3a61beed9a5e7c03d7bb3308b050b96b6014e55d244af5c89934cb0de29a0",
+      "retrieved_at": "2026-10-03T22:39:37.717755+00:00"
+    },
+    {
+      "race_id": "202606010511",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010511",
+      "sha256": "675a6e3765fad5bb52e380d58b77f0ebd80fc16558c1bb0222baceb35e717538",
+      "retrieved_at": "2026-10-03T22:39:45.241507+00:00"
+    },
+    {
+      "race_id": "202606010911",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010911",
+      "sha256": "06a8d21dadf4830cca8dc483dfa646577a0a682dd20eadf535eba2c798c39fb5",
+      "retrieved_at": "2026-10-03T22:39:45.358570+00:00"
+    },
+    {
+      "race_id": "202606020211",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606020211",
+      "sha256": "6bcc75813658ecea89286b5ffcd4c9b7703e09d88da8c7475b01ae56d96bec21",
+      "retrieved_at": "2026-10-03T22:39:52.741243+00:00"
+    },
+    {
+      "race_id": "202606020411",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606020411",
+      "sha256": "b102d591847d14eeb2be056fe587d0d46025671096cd7fbd8b5087dee619201c",
+      "retrieved_at": "2026-10-03T22:39:52.629064+00:00"
+    },
+    {
+      "race_id": "202606020610",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606020610",
+      "sha256": "4f5419b7bee5d03fd1a5b52df1b426a48a2a216a154445251152e52d4b7c4efd",
+      "retrieved_at": "2026-10-03T22:39:59.545747+00:00"
+    },
+    {
+      "race_id": "202606030111",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606030111",
+      "sha256": "ed2e1f46498030ed16fe6e367c501f54207c99c642fcaa7ffdfa8b61600a7d47",
+      "retrieved_at": "2026-10-03T22:39:59.750232+00:00"
+    },
+    {
+      "race_id": "202606030811",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606030811",
+      "sha256": "cb79194f41e40cd23a526ba658ce2c330242e7c57ea0889b8e31687032e242b9",
+      "retrieved_at": "2026-10-03T22:40:07.126347+00:00"
+    },
+    {
+      "race_id": "202606040111",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606040111",
+      "sha256": "9b84df4fe503081817c99348bec70956498a884f711277a368fb5f1d0005989f",
+      "retrieved_at": "2026-10-03T22:40:07.273174+00:00"
+    },
+    {
+      "race_id": "202606040611",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606040611",
+      "sha256": "83fd4ff624d00bc662828af7dae3fa7de00647dab92ab60d5cdeaf02a62ff957",
+      "retrieved_at": "2026-10-03T22:40:14.066669+00:00"
+    },
+    {
+      "race_id": "202607010211",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2607010211",
+      "sha256": "a6945466866c2e9d9168c373716bea69a36ee35cfbdb16497449438fca595e05",
+      "retrieved_at": "2026-10-03T22:40:13.921612+00:00"
+    },
+    {
+      "race_id": "202607020807",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2607020807",
+      "sha256": "06d8eae9a8b72943688895b68652013c2a39a306478539439953daee2b317218",
+      "retrieved_at": "2026-10-03T22:40:22.008553+00:00"
+    },
+    {
+      "race_id": "202608010111",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010111",
+      "sha256": "de7799a5a719ca99e2551c3d69b5510e1b936ae3c194dc3ccf31364e9c6236ad",
+      "retrieved_at": "2026-10-03T22:40:22.052542+00:00"
+    },
+    {
+      "race_id": "202608010211",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010211",
+      "sha256": "d5cd05813242955d3a7eca0b9191baf322b5d8a8e922a5178746e4224532cb99",
+      "retrieved_at": "2026-10-03T22:40:29.762429+00:00"
+    },
+    {
+      "race_id": "202608010509",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010509",
+      "sha256": "96368109d61da365e7e0053e5384a7a86b0aa9776c1990d93c64eda2204f9480",
+      "retrieved_at": "2026-10-03T22:40:29.832613+00:00"
+    },
+    {
+      "race_id": "202608010711",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010711",
+      "sha256": "f0596c3684c21bb1a3773aaf1149d8da312513fde1e4b67aec50e82ccae0eeeb",
+      "retrieved_at": "2026-10-03T22:40:37.309515+00:00"
+    },
+    {
+      "race_id": "202608010811",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010811",
+      "sha256": "57f893248d276cff1a095eac81546a917bdbf893d4d277ef42bdded5f19f5c1f",
+      "retrieved_at": "2026-10-03T22:40:37.250093+00:00"
+    },
+    {
+      "race_id": "202608020311",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608020311",
+      "sha256": "ff6947847658f8e376356166f593304ddb6ac4225b13105d2d93f0f6ca7f90be",
+      "retrieved_at": "2026-10-03T22:40:45.220052+00:00"
+    },
+    {
+      "race_id": "202608020611",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608020611",
+      "sha256": "3e883f32c21efed6d179d0bb6da204a036253c60d32950a069ffacddd0ccef37",
+      "retrieved_at": "2026-10-03T22:40:45.178537+00:00"
+    },
+    {
+      "race_id": "202608030210",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608030210",
+      "sha256": "69353751f48eda094788775e3411bb2dcb5cec98a7c5d097b12e3d3ce0bf7403",
+      "retrieved_at": "2026-10-03T22:40:53.036148+00:00"
+    },
+    {
+      "race_id": "202608030211",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608030211",
+      "sha256": "c105193dee267a0daaba3b17c9fd2ad2c09294edb8b705bf0a3906247c3500d3",
+      "retrieved_at": "2026-10-03T22:40:53.043243+00:00"
+    },
+    {
+      "race_id": "202608030411",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608030411",
+      "sha256": "b9fed8b6802a982a01f2138f34d6dd041e51d0cbbd48e71b2775a9d6567ef574",
+      "retrieved_at": "2026-10-03T22:41:00.531958+00:00"
+    },
+    {
+      "race_id": "202608031210",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608031210",
+      "sha256": "95f9491a2b610b14de7832c50df899102a408a8bc2d929e7c42ca39522f06a3f",
+      "retrieved_at": "2026-10-03T22:41:00.581303+00:00"
+    },
+    {
+      "race_id": "202608040101",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608040101",
+      "sha256": "6c640a11c6c68163de05a182432f14292f6c30e218bd4747bad06dbfc5f26162",
+      "retrieved_at": "2026-10-03T22:41:08.636743+00:00"
+    },
+    {
+      "race_id": "202608040102",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608040102",
+      "sha256": "ea4b83f4a1797979b4177e49ffde4b83b19e18c602faa3bd0bbddb86b40b7337",
+      "retrieved_at": "2026-10-03T22:41:08.756259+00:00"
+    },
+    {
+      "race_id": "202608040103",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608040103",
+      "sha256": "95699460f90598965bf94bc761e84280350f28298ee7bb3eaba05d98f41ff3a4",
+      "retrieved_at": "2026-10-03T22:41:16.550745+00:00"
+    },
+    {
+      "race_id": "202608040104",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608040104",
+      "sha256": "e649761394f3c20d2bce8939e43fb75e1a5b9981c8ebe73a80e3239c095f8e42",
+      "retrieved_at": "2026-10-03T22:41:16.655941+00:00"
+    },
+    {
+      "race_id": "202608040105",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608040105",
+      "sha256": "3fec618a279414b3d84d64e9d13ce1a20b8802e8096e6e14b0e596e86bd61db6",
+      "retrieved_at": "2026-10-03T22:41:24.411298+00:00"
+    },
+    {
+      "race_id": "202608040106",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608040106",
+      "sha256": "f679c7866fdfdf166dedba6806b0e7a018d99f48d609fc2ae2fad08fc7c488b2",
+      "retrieved_at": "2026-10-03T22:41:24.621259+00:00"
+    },
+    {
+      "race_id": "202608040107",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608040107",
+      "sha256": "a4f4779b4a0fac719e5beb6cf3e1549f97d124ce87e97cb67d84eb271ddee657",
+      "retrieved_at": "2026-10-03T22:41:32.272594+00:00"
+    },
+    {
+      "race_id": "202608040108",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608040108",
+      "sha256": "99c9a9df3aa082bad19c0fa0a5655c3a115d9ebf4844fbe80522474baa8cf0ed",
+      "retrieved_at": "2026-10-03T22:41:32.224968+00:00"
+    },
+    {
+      "race_id": "202608040109",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608040109",
+      "sha256": "699e062a5a44037cc00133b394ba67dfab7fc9c067cd80261d0ce0e58b1534d2",
+      "retrieved_at": "2026-10-03T22:41:39.722911+00:00"
+    },
+    {
+      "race_id": "202608040110",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608040110",
+      "sha256": "b67dbbf3037c63f8fa0043dc66a1ce0f1c7defd4902c36cd4832ce74bda1559a",
+      "retrieved_at": "2026-10-03T22:41:39.616624+00:00"
+    },
+    {
+      "race_id": "202608040111",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608040111",
+      "sha256": "bc9ec3e9b1494e45664b0d8b9a132dc6bd8763cfb8fe4e4441d56b673e281ac8",
+      "retrieved_at": "2026-10-03T22:41:48.278503+00:00"
+    },
+    {
+      "race_id": "202608040112",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608040112",
+      "sha256": "f486ab6e4a5da3c320fe3fe858016e32f81fdd33f08230645d47a66f30d6c5fe",
+      "retrieved_at": "2026-10-03T22:41:48.226970+00:00"
+    },
+    {
+      "race_id": "202609010309",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2609010309",
+      "sha256": "6f578def21048c346e3578e473d2e2b5a7cfa45a4d6b0437dd7c3bc7de1c3cd4",
+      "retrieved_at": "2026-10-03T22:41:55.718165+00:00"
+    },
+    {
+      "race_id": "202609010611",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2609010611",
+      "sha256": "6a5c024e251eac694ecebff40c40534505152fbcdfaa8691970ad2e29eeb6715",
+      "retrieved_at": "2026-10-03T22:41:55.763694+00:00"
+    },
+    {
+      "race_id": "202609011011",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2609011011",
+      "sha256": "3c4383c4d01b76baefccc2cce4630e588a5689474dbdf805ec271bee0628998c",
+      "retrieved_at": "2026-10-03T22:42:03.471689+00:00"
+    },
+    {
+      "race_id": "202609020210",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2609020210",
+      "sha256": "a7b1c0c90bfb599426f7a6688766f663ed7bf5043a016c7271799f7e9375fdc5",
+      "retrieved_at": "2026-10-03T22:42:03.813522+00:00"
+    },
+    {
+      "race_id": "202609020411",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2609020411",
+      "sha256": "777409f3ae26ee2b8553df5f992d500c6d9681725c166bb86b8a239f4e3b9653",
+      "retrieved_at": "2026-10-03T22:42:11.758011+00:00"
+    },
+    {
+      "race_id": "202609020510",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2609020510",
+      "sha256": "8c551f1b64e5078855369becdd4e6bb647b63fece0296b7bb44e4bd704e3965b",
+      "retrieved_at": "2026-10-03T22:42:12.100014+00:00"
+    },
+    {
+      "race_id": "202609020610",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2609020610",
+      "sha256": "87d56f7d62d636dcd06ed65466763b3be9280839f70fbbb8f3978d0a39a77e1b",
+      "retrieved_at": "2026-10-03T22:42:19.147467+00:00"
+    },
+    {
+      "race_id": "202609030411",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2609030411",
+      "sha256": "8d981bd1044aa91aec1e83a206f7504c3fd4caa1783c800567ac37654326443f",
+      "retrieved_at": "2026-10-03T22:42:19.209499+00:00"
+    },
+    {
+      "race_id": "202609030611",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2609030611",
+      "sha256": "bca5bf31c63995b7e8fb5150e4c9d9c32e7e9df3bf95b2f557ad6f22e11b69be",
+      "retrieved_at": "2026-10-03T22:42:26.884492+00:00"
+    },
+    {
+      "race_id": "202610010110",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2610010110",
+      "sha256": "57811f9c0f599256166136350ee48b79b99cb6c8f81b28da192d41d4f23a20a3",
+      "retrieved_at": "2026-10-03T22:42:27.029016+00:00"
+    },
+    {
+      "race_id": "202610011011",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2610011011",
+      "sha256": "8cdc417567c870f4936f55317b05e62d5894df8f00d475510b7494333fb5a8d1",
+      "retrieved_at": "2026-10-03T22:42:35.729887+00:00"
+    },
+    {
+      "race_id": "202610020811",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2610020811",
+      "sha256": "c3f6acc19e320b2d8f76c43e4b6811585bb49870c39a11f919f116ccb3c088e1",
+      "retrieved_at": "2026-10-03T22:42:35.859806+00:00"
+    }
+  ],
+  "corrected_history_sha256": "56274b965d4ee05e110c4bb8a1d781d0caba06fa71e7c037071a49d12fad27fa",
+  "corrected_context_sha256": "b72ea0ad58d73acafa0b0c829c4e27d0f01838ecabe0a297f0dea6ccc58feeca",
+  "corrected_prediction_sha256": "3371a05c7cb41eac468d7b7d24d97803b4772b847aec0fe32c357bd864b3cf37",
+  "original_1e_minus7_reproduction_gate_passed": false
+}

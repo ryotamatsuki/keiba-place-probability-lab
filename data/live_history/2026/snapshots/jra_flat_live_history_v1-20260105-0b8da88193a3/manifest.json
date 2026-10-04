@@ -1,0 +1,1388 @@
+{
+  "schema_version": "jra_flat_live_history_v1",
+  "snapshot_id": "jra_flat_live_history_v1-20260105-0b8da88193a3",
+  "requested_through": "2026-01-05",
+  "complete_through": "2026-01-05",
+  "latest_race_date": "2026-01-05",
+  "expected_races": 47,
+  "confirmed_races": 47,
+  "missing_race_ids": [],
+  "expected_race_days": 2,
+  "confirmed_race_days": 2,
+  "rows": 654,
+  "entry_rows": 657,
+  "history_sha256": "0b8da88193a3484dfbfcb81fc8ad6e62e4ce54be9230174f10cc49074ae1ae43",
+  "entry_audit_sha256": "50ad7330ebfb36ca926704633571268b0ce5f6fca3393d37450f809967ec10a6",
+  "race_ledger_sha256": "876dbcd1669d0914aca2520c06d7ab587c4a44fd0b1852271adc13007f1ef225",
+  "race_qa": [
+    {
+      "declared_entries": 16,
+      "actual_starters": 16,
+      "declared_field_size": 16,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010101",
+      "provider_id": "2606010101",
+      "race_date": "2026-01-04",
+      "result_sha256": "06f6a56b3313fff3f5b297081cb9331637be4ef59b4ff2659997241c11a1da77",
+      "roster_sha256": "b06c79c9457a350300bc776841ca96b75817196f2cc6c1844145cfb958898a08"
+    },
+    {
+      "declared_entries": 13,
+      "actual_starters": 13,
+      "declared_field_size": 13,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010102",
+      "provider_id": "2606010102",
+      "race_date": "2026-01-04",
+      "result_sha256": "3f0f04411aa347d86101934627b5298a6c313dcdd815f1166e34c427aae17518",
+      "roster_sha256": "5ef5f8980c14930cfdb6394520b32957aa8c71a3f6baed4a01f2c90093b00887"
+    },
+    {
+      "declared_entries": 16,
+      "actual_starters": 15,
+      "declared_field_size": 16,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010103",
+      "provider_id": "2606010103",
+      "race_date": "2026-01-04",
+      "result_sha256": "d2ea1c2b8872376224011ee51133b5296944f79f2495bb7f0328993e333ceaa4",
+      "roster_sha256": "f95903b6cbd790a7746719881e86b24406234ab6e24055deb63bf60253cb4fdf"
+    },
+    {
+      "declared_entries": 12,
+      "actual_starters": 12,
+      "declared_field_size": 12,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010104",
+      "provider_id": "2606010104",
+      "race_date": "2026-01-04",
+      "result_sha256": "fcd3f11d2f787837aac72a4f7d97feef650bf8becb88da7ae0110da55b03b741",
+      "roster_sha256": "5fcdd5af692849d76ea5ad9f3a1ea38994657676146e8945e3bd9717ff45d6b5"
+    },
+    {
+      "declared_entries": 16,
+      "actual_starters": 16,
+      "declared_field_size": 16,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010105",
+      "provider_id": "2606010105",
+      "race_date": "2026-01-04",
+      "result_sha256": "94eb3b62ed98e05977d711d6c89af7238f0637499e29cafba82b2e92674e21f2",
+      "roster_sha256": "73b39fbf66f0c9b8bf293a071dccfb5379cd064a0dd434fdd0364fefdd7725aa"
+    },
+    {
+      "declared_entries": 17,
+      "actual_starters": 17,
+      "declared_field_size": 17,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010106",
+      "provider_id": "2606010106",
+      "race_date": "2026-01-04",
+      "result_sha256": "9e7e5fc547a878236ed300d9d8b361b01dab5a4176135eaf3167921cbd3bafd7",
+      "roster_sha256": "2836d6b6019f52a67d12cac37e055545000fd6b900d4003e879ec6ceb8db0949"
+    },
+    {
+      "declared_entries": 16,
+      "actual_starters": 16,
+      "declared_field_size": 16,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010107",
+      "provider_id": "2606010107",
+      "race_date": "2026-01-04",
+      "result_sha256": "e3f24c856b062e9c37cfe9b8c9805958418b37441dc6547f96381f0897e96ec1",
+      "roster_sha256": "e3fa5e3efe8915b20ae3d9aa2854f3b32b26650baf8a457dcd03fa8b090ab6eb"
+    },
+    {
+      "declared_entries": 16,
+      "actual_starters": 16,
+      "declared_field_size": 16,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010108",
+      "provider_id": "2606010108",
+      "race_date": "2026-01-04",
+      "result_sha256": "443b5335e3c6ef34d77e35dc67569a81617ada541fbde05d3ece48bf81263bdf",
+      "roster_sha256": "72f1fa46058a24afa1edd23a4eed5c79bd7f89ae729ffaf591f291df9b647774"
+    },
+    {
+      "declared_entries": 11,
+      "actual_starters": 11,
+      "declared_field_size": 11,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010109",
+      "provider_id": "2606010109",
+      "race_date": "2026-01-04",
+      "result_sha256": "8c94f54cd62224280e2386de652b3c87bdc8e86ad7bfb5fc0f503fc14f860dc1",
+      "roster_sha256": "b994ff7c9840c9a9eeac44228909015e35d3e33f4e56161648d9f0f004ac4022"
+    },
+    {
+      "declared_entries": 8,
+      "actual_starters": 8,
+      "declared_field_size": 8,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010110",
+      "provider_id": "2606010110",
+      "race_date": "2026-01-04",
+      "result_sha256": "55ad3dbf4e09c46bc70c25b2ae81035bc0f0883191b5e6915c1d1534e6977db9",
+      "roster_sha256": "ea99d02e564c2a9d525660de84052b4fca5ea389c098f3181e4ce677a7c31cb8"
+    },
+    {
+      "declared_entries": 14,
+      "actual_starters": 14,
+      "declared_field_size": 14,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010111",
+      "provider_id": "2606010111",
+      "race_date": "2026-01-04",
+      "result_sha256": "ff5eaac1ffda63b4140d6f8fc1b7d80cafdaf9d6299f44b8219001758737c0cc",
+      "roster_sha256": "f773544c20fdcddc6ef376e648e15b27979152d60dabca683038fce77ab1396d"
+    },
+    {
+      "declared_entries": 16,
+      "actual_starters": 16,
+      "declared_field_size": 16,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010112",
+      "provider_id": "2606010112",
+      "race_date": "2026-01-04",
+      "result_sha256": "2e56d1c0e7e7460b3b805b2678e404878654a3138305d513ff3f99ac94184c41",
+      "roster_sha256": "1d09d8dfd5e5e2fabdc79d6720ff070def6019dc7e3e78df6c20c0c6ead85314"
+    },
+    {
+      "declared_entries": 16,
+      "actual_starters": 16,
+      "declared_field_size": 16,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010201",
+      "provider_id": "2606010201",
+      "race_date": "2026-01-05",
+      "result_sha256": "60a42d8da81862c3d9abe31101d86ffc8fbc11259e1101e3e69f1890a0a24aa9",
+      "roster_sha256": "346c658741986ef85b86e87e35ad7a77adb1d7abdf0dc9d69ac3eae6bce24761"
+    },
+    {
+      "declared_entries": 16,
+      "actual_starters": 16,
+      "declared_field_size": 16,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010202",
+      "provider_id": "2606010202",
+      "race_date": "2026-01-05",
+      "result_sha256": "4975eca902c064cd94ed8c14a578c47870b1001d60c3c2114714a3ae4b7ae88d",
+      "roster_sha256": "86c0677cf3125019f4f45e55528cfc587ee6d6c2357154319c3b387fb61d066f"
+    },
+    {
+      "declared_entries": 12,
+      "actual_starters": 12,
+      "declared_field_size": 12,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010203",
+      "provider_id": "2606010203",
+      "race_date": "2026-01-05",
+      "result_sha256": "b5f72eabaea9462a7518411af1d8105f68d961b4c4615e19617e72f094db0ee0",
+      "roster_sha256": "94da30e92dd2a5660e66dc9c3552e8d8c2f6b80727815c6e73129b2a41082f7c"
+    },
+    {
+      "declared_entries": 13,
+      "actual_starters": 13,
+      "declared_field_size": 13,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010204",
+      "provider_id": "2606010204",
+      "race_date": "2026-01-05",
+      "result_sha256": "f632eaf6b3161afc59324cc2b8227720b79bb00901d48e264d92fb4610e9c6c4",
+      "roster_sha256": "f82355c098f447c80b85cc8239d9dbb08f1a9864fae1442d0cd9125a49322c8c"
+    },
+    {
+      "declared_entries": 16,
+      "actual_starters": 16,
+      "declared_field_size": 16,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010205",
+      "provider_id": "2606010205",
+      "race_date": "2026-01-05",
+      "result_sha256": "2f4ab0ac541cc5d71a8198d498f63b6f9c138890cc75c8130698db9c6ab41883",
+      "roster_sha256": "e5696cdecba46028402d7f1dc389dcf690846d31285771b93f71b482ee3c83a8"
+    },
+    {
+      "declared_entries": 18,
+      "actual_starters": 18,
+      "declared_field_size": 18,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010206",
+      "provider_id": "2606010206",
+      "race_date": "2026-01-05",
+      "result_sha256": "4101b7b9ce05447e0083c45ffce8fc545f9b28817a0f3ad255294a9901a36388",
+      "roster_sha256": "b9b5301d66d8024e87e09a1de967ac06b80e5e76433f94d3a540ae2364629f6a"
+    },
+    {
+      "declared_entries": 10,
+      "actual_starters": 10,
+      "declared_field_size": 10,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010207",
+      "provider_id": "2606010207",
+      "race_date": "2026-01-05",
+      "result_sha256": "47baca0e5ad49946676e9d9cf5bf5c19ecacd6893e845967f1e47abea93aa948",
+      "roster_sha256": "36903a22af3bafbe893cab1e7db46457c3c83eaad6c35a76e9ffcda63c6eb95f"
+    },
+    {
+      "declared_entries": 12,
+      "actual_starters": 12,
+      "declared_field_size": 12,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010209",
+      "provider_id": "2606010209",
+      "race_date": "2026-01-05",
+      "result_sha256": "69c8ea3a30eb66a3c335a844320c46713c69514813cfbc55fa90ea899b0d61d7",
+      "roster_sha256": "03efe520ac973f1d5764cbeafe963da2bc20742ed30bcb87fbceababbe3ef8e8"
+    },
+    {
+      "declared_entries": 12,
+      "actual_starters": 11,
+      "declared_field_size": 12,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010210",
+      "provider_id": "2606010210",
+      "race_date": "2026-01-05",
+      "result_sha256": "8535d8cf6ef7b46e4da5b3f9a4d79e4aae41431916c5029c30a0388eee727bd7",
+      "roster_sha256": "96bbb800065cf458b068e8686a9ec0bdeef72d75cd68c3106b5f2c89e0157398"
+    },
+    {
+      "declared_entries": 14,
+      "actual_starters": 14,
+      "declared_field_size": 14,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010211",
+      "provider_id": "2606010211",
+      "race_date": "2026-01-05",
+      "result_sha256": "225c0355982746cabb4ddf396f9bddf07d4ec2a0f521f6ffc7911cab2ed2e501",
+      "roster_sha256": "04360e4a5d03da372b19adb3885e1fce8b3281ecd54a48c1154339bcb85e2488"
+    },
+    {
+      "declared_entries": 16,
+      "actual_starters": 16,
+      "declared_field_size": 16,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202606010212",
+      "provider_id": "2606010212",
+      "race_date": "2026-01-05",
+      "result_sha256": "184914c39297c973f6d32452b0b2586994d9bab5e464adebeda7f01a28706f1a",
+      "roster_sha256": "e58227da221f6a11efbb484ad26f8d2c1d2308ce7b9695e63341c7a61659f464"
+    },
+    {
+      "declared_entries": 16,
+      "actual_starters": 16,
+      "declared_field_size": 16,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010101",
+      "provider_id": "2608010101",
+      "race_date": "2026-01-04",
+      "result_sha256": "8e8499a4a2ba348c0904caca4e722d9dd5afce3ad7b0cde9d9093e8f8197018a",
+      "roster_sha256": "d1be23c667581f848fb631ff958481bcb27e3b845aceee4321ae035bcd6a9b56"
+    },
+    {
+      "declared_entries": 16,
+      "actual_starters": 16,
+      "declared_field_size": 16,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010102",
+      "provider_id": "2608010102",
+      "race_date": "2026-01-04",
+      "result_sha256": "f12e46a4d7f52f3c96630b4803dd3ebccb84cbcbf08b7f9ee8684c57af917700",
+      "roster_sha256": "52168708e78390919a81ba0ffff140b8963af36f997e988c4444b426d856c25d"
+    },
+    {
+      "declared_entries": 16,
+      "actual_starters": 16,
+      "declared_field_size": 16,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010103",
+      "provider_id": "2608010103",
+      "race_date": "2026-01-04",
+      "result_sha256": "170ee44ff60fcd54b0fd21359140597df4f268f6e3586fc50411629e2c8c2b20",
+      "roster_sha256": "022d6e6c726306b759ce4ccf7ff412111b9e8e17b3c3138258c488c9727c84d0"
+    },
+    {
+      "declared_entries": 12,
+      "actual_starters": 12,
+      "declared_field_size": 12,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 1,
+      "disqualified": 0,
+      "race_id": "202608010104",
+      "provider_id": "2608010104",
+      "race_date": "2026-01-04",
+      "result_sha256": "67363ab542aa0f73539c4e2717d51593a5052e0980c29d0b2a09b7827255d9ae",
+      "roster_sha256": "5e7035fb1ea93b09a414c85e571e1c2b2cca9d76c6a1d7b0602726db188ecbfb"
+    },
+    {
+      "declared_entries": 18,
+      "actual_starters": 18,
+      "declared_field_size": 18,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010105",
+      "provider_id": "2608010105",
+      "race_date": "2026-01-04",
+      "result_sha256": "ce40e6fdb317ae68c24b5af1636c46b3d8c7408e020fc209321ec2261728490b",
+      "roster_sha256": "7cd8c08dca49514c8163ac4f4efd7e23dbe3f9c391396c0b9cfcc48798e81c0c"
+    },
+    {
+      "declared_entries": 7,
+      "actual_starters": 7,
+      "declared_field_size": 7,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010106",
+      "provider_id": "2608010106",
+      "race_date": "2026-01-04",
+      "result_sha256": "1e758e6e7ef0dda4707043a2c8d0b0da9b85e0da40b76fbb0e2bf8967caa66f2",
+      "roster_sha256": "ba422f2b0e36cf7008ca82bfc877fa66d63ab2a6d080eb37f8389f48494b493f"
+    },
+    {
+      "declared_entries": 10,
+      "actual_starters": 10,
+      "declared_field_size": 10,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010107",
+      "provider_id": "2608010107",
+      "race_date": "2026-01-04",
+      "result_sha256": "eadbe1831327abff7f858d710651c387bfc4f17330834b21c22ea42c1e301ba3",
+      "roster_sha256": "5b87f256b6388c91a532e9a6cfd719d00737789f0b0ecb2269d0f2f2c29ca1ab"
+    },
+    {
+      "declared_entries": 16,
+      "actual_starters": 16,
+      "declared_field_size": 16,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010108",
+      "provider_id": "2608010108",
+      "race_date": "2026-01-04",
+      "result_sha256": "741d74d36e51fd3d77c163cad21aa24d5acdf2d24e9f149dc82f0c15d6820300",
+      "roster_sha256": "b6559078c96c6873ca7940d76b4acc7a511a6f2d6b3620af571b5ce7034b65ba"
+    },
+    {
+      "declared_entries": 13,
+      "actual_starters": 13,
+      "declared_field_size": 13,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010109",
+      "provider_id": "2608010109",
+      "race_date": "2026-01-04",
+      "result_sha256": "8e6844d1ef307a6efbba691475d6192704c629c26320ec6ae9be2f3a70e8aa31",
+      "roster_sha256": "92c8d2e1909b6150327397694935574314f302331a083b9ccd89dfa409f97189"
+    },
+    {
+      "declared_entries": 9,
+      "actual_starters": 9,
+      "declared_field_size": 9,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010110",
+      "provider_id": "2608010110",
+      "race_date": "2026-01-04",
+      "result_sha256": "5e48eb14c283d62e8d7fa157d2d185109911924e4daaee373cf38be85344754f",
+      "roster_sha256": "460bb3aec1ac13307c12c0eb55ec0901df2f87da7b0d89bf373a6a221d1ca2d0"
+    },
+    {
+      "declared_entries": 18,
+      "actual_starters": 18,
+      "declared_field_size": 18,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010111",
+      "provider_id": "2608010111",
+      "race_date": "2026-01-04",
+      "result_sha256": "91ac405e48813962c4dc97b5ab26cb93275763e8cc5f193cf40069021f42665a",
+      "roster_sha256": "d93939dc5b0bd997e57c29e05d349712a71d6575816bb32d1a8fd07fedf981ae"
+    },
+    {
+      "declared_entries": 12,
+      "actual_starters": 12,
+      "declared_field_size": 12,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010112",
+      "provider_id": "2608010112",
+      "race_date": "2026-01-04",
+      "result_sha256": "43a96fe0a76dcf51d8bd42271c534157359c93f99fec3de26f86c414bc316089",
+      "roster_sha256": "de0f38e5e733a94d5b557438df0e424b053e73f79c2b64a88ab6ecc987cf6ad1"
+    },
+    {
+      "declared_entries": 14,
+      "actual_starters": 14,
+      "declared_field_size": 14,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010201",
+      "provider_id": "2608010201",
+      "race_date": "2026-01-05",
+      "result_sha256": "0fc9f2e540e0e6212eccadd127d41f14e01f3d43947ad2ac8369962ec3bec545",
+      "roster_sha256": "b9c159b4019b6e89c482e114c8fbf62936cb6cf934a0f8b59c3984a0f4f5c51f"
+    },
+    {
+      "declared_entries": 16,
+      "actual_starters": 16,
+      "declared_field_size": 16,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010202",
+      "provider_id": "2608010202",
+      "race_date": "2026-01-05",
+      "result_sha256": "63c77f17057ff85e44d4da73a4289a4382bfc51828de8006e0b702ddf1092e9a",
+      "roster_sha256": "630996546659cc266e9db3cbb4c833721f487e493a70ab6fa2957f2e48fbf011"
+    },
+    {
+      "declared_entries": 14,
+      "actual_starters": 14,
+      "declared_field_size": 14,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010203",
+      "provider_id": "2608010203",
+      "race_date": "2026-01-05",
+      "result_sha256": "c213ce6a03e36c00c2ca3a57a5c65829bda7b5f9f71ba8527fadc2fb4a5e1ba8",
+      "roster_sha256": "56328ba835c5f1f1c5f210e0eecd5a4e00330350f6acc7995052724e84f15a61"
+    },
+    {
+      "declared_entries": 11,
+      "actual_starters": 11,
+      "declared_field_size": 11,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010204",
+      "provider_id": "2608010204",
+      "race_date": "2026-01-05",
+      "result_sha256": "cba1c145af93fbe6f6c98d8b3beb97e1ac012cf5c1c8783be8b575807b05d4af",
+      "roster_sha256": "7db87e6c1a9ab91601b85841017e4ab3101c5c566666d5dcd690ac4737aef9a3"
+    },
+    {
+      "declared_entries": 17,
+      "actual_starters": 17,
+      "declared_field_size": 17,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010205",
+      "provider_id": "2608010205",
+      "race_date": "2026-01-05",
+      "result_sha256": "7c9f1380fec3e9a509e12916e25edb60e08379ec7025dd48065baddc44dc7ba6",
+      "roster_sha256": "351c2d2286b39182d092c34f8c8ae870414df1a3887b8655725f4ed360354f36"
+    },
+    {
+      "declared_entries": 15,
+      "actual_starters": 14,
+      "declared_field_size": 15,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010206",
+      "provider_id": "2608010206",
+      "race_date": "2026-01-05",
+      "result_sha256": "edc368ad788c4e37559dbaddc5b1ca31504e98d2d7aa5ce40aa99d04f0c4606c",
+      "roster_sha256": "ac39ea06365168564a97f614e929ed860fd0a9a25093311043377e42bea05d8c"
+    },
+    {
+      "declared_entries": 15,
+      "actual_starters": 15,
+      "declared_field_size": 15,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 1,
+      "disqualified": 0,
+      "race_id": "202608010207",
+      "provider_id": "2608010207",
+      "race_date": "2026-01-05",
+      "result_sha256": "c01fc34c8e67e0918d17003f07c63f24d400515234ea09dd1325769aadd3fcc9",
+      "roster_sha256": "1be02345aeb53563e545c50e6741734cc6801062afc1e7ba29db893aa66b956b"
+    },
+    {
+      "declared_entries": 15,
+      "actual_starters": 15,
+      "declared_field_size": 15,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010208",
+      "provider_id": "2608010208",
+      "race_date": "2026-01-05",
+      "result_sha256": "4eea07fe3606fd0b00785a1bc8e91e9bc5d41f1ef39da9fa57af3b042eaac9b0",
+      "roster_sha256": "9cc3f96d231ba96846378c81f4d1deec622047a10430faf1ed4299852b600872"
+    },
+    {
+      "declared_entries": 11,
+      "actual_starters": 11,
+      "declared_field_size": 11,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010209",
+      "provider_id": "2608010209",
+      "race_date": "2026-01-05",
+      "result_sha256": "004958e87c94d699a3a8b7ba91e0a6934e3660d3d8d3aa37e204e591be9ead05",
+      "roster_sha256": "08153a990ef3714c1eafe5c56895b0c91054bf3e55ebf13a83c90ba1d7b9a446"
+    },
+    {
+      "declared_entries": 16,
+      "actual_starters": 16,
+      "declared_field_size": 16,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010210",
+      "provider_id": "2608010210",
+      "race_date": "2026-01-05",
+      "result_sha256": "adbb5de88ba8446c1e551965ebb91933fcde4d4e7115e089373a9faa3bf01794",
+      "roster_sha256": "f1de249ca10938e651e0717618ecda92a70a1bb2d27397eed2b968f1e736a427"
+    },
+    {
+      "declared_entries": 9,
+      "actual_starters": 9,
+      "declared_field_size": 9,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010211",
+      "provider_id": "2608010211",
+      "race_date": "2026-01-05",
+      "result_sha256": "dbf6cd62cf06384860f1e2db4494f8adba10e89aa59d4662995316e9b30ab183",
+      "roster_sha256": "c48c02036b6661819797c4b0397d746d0975eb5d3a9350651e17d9123bab839d"
+    },
+    {
+      "declared_entries": 15,
+      "actual_starters": 15,
+      "declared_field_size": 15,
+      "scratched": 0,
+      "excluded": 0,
+      "dnf": 0,
+      "disqualified": 0,
+      "race_id": "202608010212",
+      "provider_id": "2608010212",
+      "race_date": "2026-01-05",
+      "result_sha256": "4ecdafef15014298dff9c6ebceec5666da57895c43785ee4529eb68b0a243cd3",
+      "roster_sha256": "5f9751e34a2de3c61b5434fc16bafc2d5c2168b04245d6d7335307d3b3ce1735"
+    }
+  ],
+  "source_fetches": [
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/schedule/monthly/?year=2026&month=1",
+      "retrieved_at": "2026-10-04T00:02:12.555119+00:00",
+      "sha256": "5a6fa8c1e25e418253fc12fb66bbe99815d87ae0fa3564e2779c28c4fbcf5eff",
+      "cache_path": "data/raw/live_history_2026/f2c8dcfaf69da18bf6d1d307f56e369afcc28f9bc124300966049c9a814f93dc.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26050101",
+      "retrieved_at": "2026-10-04T00:02:13.937608+00:00",
+      "sha256": "8a9827064fc7490dd3e43e9b1f27b708af32c47287be36f0fdef78fe4d54e072",
+      "cache_path": "data/raw/live_history_2026/46056759fece91a8cc2c57129a4e66326acfd68c53bbc903ef85486ce1621be7.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26060101",
+      "retrieved_at": "2026-10-04T00:02:15.215988+00:00",
+      "sha256": "f935887cacc15afb222e54f35d044861ff8a74cd6f2969230357f17af8307182",
+      "cache_path": "data/raw/live_history_2026/a5f530b40f584bb0e7d7810282d1cbeafa61e3dde4cc103149b969ff8d13609f.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26060102",
+      "retrieved_at": "2026-10-04T00:02:16.501655+00:00",
+      "sha256": "cbf58a712ba8b3c8873abcd9667efccdbdbe781c6eb591b7dd9f72129791d7f8",
+      "cache_path": "data/raw/live_history_2026/06aa334b9b003cf9e34e037835b4b4b9fa893061c9202fc2738d76384671b67a.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26060103",
+      "retrieved_at": "2026-10-04T00:02:17.813869+00:00",
+      "sha256": "239a212d62fcd1b3616cc932f52870557bb92cc2cba668fafa6ea83bb7b04546",
+      "cache_path": "data/raw/live_history_2026/69450d4912edea4df14ef55b7d2244422ebbf5a199328cd5860982dae41f736d.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26060104",
+      "retrieved_at": "2026-10-04T00:02:19.010555+00:00",
+      "sha256": "047b5621cae8c11fae4b78244ad13a8041f425140968e079aec5939c692f266f",
+      "cache_path": "data/raw/live_history_2026/0b25a98a552f780f6f06dcb3e0633f6d0be7c6f87932244ab292adf18348d04a.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26060105",
+      "retrieved_at": "2026-10-04T00:02:20.771897+00:00",
+      "sha256": "9cd8a1a95210a9ba89e01478ef18ac9a76e63aa62bb62cd825d1f8a3b2ac9f24",
+      "cache_path": "data/raw/live_history_2026/d3b2df9b76dc5183ff4d1d233cfd3eebc584c85e217a2f7d6009a56b9e1ea7a3.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26060106",
+      "retrieved_at": "2026-10-04T00:02:22.080877+00:00",
+      "sha256": "0f0a3b076cf67d0b25b6611a2405ca38f0f7eb97b3ba5fd78a360b77c5dce292",
+      "cache_path": "data/raw/live_history_2026/3aa8ca10791248f4bb1fa9e361747b82738543d93277964e4ee223045d878a2f.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26060107",
+      "retrieved_at": "2026-10-04T00:02:23.926935+00:00",
+      "sha256": "77dc82210965cec61c46d8c7fd3f79d86d3ed0390a43df68532f2497c716f450",
+      "cache_path": "data/raw/live_history_2026/cbe9aec7d1df29c2e9f429a8fdffd0018b466a68e7b5bcc44bfd1cd6abf542eb.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26060108",
+      "retrieved_at": "2026-10-04T00:02:25.401589+00:00",
+      "sha256": "b26874bb62aca751f42009f42a0c1fd3446425637de25f81592c293ec73d32f3",
+      "cache_path": "data/raw/live_history_2026/5c90dd4de2f1c945bdc5d6c8197e9eef7b5f83a300f63e4ec312e51f625b8e14.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26060109",
+      "retrieved_at": "2026-10-04T00:02:26.616599+00:00",
+      "sha256": "32042d48cf6ddc993c696f8f1a24073de2f43fa0a8a35dda89dff8234e83ace0",
+      "cache_path": "data/raw/live_history_2026/096e109c49a964107a7773a3b436b637e78e4539d72ee3e89cd58b48cebaf933.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26080101",
+      "retrieved_at": "2026-10-04T00:02:28.775481+00:00",
+      "sha256": "e86961df75a811bedc19d97c25de483dd10f51e677ca6329e01d3ad959887655",
+      "cache_path": "data/raw/live_history_2026/c33f6daf69c2edc52bb25482eb35a9932fa765a2241c06e487160149502cb078.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26080102",
+      "retrieved_at": "2026-10-04T00:02:30.051993+00:00",
+      "sha256": "c079c13f75f7b4133b2f612aeaa5e05130637d3ea497989dd82c13f083173424",
+      "cache_path": "data/raw/live_history_2026/e7dd4a4ba57b4dadde599f167f00816e3d49b1e66e2e098f107cf9ac9281d24d.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26080103",
+      "retrieved_at": "2026-10-04T00:02:31.396549+00:00",
+      "sha256": "429c1b2f645669258ef70724c6a93cc563a6805ed292e93e2c6741ab3b6ef9bc",
+      "cache_path": "data/raw/live_history_2026/d44cadd830436e0804b567fa6b048c0379b22427ab066c1b03f993ddbbe31c31.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26080104",
+      "retrieved_at": "2026-10-04T00:02:32.509863+00:00",
+      "sha256": "ae715e42245ecedaceee9c659150f6a03fed7e1ab743b4de94d4d020f6c2b88d",
+      "cache_path": "data/raw/live_history_2026/9437e2ff0cd078719ebaefbe6aa55b8a18b9412d595d3c9e647f4b03926b9194.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26080105",
+      "retrieved_at": "2026-10-04T00:02:33.784614+00:00",
+      "sha256": "32fb523b1282a845aa6b7cf5785c945863787cdf7eec33dc14855d1f7d591597",
+      "cache_path": "data/raw/live_history_2026/87afc94d3f7153fcf05cf844c0dc4720c549116c32c4a2cbf077aa6b1549c6de.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26080106",
+      "retrieved_at": "2026-10-04T00:02:34.885995+00:00",
+      "sha256": "bebb71833681661a46d23003f7b6906aea6b13acb73db27c7724f17ce4cacd54",
+      "cache_path": "data/raw/live_history_2026/8cc5a4b8780ab7dbce3bb775a85b75f0fa7d8d2e894afcb8d2fc888e719377c2.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26080107",
+      "retrieved_at": "2026-10-04T00:02:36.073174+00:00",
+      "sha256": "f8af372e2a25e6a7ae6d549a0addfae5d48ff3fb7c97e5fc01e8c52258bd2cb2",
+      "cache_path": "data/raw/live_history_2026/be091b62a0cda86a1889e6400e2280d77ac7d542fc884baf06c7d25ac10979fe.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26080108",
+      "retrieved_at": "2026-10-04T00:02:37.300344+00:00",
+      "sha256": "049bf2afa0560eca0017b693e63d030db09c9a5621ddb207f51921364a144374",
+      "cache_path": "data/raw/live_history_2026/18e42240809de743c6c3688fef079ece3761fcb89dc94db421e3efac3d0ef05e.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26080109",
+      "retrieved_at": "2026-10-04T00:02:38.290085+00:00",
+      "sha256": "80a29d13711d410bae3262562032522f9d533576a785cbd08a56a5c70896dbcb",
+      "cache_path": "data/raw/live_history_2026/9a2749dde1f01cb505c383eca61cfb8f29ca1ab927fa2c8e644c6a6efb975f89.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26080201",
+      "retrieved_at": "2026-10-04T00:02:40.523634+00:00",
+      "sha256": "4f7ca72e72179248b5b021eb8e0ceafe09934e8629c8c08b76a8419f1c955ca9",
+      "cache_path": "data/raw/live_history_2026/46f1f9021b1631bad74e8056838b6ba1fb8abb635c1644f7b1034368b1338b36.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26100101",
+      "retrieved_at": "2026-10-04T00:02:41.960968+00:00",
+      "sha256": "b772b95cd1553fdfbe060b279fcb83eb34a859f6cd945fb1839ee12cf64436fb",
+      "cache_path": "data/raw/live_history_2026/5c46c500c253e9aa059a4d0817b8d6f4c4b70fab3a866882f13d0eb705d48652.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26100102",
+      "retrieved_at": "2026-10-04T00:02:43.204105+00:00",
+      "sha256": "83077cd13b2008bcf5397f5a4212a9153cfa2025d9c4ab38b60ba05c934d3e7c",
+      "cache_path": "data/raw/live_history_2026/0d21c8e36bd572ea105847c2960bdc977842c905e47ed600cf8cd484c8c611b9.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/list/26100103",
+      "retrieved_at": "2026-10-04T00:02:44.586398+00:00",
+      "sha256": "110dadd57d152c1c4903976f32b941879e0e2d0aa1f5397c5e48bf8ea663b07a",
+      "cache_path": "data/raw/live_history_2026/0e8c2c398daed84f49a13110c8ccb87c09f46e467f62ddb35b71cfc9d3a04d21.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010102",
+      "retrieved_at": "2026-10-04T00:02:45.570205+00:00",
+      "sha256": "3f0f04411aa347d86101934627b5298a6c313dcdd815f1166e34c427aae17518",
+      "cache_path": "data/raw/live_history_2026/692363d19142a81898cef31996702e1a09bd5175cd8218ba0d3b4e14d1b0db70.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010102",
+      "retrieved_at": "2026-10-04T00:02:46.465400+00:00",
+      "sha256": "5ef5f8980c14930cfdb6394520b32957aa8c71a3f6baed4a01f2c90093b00887",
+      "cache_path": "data/raw/live_history_2026/6f35cb7222e493318fb841cc9d0840c0cc31b01c1f6e292fd732439ec257187c.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010104",
+      "retrieved_at": "2026-10-04T00:02:45.618765+00:00",
+      "sha256": "fcd3f11d2f787837aac72a4f7d97feef650bf8becb88da7ae0110da55b03b741",
+      "cache_path": "data/raw/live_history_2026/8bc4b9ce2fe445f78191d2cdcbdc866eed0082f11b30c2d1ca46c45c409c5c96.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010104",
+      "retrieved_at": "2026-10-04T00:02:46.680915+00:00",
+      "sha256": "5fcdd5af692849d76ea5ad9f3a1ea38994657676146e8945e3bd9717ff45d6b5",
+      "cache_path": "data/raw/live_history_2026/7b47fdc2c64ffb640d76710ae934321a4ab9e864ac86f555a4d0d7f2c1a57a81.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010106",
+      "retrieved_at": "2026-10-04T00:02:45.612256+00:00",
+      "sha256": "9e7e5fc547a878236ed300d9d8b361b01dab5a4176135eaf3167921cbd3bafd7",
+      "cache_path": "data/raw/live_history_2026/5d50966cd682ffcc846a7afffa189a819318fd70442cfeb00b6e7c1180794145.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010106",
+      "retrieved_at": "2026-10-04T00:02:46.626292+00:00",
+      "sha256": "2836d6b6019f52a67d12cac37e055545000fd6b900d4003e879ec6ceb8db0949",
+      "cache_path": "data/raw/live_history_2026/4eb0b81da5ff14bd56e90e051a8836b0c894d36360f63c3e14734d69e0e3bc22.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010101",
+      "retrieved_at": "2026-10-04T00:02:45.600313+00:00",
+      "sha256": "06f6a56b3313fff3f5b297081cb9331637be4ef59b4ff2659997241c11a1da77",
+      "cache_path": "data/raw/live_history_2026/ac93e313cc2a15d5c5e11be802e3283d3df05373e05a89ab64207041d9f51839.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010101",
+      "retrieved_at": "2026-10-04T00:02:46.676317+00:00",
+      "sha256": "b06c79c9457a350300bc776841ca96b75817196f2cc6c1844145cfb958898a08",
+      "cache_path": "data/raw/live_history_2026/b134248d240f0822cf673f918cbb7de52e4aa9068bb51a6b8d23f2a891f0676f.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010103",
+      "retrieved_at": "2026-10-04T00:02:45.609760+00:00",
+      "sha256": "d2ea1c2b8872376224011ee51133b5296944f79f2495bb7f0328993e333ceaa4",
+      "cache_path": "data/raw/live_history_2026/15a0b9f313864e052a2cede1e0323b0719cb94a4ac3a2592c749bd9ba417b222.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010103",
+      "retrieved_at": "2026-10-04T00:02:46.677005+00:00",
+      "sha256": "f95903b6cbd790a7746719881e86b24406234ab6e24055deb63bf60253cb4fdf",
+      "cache_path": "data/raw/live_history_2026/0efdb213a3ef19e6830d9ee8aaa1b303f77e4dfc5224a1d6c545f7273bc642df.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010105",
+      "retrieved_at": "2026-10-04T00:02:45.579677+00:00",
+      "sha256": "94eb3b62ed98e05977d711d6c89af7238f0637499e29cafba82b2e92674e21f2",
+      "cache_path": "data/raw/live_history_2026/2dedf99feb0c39fda6b4c4f395836bc8ee5d4ecdee9dec541932a2848c150f61.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010105",
+      "retrieved_at": "2026-10-04T00:02:46.673795+00:00",
+      "sha256": "73b39fbf66f0c9b8bf293a071dccfb5379cd064a0dd434fdd0364fefdd7725aa",
+      "cache_path": "data/raw/live_history_2026/acb47c3e1899bb9690fead29e83b7bc3a2c29b1745cf3d934489b62cfadfe98a.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010108",
+      "retrieved_at": "2026-10-04T00:02:48.211264+00:00",
+      "sha256": "443b5335e3c6ef34d77e35dc67569a81617ada541fbde05d3ece48bf81263bdf",
+      "cache_path": "data/raw/live_history_2026/e4a4e8a5f2b076a30b4c97b343addb7f088062f3c8e61f103540c5450dfd2228.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010108",
+      "retrieved_at": "2026-10-04T00:02:49.104175+00:00",
+      "sha256": "72f1fa46058a24afa1edd23a4eed5c79bd7f89ae729ffaf591f291df9b647774",
+      "cache_path": "data/raw/live_history_2026/4eb972cbb493591623503c4686e4672dc7707dc1280225a4f1129a07f7eef7ed.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010111",
+      "retrieved_at": "2026-10-04T00:02:48.259683+00:00",
+      "sha256": "ff5eaac1ffda63b4140d6f8fc1b7d80cafdaf9d6299f44b8219001758737c0cc",
+      "cache_path": "data/raw/live_history_2026/f1f3d747da81734c3d7ead3be2901e19a131a8088aa037b53348919db1b45fd9.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010111",
+      "retrieved_at": "2026-10-04T00:02:49.406859+00:00",
+      "sha256": "f773544c20fdcddc6ef376e648e15b27979152d60dabca683038fce77ab1396d",
+      "cache_path": "data/raw/live_history_2026/942f4e53445eb5c9eb403c3992a4df3076e52df3353cb9350f6fd15aa030188f.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010109",
+      "retrieved_at": "2026-10-04T00:02:48.261064+00:00",
+      "sha256": "8c94f54cd62224280e2386de652b3c87bdc8e86ad7bfb5fc0f503fc14f860dc1",
+      "cache_path": "data/raw/live_history_2026/5c00c73261f7c435ed6b28c13e7044cc10abfe19957bf67396b7be4ee39d9311.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010109",
+      "retrieved_at": "2026-10-04T00:02:49.403450+00:00",
+      "sha256": "b994ff7c9840c9a9eeac44228909015e35d3e33f4e56161648d9f0f004ac4022",
+      "cache_path": "data/raw/live_history_2026/904789edab55450b541dbd52b1ed0b7bf474fd7afc936d5a11a72cbe955c0122.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010112",
+      "retrieved_at": "2026-10-04T00:02:48.577114+00:00",
+      "sha256": "2e56d1c0e7e7460b3b805b2678e404878654a3138305d513ff3f99ac94184c41",
+      "cache_path": "data/raw/live_history_2026/61d3fb5f2ebe78689df8ef72c37944625c5eeede3e7ff4eb00918e9966fa6835.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010112",
+      "retrieved_at": "2026-10-04T00:02:49.495201+00:00",
+      "sha256": "1d09d8dfd5e5e2fabdc79d6720ff070def6019dc7e3e78df6c20c0c6ead85314",
+      "cache_path": "data/raw/live_history_2026/a88efdafe8012ad14163589108dc3698654314422b9a70c14b7cbb0421b2a23c.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010110",
+      "retrieved_at": "2026-10-04T00:02:48.268992+00:00",
+      "sha256": "55ad3dbf4e09c46bc70c25b2ae81035bc0f0883191b5e6915c1d1534e6977db9",
+      "cache_path": "data/raw/live_history_2026/307ebad59905d2850b91720317d190f4e975b8691a85223a0bcb133bf7c11641.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010110",
+      "retrieved_at": "2026-10-04T00:02:49.405046+00:00",
+      "sha256": "ea99d02e564c2a9d525660de84052b4fca5ea389c098f3181e4ce677a7c31cb8",
+      "cache_path": "data/raw/live_history_2026/8522e66deef989970f0920462b57ab7335b1e3ab91db93ae1228126228085aa8.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010107",
+      "retrieved_at": "2026-10-04T00:02:47.579189+00:00",
+      "sha256": "e3f24c856b062e9c37cfe9b8c9805958418b37441dc6547f96381f0897e96ec1",
+      "cache_path": "data/raw/live_history_2026/b250610adc3fed0ee25c5aaaa35df00e8201aa8e48e08b5e0dd145b07c962c88.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010107",
+      "retrieved_at": "2026-10-04T00:02:49.757204+00:00",
+      "sha256": "e3fa5e3efe8915b20ae3d9aa2854f3b32b26650baf8a457dcd03fa8b090ab6eb",
+      "cache_path": "data/raw/live_history_2026/5f58ab669905d3860ebe47c5487e72d261e1a16593ab70f08e50aa76862c1ada.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010101",
+      "retrieved_at": "2026-10-04T00:02:50.205278+00:00",
+      "sha256": "8e8499a4a2ba348c0904caca4e722d9dd5afce3ad7b0cde9d9093e8f8197018a",
+      "cache_path": "data/raw/live_history_2026/1846972b8ce2ed308bb0548a04af9548b6f30466e5da6f77514c79ff14fbc2e9.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010101",
+      "retrieved_at": "2026-10-04T00:02:51.050089+00:00",
+      "sha256": "d1be23c667581f848fb631ff958481bcb27e3b845aceee4321ae035bcd6a9b56",
+      "cache_path": "data/raw/live_history_2026/6d90b859b37bee1e2c07dddb3328393ca0281e818cf40d2ee85fa89d02e47ef1.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010103",
+      "retrieved_at": "2026-10-04T00:02:50.890583+00:00",
+      "sha256": "170ee44ff60fcd54b0fd21359140597df4f268f6e3586fc50411629e2c8c2b20",
+      "cache_path": "data/raw/live_history_2026/425bcc0cc85f44a1ef04958958f9cdfe70553709e57a98f7a81723974c20f1ef.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010103",
+      "retrieved_at": "2026-10-04T00:02:51.819287+00:00",
+      "sha256": "022d6e6c726306b759ce4ccf7ff412111b9e8e17b3c3138258c488c9727c84d0",
+      "cache_path": "data/raw/live_history_2026/f17ffabf1f508d6334f097b6a483a4ea9b34d7fc2eb36e37d62dede3b79f7ead.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010102",
+      "retrieved_at": "2026-10-04T00:02:50.881773+00:00",
+      "sha256": "f12e46a4d7f52f3c96630b4803dd3ebccb84cbcbf08b7f9ee8684c57af917700",
+      "cache_path": "data/raw/live_history_2026/9cf2df7d00a7972c3648de257cfa2708f057436c1f35cd2884c92c2f68592357.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010102",
+      "retrieved_at": "2026-10-04T00:02:51.843575+00:00",
+      "sha256": "52168708e78390919a81ba0ffff140b8963af36f997e988c4444b426d856c25d",
+      "cache_path": "data/raw/live_history_2026/494fa78cdbe4631f954d6006a8d484ad9d3ce9b69329b2e9f466b85c38c75e58.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010106",
+      "retrieved_at": "2026-10-04T00:02:50.919143+00:00",
+      "sha256": "1e758e6e7ef0dda4707043a2c8d0b0da9b85e0da40b76fbb0e2bf8967caa66f2",
+      "cache_path": "data/raw/live_history_2026/41737993b79f1d05f4830e7b90a265df7b57905888b97456ab7b6bcfdb8ad4b8.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010106",
+      "retrieved_at": "2026-10-04T00:02:52.027546+00:00",
+      "sha256": "ba422f2b0e36cf7008ca82bfc877fa66d63ab2a6d080eb37f8389f48494b493f",
+      "cache_path": "data/raw/live_history_2026/5a3d73498fb277c0ef4a4b4804207c4b33937ebfdeccc0295666d6b2d3aa0195.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010105",
+      "retrieved_at": "2026-10-04T00:02:50.923176+00:00",
+      "sha256": "ce40e6fdb317ae68c24b5af1636c46b3d8c7408e020fc209321ec2261728490b",
+      "cache_path": "data/raw/live_history_2026/c7939c92ef3c45180a238d260e1d3689316638d29d8f1c893d916d767b30a8d9.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010105",
+      "retrieved_at": "2026-10-04T00:02:52.028576+00:00",
+      "sha256": "7cd8c08dca49514c8163ac4f4efd7e23dbe3f9c391396c0b9cfcc48798e81c0c",
+      "cache_path": "data/raw/live_history_2026/f0693d275371b63fb6e03f81f2c7d357608745ce356aa378c35fedd46424b26b.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010104",
+      "retrieved_at": "2026-10-04T00:02:50.919032+00:00",
+      "sha256": "67363ab542aa0f73539c4e2717d51593a5052e0980c29d0b2a09b7827255d9ae",
+      "cache_path": "data/raw/live_history_2026/7353ccba5fb60458fa829914ca82d0f6767f51c68cb6a76b86be0fccad0cb368.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010104",
+      "retrieved_at": "2026-10-04T00:02:52.030328+00:00",
+      "sha256": "5e7035fb1ea93b09a414c85e571e1c2b2cca9d76c6a1d7b0602726db188ecbfb",
+      "cache_path": "data/raw/live_history_2026/a6e76ec3c77e2e7a5c621e4b6b16b1441b19c0fdd3ca448faba80acadd925fe9.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010108",
+      "retrieved_at": "2026-10-04T00:02:53.255128+00:00",
+      "sha256": "741d74d36e51fd3d77c163cad21aa24d5acdf2d24e9f149dc82f0c15d6820300",
+      "cache_path": "data/raw/live_history_2026/b032b743996dc7c56e4f6c8f4ff824fdf9659e458bdbd5ceadb3868573acd861.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010108",
+      "retrieved_at": "2026-10-04T00:02:54.139738+00:00",
+      "sha256": "b6559078c96c6873ca7940d76b4acc7a511a6f2d6b3620af571b5ce7034b65ba",
+      "cache_path": "data/raw/live_history_2026/28db783d192e909ddf56d1af8096a3ae99001f84b8e8808768f52dac22648298.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010110",
+      "retrieved_at": "2026-10-04T00:02:53.473113+00:00",
+      "sha256": "5e48eb14c283d62e8d7fa157d2d185109911924e4daaee373cf38be85344754f",
+      "cache_path": "data/raw/live_history_2026/78410cc29688214fd74a191263835134b81a5db6b64eadfd02c8040d1fa20531.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010110",
+      "retrieved_at": "2026-10-04T00:02:54.560889+00:00",
+      "sha256": "460bb3aec1ac13307c12c0eb55ec0901df2f87da7b0d89bf373a6a221d1ca2d0",
+      "cache_path": "data/raw/live_history_2026/f0f99f1956dc58e84b1e307dcb743329fdd18e88a1103afbf6bc5114918c4a1c.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010107",
+      "retrieved_at": "2026-10-04T00:02:53.340230+00:00",
+      "sha256": "eadbe1831327abff7f858d710651c387bfc4f17330834b21c22ea42c1e301ba3",
+      "cache_path": "data/raw/live_history_2026/3c41637dae3bf46c975b54890877268204d2b6357f99c5723afbe0d82b460c84.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010107",
+      "retrieved_at": "2026-10-04T00:02:54.516281+00:00",
+      "sha256": "5b87f256b6388c91a532e9a6cfd719d00737789f0b0ecb2269d0f2f2c29ca1ab",
+      "cache_path": "data/raw/live_history_2026/5408bf5188f3121ffdded01bc82b6dcf561a286ccd9274e67d17f9c2c8678e66.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010109",
+      "retrieved_at": "2026-10-04T00:02:53.295997+00:00",
+      "sha256": "8e6844d1ef307a6efbba691475d6192704c629c26320ec6ae9be2f3a70e8aa31",
+      "cache_path": "data/raw/live_history_2026/8c7527db398c1f9937e7b7dd7bec7fd5d0f286ade480cb6bad7de90b53caa8aa.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010109",
+      "retrieved_at": "2026-10-04T00:02:54.560947+00:00",
+      "sha256": "92c8d2e1909b6150327397694935574314f302331a083b9ccd89dfa409f97189",
+      "cache_path": "data/raw/live_history_2026/dc6bec9905d186e1de2993661be4a12f33bfa320f93583592072ea7abad215ff.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010111",
+      "retrieved_at": "2026-10-04T00:02:53.476094+00:00",
+      "sha256": "91ac405e48813962c4dc97b5ab26cb93275763e8cc5f193cf40069021f42665a",
+      "cache_path": "data/raw/live_history_2026/85f26a008fe5a2eff30900f6f4e8623561639d309ddbcce77c48e497098af9f1.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010111",
+      "retrieved_at": "2026-10-04T00:02:54.580274+00:00",
+      "sha256": "d93939dc5b0bd997e57c29e05d349712a71d6575816bb32d1a8fd07fedf981ae",
+      "cache_path": "data/raw/live_history_2026/fcb80fa4f67e952ca87d6f090846716bf29c9c7465af783ae8015ccf3345d55e.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010112",
+      "retrieved_at": "2026-10-04T00:02:53.487224+00:00",
+      "sha256": "43a96fe0a76dcf51d8bd42271c534157359c93f99fec3de26f86c414bc316089",
+      "cache_path": "data/raw/live_history_2026/b1856bac6ca88bacb64fef89e7850c0077e0b95a8104c9b4c65e3dff29fbc15b.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010112",
+      "retrieved_at": "2026-10-04T00:02:54.540097+00:00",
+      "sha256": "de0f38e5e733a94d5b557438df0e424b053e73f79c2b64a88ab6ecc987cf6ad1",
+      "cache_path": "data/raw/live_history_2026/1c7b0dc49b90e097da9aded499d883e12692ee0cd9c9784c4c885d87cef29630.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010201",
+      "retrieved_at": "2026-10-04T00:02:55.280629+00:00",
+      "sha256": "60a42d8da81862c3d9abe31101d86ffc8fbc11259e1101e3e69f1890a0a24aa9",
+      "cache_path": "data/raw/live_history_2026/6b7fe19b910b5db0c8c26a746683f0538827d0deb975e1940b37319ce3b8c2b5.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010201",
+      "retrieved_at": "2026-10-04T00:02:56.146647+00:00",
+      "sha256": "346c658741986ef85b86e87e35ad7a77adb1d7abdf0dc9d69ac3eae6bce24761",
+      "cache_path": "data/raw/live_history_2026/6378738687c2628abb48ba2f794cae28e65ee7ce271db1d3d122756ed18e3622.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010203",
+      "retrieved_at": "2026-10-04T00:02:56.029979+00:00",
+      "sha256": "b5f72eabaea9462a7518411af1d8105f68d961b4c4615e19617e72f094db0ee0",
+      "cache_path": "data/raw/live_history_2026/045191292cd1a79bda3147b3b57d789b8dfb259b0576e5094501a89f504186dc.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010203",
+      "retrieved_at": "2026-10-04T00:02:56.994364+00:00",
+      "sha256": "94da30e92dd2a5660e66dc9c3552e8d8c2f6b80727815c6e73129b2a41082f7c",
+      "cache_path": "data/raw/live_history_2026/1d8e9c0110a8b68a60b5e09ab9bb51516a65ef9f6e3a50f2e5e17214bde2c639.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010204",
+      "retrieved_at": "2026-10-04T00:02:56.028943+00:00",
+      "sha256": "f632eaf6b3161afc59324cc2b8227720b79bb00901d48e264d92fb4610e9c6c4",
+      "cache_path": "data/raw/live_history_2026/06372d95a74275a573a1d97f4d7c6f1c21c3a7b350c55918787c37509fffffb9.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010204",
+      "retrieved_at": "2026-10-04T00:02:57.005447+00:00",
+      "sha256": "f82355c098f447c80b85cc8239d9dbb08f1a9864fae1442d0cd9125a49322c8c",
+      "cache_path": "data/raw/live_history_2026/469fa39d0e006453bec13d9bd03f19d1c8cc85eb9129a861a4af0e05972c3b54.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010202",
+      "retrieved_at": "2026-10-04T00:02:56.018177+00:00",
+      "sha256": "4975eca902c064cd94ed8c14a578c47870b1001d60c3c2114714a3ae4b7ae88d",
+      "cache_path": "data/raw/live_history_2026/8d1cce66de95e157e7eb070e69be3ed1ed3dce5edd52e1f563f7047a169876d7.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010202",
+      "retrieved_at": "2026-10-04T00:02:57.047616+00:00",
+      "sha256": "86c0677cf3125019f4f45e55528cfc587ee6d6c2357154319c3b387fb61d066f",
+      "cache_path": "data/raw/live_history_2026/5e69f9bab75236141a10bf5c6d993ba123f22108ee484088e7ed90bb19ba9e88.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010206",
+      "retrieved_at": "2026-10-04T00:02:56.053222+00:00",
+      "sha256": "4101b7b9ce05447e0083c45ffce8fc545f9b28817a0f3ad255294a9901a36388",
+      "cache_path": "data/raw/live_history_2026/e9aa909eb0b5936ea23fdf5df7f25a282974293b303eb2a56b1de162f74f8c30.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010206",
+      "retrieved_at": "2026-10-04T00:02:57.005971+00:00",
+      "sha256": "b9b5301d66d8024e87e09a1de967ac06b80e5e76433f94d3a540ae2364629f6a",
+      "cache_path": "data/raw/live_history_2026/7c91da722a4e37d1aaa23ef2d995d8043fce16d429509289c0e07c103b978c87.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010205",
+      "retrieved_at": "2026-10-04T00:02:56.054882+00:00",
+      "sha256": "2f4ab0ac541cc5d71a8198d498f63b6f9c138890cc75c8130698db9c6ab41883",
+      "cache_path": "data/raw/live_history_2026/3f45ee9e225688d94098f71ad5a35100e2bd972feda9bfa35d1b9beaf7ceda16.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010205",
+      "retrieved_at": "2026-10-04T00:02:57.000002+00:00",
+      "sha256": "e5696cdecba46028402d7f1dc389dcf690846d31285771b93f71b482ee3c83a8",
+      "cache_path": "data/raw/live_history_2026/7a70dc268ed30475749f591bdcc5e41a7845613b002b2fe89fc175b49c8d3515.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010207",
+      "retrieved_at": "2026-10-04T00:02:57.429476+00:00",
+      "sha256": "47baca0e5ad49946676e9d9cf5bf5c19ecacd6893e845967f1e47abea93aa948",
+      "cache_path": "data/raw/live_history_2026/0e41c3009955d99c8f8efc2dcea64f15ad398233215e639b01ff500cbee3fef2.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010207",
+      "retrieved_at": "2026-10-04T00:02:59.554516+00:00",
+      "sha256": "36903a22af3bafbe893cab1e7db46457c3c83eaad6c35a76e9ffcda63c6eb95f",
+      "cache_path": "data/raw/live_history_2026/209907156a8128b9c1deb91f1eb39798ec873b8c3acb4abed178838227c4f293.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010211",
+      "retrieved_at": "2026-10-04T00:02:58.669600+00:00",
+      "sha256": "225c0355982746cabb4ddf396f9bddf07d4ec2a0f521f6ffc7911cab2ed2e501",
+      "cache_path": "data/raw/live_history_2026/41fed4815fcba8db19ef063f4aecd11d2091578bfbdd9f23c399b97632e7c588.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010211",
+      "retrieved_at": "2026-10-04T00:02:59.557167+00:00",
+      "sha256": "04360e4a5d03da372b19adb3885e1fce8b3281ecd54a48c1154339bcb85e2488",
+      "cache_path": "data/raw/live_history_2026/ff8d667c2314eba9b613f26879516f5bbfebad5d38dc65cb1481db84541d0a26.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010210",
+      "retrieved_at": "2026-10-04T00:02:58.639978+00:00",
+      "sha256": "8535d8cf6ef7b46e4da5b3f9a4d79e4aae41431916c5029c30a0388eee727bd7",
+      "cache_path": "data/raw/live_history_2026/3247d583c6ce3663e7c5437efda26a19bef743325ba1c226319c5eb09758e96d.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010210",
+      "retrieved_at": "2026-10-04T00:02:59.541300+00:00",
+      "sha256": "96bbb800065cf458b068e8686a9ec0bdeef72d75cd68c3106b5f2c89e0157398",
+      "cache_path": "data/raw/live_history_2026/21b9c331de29b21fc2bc5dbaf2349930c5582ca472046440362653cb25949f0d.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010201",
+      "retrieved_at": "2026-10-04T00:02:58.642233+00:00",
+      "sha256": "0fc9f2e540e0e6212eccadd127d41f14e01f3d43947ad2ac8369962ec3bec545",
+      "cache_path": "data/raw/live_history_2026/6a77add0b3e8107841d69faac6ff7f173240dfb9eac14faef216fbd0b82ca17c.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010201",
+      "retrieved_at": "2026-10-04T00:02:59.537473+00:00",
+      "sha256": "b9c159b4019b6e89c482e114c8fbf62936cb6cf934a0f8b59c3984a0f4f5c51f",
+      "cache_path": "data/raw/live_history_2026/3a36d4785a3f0fe06735f36a786a423c2cdc08c1304b75e84b85dc30db7d81c5.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010209",
+      "retrieved_at": "2026-10-04T00:02:58.639509+00:00",
+      "sha256": "69c8ea3a30eb66a3c335a844320c46713c69514813cfbc55fa90ea899b0d61d7",
+      "cache_path": "data/raw/live_history_2026/57fbc9d1af15a5be10e0b55f086f9c22f99a0b7d6de0671bcbf5c3af2902b140.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010209",
+      "retrieved_at": "2026-10-04T00:02:59.555675+00:00",
+      "sha256": "03efe520ac973f1d5764cbeafe963da2bc20742ed30bcb87fbceababbe3ef8e8",
+      "cache_path": "data/raw/live_history_2026/1ae66ba70ea9e2d89ea4921d2eb57d70ad7eddd227b70bebe3dd72a74c372ef3.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2606010212",
+      "retrieved_at": "2026-10-04T00:02:58.657378+00:00",
+      "sha256": "184914c39297c973f6d32452b0b2586994d9bab5e464adebeda7f01a28706f1a",
+      "cache_path": "data/raw/live_history_2026/3417b5da5fb31361f4eed49588648ba713f00d9964f12287f8f629215235c7df.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2606010212",
+      "retrieved_at": "2026-10-04T00:02:59.594162+00:00",
+      "sha256": "e58227da221f6a11efbb484ad26f8d2c1d2308ce7b9695e63341c7a61659f464",
+      "cache_path": "data/raw/live_history_2026/a7ed93dc3f6f8b32ee9c1edf1650ea08e6c3172d54df2d0aa5938d2296199ec2.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010203",
+      "retrieved_at": "2026-10-04T00:03:01.299438+00:00",
+      "sha256": "c213ce6a03e36c00c2ca3a57a5c65829bda7b5f9f71ba8527fadc2fb4a5e1ba8",
+      "cache_path": "data/raw/live_history_2026/a0a4361ffc3e06033e848b4317928e769b544fe499b054794ee05521fc7fab2e.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010203",
+      "retrieved_at": "2026-10-04T00:03:02.123251+00:00",
+      "sha256": "56328ba835c5f1f1c5f210e0eecd5a4e00330350f6acc7995052724e84f15a61",
+      "cache_path": "data/raw/live_history_2026/94b01cb70219f4d0e62fde249ae4de90da7a75a17e3871b1cee302dfe952e740.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010207",
+      "retrieved_at": "2026-10-04T00:03:01.337930+00:00",
+      "sha256": "c01fc34c8e67e0918d17003f07c63f24d400515234ea09dd1325769aadd3fcc9",
+      "cache_path": "data/raw/live_history_2026/ffc7ab9d4870b3de3e82e22b3d510040ab9f04d94a4183b58eaa66e4e4d87a44.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010207",
+      "retrieved_at": "2026-10-04T00:03:02.189033+00:00",
+      "sha256": "1be02345aeb53563e545c50e6741734cc6801062afc1e7ba29db893aa66b956b",
+      "cache_path": "data/raw/live_history_2026/f06ae9ca727610a5dba10a7f85abb9504db36e6f039b24cbb08db958c39dbc8d.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010206",
+      "retrieved_at": "2026-10-04T00:03:01.326673+00:00",
+      "sha256": "edc368ad788c4e37559dbaddc5b1ca31504e98d2d7aa5ce40aa99d04f0c4606c",
+      "cache_path": "data/raw/live_history_2026/0f1df89c96be93f5fa6a1fecb1b880fc7de38c66d48bb3779ca57013ff4d18c1.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010206",
+      "retrieved_at": "2026-10-04T00:03:02.165668+00:00",
+      "sha256": "ac39ea06365168564a97f614e929ed860fd0a9a25093311043377e42bea05d8c",
+      "cache_path": "data/raw/live_history_2026/eaedaf21838d3a1d5ca7c2cd644042c5ae1764e0e168c02a7874c068ed9708aa.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010204",
+      "retrieved_at": "2026-10-04T00:03:01.403788+00:00",
+      "sha256": "cba1c145af93fbe6f6c98d8b3beb97e1ac012cf5c1c8783be8b575807b05d4af",
+      "cache_path": "data/raw/live_history_2026/a2424a3b72dafdafc03a5013f86b0388a5d17b9cb9c5e524168c7de9778264e2.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010204",
+      "retrieved_at": "2026-10-04T00:03:02.366973+00:00",
+      "sha256": "7db87e6c1a9ab91601b85841017e4ab3101c5c566666d5dcd690ac4737aef9a3",
+      "cache_path": "data/raw/live_history_2026/2cc8e0926dc5f3c2b63c4c168946d771ad45094cfeb723b1b5afa6d8695d4a47.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010205",
+      "retrieved_at": "2026-10-04T00:03:01.425430+00:00",
+      "sha256": "7c9f1380fec3e9a509e12916e25edb60e08379ec7025dd48065baddc44dc7ba6",
+      "cache_path": "data/raw/live_history_2026/145f71774fbf04ba111101f4e6a4e03f240e2746bda75922c1c875a8bafaeb95.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010205",
+      "retrieved_at": "2026-10-04T00:03:02.394493+00:00",
+      "sha256": "351c2d2286b39182d092c34f8c8ae870414df1a3887b8655725f4ed360354f36",
+      "cache_path": "data/raw/live_history_2026/99c3137a33a322832998fc34853160a1a366079a25d23d6a863fd7ba7c565243.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010202",
+      "retrieved_at": "2026-10-04T00:03:02.436848+00:00",
+      "sha256": "63c77f17057ff85e44d4da73a4289a4382bfc51828de8006e0b702ddf1092e9a",
+      "cache_path": "data/raw/live_history_2026/098ab7d622ab688507c9718d12e959beeb875b6853484e963d49d00b2f387bb5.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010202",
+      "retrieved_at": "2026-10-04T00:03:03.497286+00:00",
+      "sha256": "630996546659cc266e9db3cbb4c833721f487e493a70ab6fa2957f2e48fbf011",
+      "cache_path": "data/raw/live_history_2026/957a4188cbd10a0dc103fec8c407882d50a6be884118ee2185d2d70bf1be4bfe.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010208",
+      "retrieved_at": "2026-10-04T00:03:03.579502+00:00",
+      "sha256": "4eea07fe3606fd0b00785a1bc8e91e9bc5d41f1ef39da9fa57af3b042eaac9b0",
+      "cache_path": "data/raw/live_history_2026/d5d588787bc2474f3f4639b781920eed8aa2c75b4946f43d5de69d3b9a50fbfc.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010208",
+      "retrieved_at": "2026-10-04T00:03:04.539274+00:00",
+      "sha256": "9cc3f96d231ba96846378c81f4d1deec622047a10430faf1ed4299852b600872",
+      "cache_path": "data/raw/live_history_2026/8139f45f1742a2f8bb572a8d324ddbd02d09a24e033973e94fdf826d18c01813.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010209",
+      "retrieved_at": "2026-10-04T00:03:03.773243+00:00",
+      "sha256": "004958e87c94d699a3a8b7ba91e0a6934e3660d3d8d3aa37e204e591be9ead05",
+      "cache_path": "data/raw/live_history_2026/a36c278d04a75f23f34d971f79cfa07ddf8eb316491b682595522e0cb9076afb.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010209",
+      "retrieved_at": "2026-10-04T00:03:04.694950+00:00",
+      "sha256": "08153a990ef3714c1eafe5c56895b0c91054bf3e55ebf13a83c90ba1d7b9a446",
+      "cache_path": "data/raw/live_history_2026/926c143654cf17bb5f920c1cfd31ff7f272914403a348cc46776881893f05e74.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010211",
+      "retrieved_at": "2026-10-04T00:03:03.775589+00:00",
+      "sha256": "dbf6cd62cf06384860f1e2db4494f8adba10e89aa59d4662995316e9b30ab183",
+      "cache_path": "data/raw/live_history_2026/f56412d556623a66cef672510d3f0288979b22a13164ffc8b890b5f3e7498575.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010211",
+      "retrieved_at": "2026-10-04T00:03:04.696043+00:00",
+      "sha256": "c48c02036b6661819797c4b0397d746d0975eb5d3a9350651e17d9123bab839d",
+      "cache_path": "data/raw/live_history_2026/2d83d49ce3073aabfbec44a96968674767fce6e9a7c0943370b8fa3cb9c5f8b8.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010212",
+      "retrieved_at": "2026-10-04T00:03:03.776247+00:00",
+      "sha256": "4ecdafef15014298dff9c6ebceec5666da57895c43785ee4529eb68b0a243cd3",
+      "cache_path": "data/raw/live_history_2026/65629305a36557a0c1a34c49dc622a5b0b4ab0b885da801b3fd49781649f4508.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010212",
+      "retrieved_at": "2026-10-04T00:03:04.697686+00:00",
+      "sha256": "5f9751e34a2de3c61b5434fc16bafc2d5c2168b04245d6d7335307d3b3ce1735",
+      "cache_path": "data/raw/live_history_2026/c24e828a85163d577e69c30571f9e29d3b9facc4d9168d6a722770669662bbe6.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2608010210",
+      "retrieved_at": "2026-10-04T00:03:03.773165+00:00",
+      "sha256": "adbb5de88ba8446c1e551965ebb91933fcde4d4e7115e089373a9faa3bf01794",
+      "cache_path": "data/raw/live_history_2026/51fdbd80dccc5304fcf2cf9c41852e9f08dad91e0527af4ead1cd37e6859512f.html"
+    },
+    {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2608010210",
+      "retrieved_at": "2026-10-04T00:03:04.697906+00:00",
+      "sha256": "f1de249ca10938e651e0717618ecda92a70a1bb2d27397eed2b968f1e736a427",
+      "cache_path": "data/raw/live_history_2026/041966a73e51a5c75feefbf77227669daca5c7d3939624e6b82f74b8c6dcf8ed.html"
+    }
+  ],
+  "generated_at": "2026-10-04T00:03:05.480156+00:00"
+}

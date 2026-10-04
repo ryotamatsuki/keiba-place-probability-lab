@@ -148,16 +148,17 @@ def parse_results(html: str, provider_id: str):
         if not rank.isdigit() and rank not in ("中止", "失格"):
             raise ValueError(f"Unconfirmed placing: {rank}")
         hid, name = _identity(c[3]); sex, age = _sex_age(c[3])
-        tm = re.match(r"\s*(\d+):(\d+\.\d+)", c[4].get_text())
+        from .live_history import _parse_race_time
+        seconds = _parse_race_time(c[4].get_text(" ", strip=True))
         early = re.match(r"\s*(\d+)", c[5].get_text())
         row = {k: v for k, v in meta.items() if k != "off_at"}
         row.update(horse_id=hid, horse_name=name, horse_no=number, sex=sex, age=age,
                    assigned_weight_kg=_weight(c[6]),
                    finish_position=float(rank) if rank.isdigit() else np.nan,
                    finish_status="finished" if rank.isdigit() else "dnf",
-                   race_time_seconds=int(tm[1])*60+float(tm[2]) if tm else np.nan,
+                   race_time_seconds=seconds,
                    early_position=float(early[1]) if early else np.nan, outcome_confirmed=True)
-        if rank.isdigit() and not tm:
+        if rank.isdigit() and pd.isna(seconds):
             raise ValueError("Finished runner has no time")
         rows.append(row)
     if not rows or not any(r["finish_position"] == 1 for r in rows):

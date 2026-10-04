@@ -267,7 +267,9 @@ def parse_conditions(text: str) -> dict:
     s = re.sub(r"\s+", "", unicodedata.normalize("NFKC", text))
     s = re.sub(r"(?<=\d),(?=\d)", "", s)
     course = re.search(r"\((芝|ダート)[・･]([^)]*)\)", s)
-    head = s[:250]
+    # Restrict race-kind detection to the condition header. A runner such as
+    # ミッキージャンプ in the first result rows does not make a flat race an obstacle.
+    head = s.split("本賞", 1)[0][:250]
     obstacle = bool(
         re.search(
             r"障害(?:2歳|3歳|4歳|4歳以上|未勝利|オープン)|J[・･]?G|ジャンプ|大障害",
@@ -306,7 +308,9 @@ def parse_conditions(text: str) -> dict:
     grade = bool(re.search(r"\(G(?:III|II|I|1|2|3)\)", s))
     if grade:
         klass = "Open"
-    dist = re.search(r"(?<!\d)(\d{4})(?!\d)", s)
+    # Whitespace removal can join 1,200 and 3歳 into 12003歳. Do not
+    # skip the leading distance and accidentally select a result-row number.
+    dist = re.search(r"(?<!\d)(\d{4})", head)
     return {
         "official_distance_m": int(dist[1]) if dist else None,
         "race_kind": kind,
@@ -397,6 +401,8 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--year", type=int, required=True)
     parser.add_argument("--workers", type=int, default=2)
+    parser.add_argument("--compact-excerpts", action="store_true",
+                        help="Store condition headers without result rows in diagnostic excerpts")
     args = parser.parse_args()
 
     cache = Path("data/historical_raw/official_fact_cache")
@@ -453,6 +459,8 @@ def main() -> None:
         )
     if conditions.race_id.duplicated().any():
         raise ValueError("Duplicate official condition race ids")
+    if args.compact_excerpts:
+        conditions["condition_excerpt"] = conditions.condition_excerpt.str.split("本賞", n=1).str[0]
     conditions.to_csv(output / f"jra_official_conditions_{args.year}.csv", index=False)
 
     print(

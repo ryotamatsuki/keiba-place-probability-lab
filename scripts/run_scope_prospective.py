@@ -71,9 +71,13 @@ def lock(args):
         matched, off_at=args.off_at, market_asof=market_meta["snapshot_at"],
         model_hash=prediction_meta["model_sha256"], protocol_hash=digest(SPEC),
     )
-    manifest.update({"prediction_sha256": digest(args.predictions), "market_sha256": digest(args.market),
-                     "market_manifest_sha256": digest(args.market_manifest),
-                     "prediction_manifest_sha256": digest(args.prediction_manifest)})
+    manifest.update({
+        "prediction_sha256": digest(args.predictions),
+        "market_sha256": digest(args.market),
+        "market_manifest_sha256": digest(args.market_manifest),
+        "prediction_manifest_sha256": digest(args.prediction_manifest),
+        "history_provenance": prediction_meta.get("history_sources"),
+    })
     args.output.mkdir(parents=True, exist_ok=False)
     (args.output / "predictions.csv").write_bytes(payload)
     json_write(args.output / "manifest.json", manifest)
