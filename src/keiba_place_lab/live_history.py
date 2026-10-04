@@ -271,6 +271,14 @@ def _parse_race_time(text: str) -> float:
     return float("nan")
 
 
+def _parse_early_position(text: str, turn_direction: str) -> float:
+    """Parse the first passage rank; straight courses have no corner passage rank."""
+    if turn_direction == "straight":
+        return float("nan")
+    early = re.match(r"\\s*(\\d+)", text)
+    return float(early[1]) if early else float("nan")
+
+
 def _status_from_rank(rank: str) -> tuple[str, bool, float]:
     rank = rank.strip()
     if rank.isdigit():
@@ -315,7 +323,9 @@ def parse_result_audited(
         hid, name = _identity(c[3])
         sex, age = _sex_age(c[3])
         race_time_seconds = _parse_race_time(c[4].get_text(" ", strip=True))
-        early = re.match(r"\s*(\d+)", c[5].get_text())
+        early_position = _parse_early_position(
+            c[5].get_text(" ", strip=True), str(meta["turn_direction"])
+        )
         if finish_status == "finished" and pd.isna(race_time_seconds):
             raise ValueError("Finished runner has no race time")
         row = {k: v for k, v in meta.items() if k != "off_at"}
@@ -330,7 +340,7 @@ def parse_result_audited(
             finish_status=finish_status,
             is_starter=is_starter,
             race_time_seconds=race_time_seconds,
-            early_position=float(early[1]) if early else float("nan"),
+            early_position=early_position,
             outcome_confirmed=True,
             declared_field_size=declared_field_size,  # fixed below after full scan
             result_source_url=source_url,
