@@ -10,8 +10,21 @@ from keiba_place_lab.live_history import (
     expected_results,
     parse_monthly_schedule,
     parse_race_list,
+    sha256_file,
+    update_live_history,
     verify_full_field,
 )
+
+
+def test_independent_inventory_cannot_certify_a_later_cutoff(tmp_path):
+    import json
+    ledger = tmp_path / "ledger.csv"
+    ledger.write_text("race_id,race_date,target_flat\n202608040101,2026-10-03,True\n")
+    ledger.with_suffix(".manifest.json").write_text(json.dumps({
+        "through": "2026-10-03", "ledger_sha256": sha256_file(ledger)}))
+    with pytest.raises(ValueError, match="does not cover requested cutoff"):
+        update_live_history(year=2026, through=pd.Timestamp("2026-10-04"), root=tmp_path / "db",
+                            cache_dir=tmp_path / "cache", ledger_path=ledger)
 
 
 def test_abandoned_race_is_audited_but_does_not_require_a_result():

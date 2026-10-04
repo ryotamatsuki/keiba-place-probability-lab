@@ -1,0 +1,22 @@
+[
+  {
+    "complete_through": "2026-02-28",
+    "latest_race_date": "2026-02-28",
+    "expected_races": 536,
+    "confirmed_races": 536,
+    "missing_race_ids": [],
+    "expected_race_days": 19,
+    "confirmed_race_days": 19,
+    "rows": 7712,
+    "entry_rows": 7738,
+    "snapshot_id": "jra_flat_live_history_v1-20260228-7ca588d6d9df",
+    "history_sha256": "5a5b4dcb3f510561f2f74b6f155f3bef99c055cb55839668e94445c700a3f7f8",
+    "abandoned_race_ids": [
+      "202605010308",
+      "202605010309",
+      "202605010310",
+      "202605010311",
+      "202605010312"
+    ]
+  }
+]

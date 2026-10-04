@@ -628,6 +628,8 @@ def update_live_history(
     cache_dir: Path,
     recheck_days: int = 14,
     max_workers: int = 6,
+    source: str = "yahoo",
+    ledger_path: Path | None = None,
 ) -> dict[str, object]:
     """Build/reconcile the year-to-date JRA flat history and publish only on full QA."""
     from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -637,8 +639,29 @@ def update_live_history(
         raise ValueError("through must be in the requested year")
     if recheck_days < 0:
         raise ValueError("recheck_days must be nonnegative")
-    fetcher = CachedFetcher(cache_dir)
-    expected, provenance = build_expected_ledger(year=year, through=through, fetcher=fetcher)
+    if source not in {"yahoo", "umanity"}:
+        raise ValueError("Unsupported live history source")
+    fetcher = CachedFetcher(cache_dir, pause_seconds=1.0 if source == "umanity" else 0.5)
+    if ledger_path is None:
+        expected, provenance = build_expected_ledger(
+            year=year, through=through, fetcher=fetcher, force_schedule=source == "yahoo")
+    else:
+        coverage_path = ledger_path.with_suffix(".manifest.json")
+        if not coverage_path.exists():
+            raise ValueError("Independent race ledger coverage manifest absent")
+        coverage = json.loads(coverage_path.read_text())
+        if coverage["ledger_sha256"] != sha256_file(ledger_path):
+            raise ValueError("Independent race ledger checksum mismatch")
+        if pd.Timestamp(coverage["through"]) < through:
+            raise ValueError("Independent race ledger does not cover requested cutoff")
+        expected = pd.read_csv(ledger_path, dtype={"race_id": "string", "provider_id": "string", "meeting_day_id": "string"})
+        expected["race_date"] = pd.to_datetime(expected.race_date)
+        expected = expected.loc[expected.race_date.le(through)].copy()
+        if expected.empty or expected.race_id.duplicated().any():
+            raise ValueError("Empty/duplicate independent race ledger")
+        if not expected.race_date.dt.year.eq(year).all():
+            raise ValueError("Independent race ledger year mismatch")
+        provenance = []
     current_manifest, current_history, current_entries, _ = _read_current_snapshot(Path(root))
     current_races = set(current_history.race_id.astype(str)) if len(current_history) else set()
     refresh_from = through - pd.Timedelta(days=max(recheck_days - 1, 0))
@@ -646,7 +669,8 @@ def update_live_history(
     flat = expected_results(expected)
     tasks = []
     for row in flat.itertuples(index=False):
-        need = str(row.race_id) not in current_races or pd.Timestamp(row.race_date) >= refresh_from
+        need = str(row.race_id) not in current_races or (
+            recheck_days > 0 and pd.Timestamp(row.race_date) >= refresh_from)
         if need:
             tasks.append(row)
 
@@ -656,23 +680,42 @@ def update_live_history(
     fetch_records: list[FetchRecord] = list(provenance)
 
     def collect(row):
-        result_url = RESULT_URL.format(provider_id=row.provider_id)
-        denma_url = DENMA_URL.format(provider_id=row.provider_id)
-        refresh = str(row.race_id) in current_races and pd.Timestamp(row.race_date) >= refresh_from
+        selected_source = source
+        yahoo_urls = [RESULT_URL.format(provider_id=row.provider_id), DENMA_URL.format(provider_id=row.provider_id)]
+        refresh = (recheck_days > 0 and str(row.race_id) in current_races
+                   and pd.Timestamp(row.race_date) >= refresh_from)
+        if source == "umanity" and not refresh and all(
+            (Path(cache_dir) / (sha256_bytes(url.encode()) + suffix)).exists()
+            for url in yahoo_urls for suffix in (".html", ".json")
+        ):
+            selected_source = "yahoo"
+        if selected_source == "umanity":
+            from .live_umanity import parse_entry, parse_result, source_id
+            source_rid = source_id(str(row.race_id), row.race_date)
+            result_url = f"https://umanity.jp/racing/result.php?race_id={source_rid}"
+            denma_url = f"https://umanity.jp/racing/card.php?race_id={source_rid}"
+        else:
+            result_url = RESULT_URL.format(provider_id=row.provider_id)
+            denma_url = DENMA_URL.format(provider_id=row.provider_id)
         result_html, result_rec = fetcher.fetch(result_url, force=refresh)
         roster_html, roster_rec = fetcher.fetch(denma_url, force=refresh)
-        starters, result_entries = parse_result_audited(
-            result_html,
-            row.provider_id,
-            source_url=result_rec.url,
-            retrieved_at=result_rec.retrieved_at,
-        )
-        roster_entries = parse_declared_entry_audit(
-            roster_html,
-            row.provider_id,
-            source_url=roster_rec.url,
-            retrieved_at=roster_rec.retrieved_at,
-        )
+        if selected_source == "umanity":
+            starters, result_entries = parse_result(
+                result_html, str(row.race_id), row.race_date,
+                source_url=result_rec.url, retrieved_at=result_rec.retrieved_at)
+            roster_entries = parse_entry(
+                roster_html, str(row.race_id), row.race_date,
+                source_url=roster_rec.url, retrieved_at=roster_rec.retrieved_at)
+        else:
+            starters, result_entries = parse_result_audited(
+                result_html, row.provider_id, source_url=result_rec.url,
+                retrieved_at=result_rec.retrieved_at)
+            roster_entries = parse_declared_entry_audit(
+                roster_html, row.provider_id, source_url=roster_rec.url,
+                retrieved_at=roster_rec.retrieved_at)
+        for key in ("race_id", "race_date", "surface", "distance_m", "racecourse", "turn_direction", "race_class", "is_graded"):
+            if starters[key].iloc[0] != roster_entries[key].iloc[0]:
+                raise ValueError(f"Result/entry race metadata conflict: {key}")
         qa = verify_full_field(result_entries, roster_entries)
         declared_size = int(roster_entries.declared_field_size.iloc[0])
         starters["declared_field_size"] = declared_size

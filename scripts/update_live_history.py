@@ -19,6 +19,8 @@ def main() -> None:
     parser.add_argument("--cache", type=Path, default=Path("data/raw/live_history_2026"))
     parser.add_argument("--recheck-days", type=int, default=14)
     parser.add_argument("--max-workers", type=int, default=6)
+    parser.add_argument("--source", choices=("yahoo", "umanity"), default="yahoo")
+    parser.add_argument("--ledger", type=Path)
     args = parser.parse_args()
     manifest = update_live_history(
         year=args.year,
@@ -27,6 +29,8 @@ def main() -> None:
         cache_dir=args.cache,
         recheck_days=args.recheck_days,
         max_workers=args.max_workers,
+        source=args.source,
+        ledger_path=args.ledger,
     )
     print(json.dumps(manifest, ensure_ascii=False, indent=2))
 

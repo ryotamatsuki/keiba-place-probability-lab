@@ -5,5 +5,13 @@
     "status": "abandoned",
     "reason": "第1回東京第3日、第8レース以降は積雪により取りやめ。実出走・確定結果なし。",
     "source_url": "https://jra.jp/news/202602/020707.html"
+  },
+  {
+    "race_date": "2026-02-08",
+    "race_ids": ["202610010604"],
+    "status": "abandoned",
+    "race_kind": "obstacle",
+    "reason": "第1回小倉第6日、第4レース（障害）は降雪により取りやめ。実出走・確定結果なし。",
+    "source_url": "https://www.jra.go.jp/news/202602/020809.html"
   }
 ]

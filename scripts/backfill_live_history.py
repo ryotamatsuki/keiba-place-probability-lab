@@ -17,6 +17,8 @@ def main():
     parser.add_argument("--root", type=Path, default=Path("data/live_history/2026"))
     parser.add_argument("--cache", type=Path, default=Path("data/raw/live_history_2026"))
     parser.add_argument("--max-workers", type=int, default=3)
+    parser.add_argument("--source", choices=("yahoo", "umanity"), default="yahoo")
+    parser.add_argument("--ledger", type=Path)
     parser.add_argument("--report", type=Path, default=Path("analysis/live_history_2026/checkpoints.json"))
     args = parser.parse_args()
     through = pd.Timestamp(args.through).normalize()
@@ -33,6 +35,7 @@ def main():
         manifest = update_live_history(
             year=through.year, through=cutoff, root=args.root, cache_dir=args.cache,
             recheck_days=14, max_workers=args.max_workers,
+            source=args.source, ledger_path=args.ledger,
         )
         summary = {key: manifest[key] for key in (
             "complete_through", "latest_race_date", "expected_races", "confirmed_races",

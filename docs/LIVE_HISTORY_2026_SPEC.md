@@ -63,6 +63,39 @@ Snapshot identity includes the history, entry-audit and ledger hashes. An existi
 snapshot is never deleted or overwritten. Missing-race retries can reuse captured
 HTML; deliberate recent-result reconciliation refreshes both published views.
 
+## Independent inventory and alternative source
+
+For the October 3 backfill, the official JRA 2026 results index and all 220 published
+daily result PDFs provide an independently extracted race inventory. The inventory
+includes the explicitly evidenced abandoned races and must account for race numbers
+1–12 on each meeting-day. An obstacle abandonment on February 8 (Kokura 4R) is also
+retained, outside the flat-starter population.
+
+The PDF parser determines flat/obstacle status from the condition header, before the
+prize/result rows. A horse name containing ジャンプ must not affect classification.
+
+When Yahoo results return persistent HTTP 500, `--source umanity` uses separately
+published Umanity result and declared-entry pages. Horse IDs, race/date identity,
+condition metadata, starters and statuses are reconciled exactly as for Yahoo.
+Source URLs, retrieval times and content hashes remain explicit per race. Already
+captured and verified Yahoo pages can be reused; no failed acquisition authorizes
+dropping an expected race. Neither odds nor proprietary prediction indices become
+history features.
+
+Commands used for the audited backfill:
+
+```bash
+PYTHONPATH=src python scripts/extract_official_jra.py --year 2026 --workers 3 --compact-excerpts
+PYTHONPATH=src python scripts/build_live_history_ledger.py \
+  --conditions data/derived/jra_official_conditions_2026.csv --through 2026-10-03
+PYTHONPATH=src python scripts/backfill_live_history.py \
+  --through 2026-10-03 --source umanity --max-workers 3 \
+  --ledger analysis/live_history_2026/official_race_ledger.csv
+```
+
+The independent ledger must be rebuilt when advancing beyond its audited cutoff;
+an older ledger must never certify a later date as complete.
+
 ## Result and full-field verification
 
 For every flat race, collection uses two separately parsed published views:
