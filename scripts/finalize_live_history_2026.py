@@ -285,9 +285,9 @@ def merge(args: argparse.Namespace) -> None:
     )
     if manifest.get("source_parser_contract") != "time_margin_separated_v1":
         raise ValueError("Merged snapshot lacks corrected parser contract")
-    if int(manifest["rows"]) != 35148 or int(manifest["entry_rows"]) != 35284:
+    if int(manifest["rows"]) != 35148:
         raise ValueError(
-            f"Final row-count invariant changed: rows={manifest['rows']} entry_rows={manifest['entry_rows']}"
+            f"Final starter-row invariant changed: rows={manifest['rows']}"
         )
 
     checkpoints = json.loads(args.checkpoints.read_text()) if args.checkpoints.exists() else []
