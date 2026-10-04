@@ -1,4 +1,4 @@
-# parser-fix-rerun: straight-course early_position is undefined
+# parser-fix-rerun-v2: straight-course early_position is undefined
 name: Finalize 2026 live history through Oct 3
 
 on:
@@ -14,7 +14,7 @@ permissions:
 
 concurrency:
   group: finalize-live-history-2026
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   reparse:
