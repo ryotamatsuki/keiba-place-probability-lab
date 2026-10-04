@@ -62,21 +62,16 @@ jobs:
               h = pd.read_parquet(history_path)
               e = pd.read_parquet(entry_path)
               hm = h["turn_direction"].astype(str).eq("straight")
-              em = e["turn_direction"].astype(str).eq("straight")
               hfinite = hm & pd.to_numeric(h["early_position"], errors="coerce").notna()
-              efinite = em & pd.to_numeric(e["early_position"], errors="coerce").notna()
               h.loc[hm, "early_position"] = np.nan
-              e.loc[em, "early_position"] = np.nan
               h.to_parquet(history_path, index=False)
-              e.to_parquet(entry_path, index=False)
               sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
               manifest = json.loads(manifest_path.read_text())
               manifest["history_sha256"] = sha(history_path)
-              manifest["entry_audit_sha256"] = sha(entry_path)
               manifest["postparse_correction"] = {
                   "contract": "straight_course_early_position_missing_v1",
                   "history_rows_changed": int(hfinite.sum()),
-                  "entry_rows_changed": int(efinite.sum()),
+                  "entry_rows_changed": 0,
               }
               manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
               summary_path = d / "shard_summary.json"
@@ -86,12 +81,12 @@ jobs:
                   summary["postparse_correction"] = manifest["postparse_correction"]
                   summary_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n")
               report["changed_history_rows"] += int(hfinite.sum())
-              report["changed_entry_rows"] += int(efinite.sum())
+              report["changed_entry_rows"] += 0
               report["shards"].append({
                   "dir": d.name,
                   "straight_history_rows": int(hm.sum()),
                   "history_rows_changed": int(hfinite.sum()),
-                  "entry_rows_changed": int(efinite.sum()),
+                  "entry_rows_changed": 0,
               })
           if len(report["shards"]) != 10:
               raise SystemExit(f"Expected 10 shards, found {len(report['shards'])}")
