@@ -50,7 +50,7 @@ jobs:
           name: scope-expansion-stage1-audit
           path: analysis/scope_expansion_stage1/
           if-no-files-found: error
-          retention-days: 90
+          retention-days: 7
       - name: Commit audit outputs
         run: |
           git config user.name 'github-actions[bot]'

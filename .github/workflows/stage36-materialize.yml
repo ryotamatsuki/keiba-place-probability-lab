@@ -36,7 +36,7 @@ jobs:
             docs/HISTORICAL_*.csv
             docs/HISTORICAL_PANEL_QA_REPORT.md
             docs/HISTORICAL_PANEL_FREEZE_V1.md
-          retention-days: 90
+          retention-days: 30
       - name: Commit computed QA and date map (no raw data)
         # Never commit stale checkout copies when materialization/QA failed.
         if: success()

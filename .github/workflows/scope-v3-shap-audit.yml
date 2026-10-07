@@ -53,7 +53,7 @@ jobs:
           name: scope-v3-shap-audit
           path: analysis/scope_v3_shap/
           if-no-files-found: error
-          retention-days: 90
+          retention-days: 7
       - name: Commit measured outputs
         run: |
           git config user.name 'github-actions[bot]'

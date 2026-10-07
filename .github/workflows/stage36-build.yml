@@ -45,7 +45,7 @@ jobs:
           name: stage36-historical-training-panel-v1
           path: data/historical_processed/stage36_v1/
           if-no-files-found: warn
-          retention-days: 30
+          retention-days: 7
 
       - name: Commit QA and fingerprints
         if: always()

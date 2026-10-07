@@ -48,4 +48,4 @@ jobs:
           name: stage4-nonmarket-baseline-results
           path: /tmp/stage4-results/
           if-no-files-found: error
-          retention-days: 90
+          retention-days: 7

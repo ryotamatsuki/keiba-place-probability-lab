@@ -38,7 +38,7 @@ jobs:
             data/derived/jra_official_${{ matrix.year }}.csv
             data/derived/jra_official_conditions_${{ matrix.year }}.csv
           if-no-files-found: error
-          retention-days: 90
+          retention-days: 3
   combine:
     needs: dates
     runs-on: ubuntu-latest

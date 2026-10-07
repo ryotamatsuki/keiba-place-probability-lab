@@ -58,7 +58,7 @@ jobs:
           name: live-history-reparse-${{ matrix.key }}
           path: out/${{ matrix.key }}
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 7
 
   combine:
     name: Merge, audit, reproduce, publish
