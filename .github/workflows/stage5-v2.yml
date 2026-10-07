@@ -72,7 +72,7 @@ jobs:
           name: stage5-v2-results
           path: analysis/stage5_v2/
           if-no-files-found: error
-          retention-days: 90
+          retention-days: 7
       - name: Commit Stage 5 v2 results
         run: |
           git config user.name 'github-actions[bot]'

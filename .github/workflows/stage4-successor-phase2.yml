@@ -56,7 +56,7 @@ jobs:
           name: stage4-successor-phase2-results
           path: analysis/stage4_successor_phase2/
           if-no-files-found: error
-          retention-days: 90
+          retention-days: 7
       - name: Commit Phase 2 measured outputs
         run: |
           git config user.name 'github-actions[bot]'

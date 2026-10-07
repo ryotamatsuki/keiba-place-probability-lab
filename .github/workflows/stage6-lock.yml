@@ -42,4 +42,4 @@ jobs:
           name: stage6-retrospective-lock
           path: /tmp/stage6-lock/
           if-no-files-found: error
-          retention-days: 90
+          retention-days: 7

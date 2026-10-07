@@ -59,7 +59,7 @@ jobs:
             /tmp/stage4-v2-model/stage4_successor_v2.joblib
             analysis/2026-10-03_kyoto11_opal/stage4_successor_v2/
           if-no-files-found: error
-          retention-days: 90
+          retention-days: 7
       - name: Commit production rehearsal outputs
         run: |
           git config user.name 'github-actions[bot]'
