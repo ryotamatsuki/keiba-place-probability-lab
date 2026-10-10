@@ -1,23 +1,59 @@
-name: Ireland Trophy model package export
+name: Ireland Trophy frozen nonmarket pre-race inference
 on:
   push:
     branches:
       - work/ireland-trophy-20261011-model-export
-  workflow_dispatch:
+    paths:
+      - .github/workflows/model-export-ireland-20261011.yml
+      - scripts/infer_ireland_trophy_20261011.py
 permissions:
-  contents: read
+  actions: read
+  contents: write
 jobs:
-  package:
+  predict:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-      - name: Archive frozen model and feature source
-        run: |
-          tar -czf /tmp/ireland-model-package.tar.gz             models/stage4_scope_v3             src/keiba_place_lab             scripts/run_stage4_scope_v3.py             scripts/run_scope_expansion_completion.py             pyproject.toml requirements-scope.txt             data/live_history/2026
-      - uses: actions/upload-artifact@v4
+      - uses: actions/setup-python@v5
         with:
-          name: ireland-20261011-frozen-model-package
-          path: /tmp/ireland-model-package.tar.gz
-          if-no-files-found: error
-          retention-days: 1
+          python-version: '3.11'
+          cache: pip
+      - name: Install exact frozen model dependencies
+        run: python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+      - name: Download immutable historical baseline
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Build exact race roster and as-of history
+        run: python -u scripts/infer_ireland_trophy_20261011.py
+      - name: Score frozen XGBoost turf_G0
+        run: |
+          python -u scripts/run_stage4_scope_v3.py predict \
+            --roster analysis/ireland_20261011_shadow/roster.csv \
+            --history /tmp/ireland_prediction_history.parquet \
+            --max-history-age-days 8 \
+            --output analysis/ireland_20261011_shadow/predictions.csv
+      - name: Validate output and publish to experiment branch
+        run: |
+          python - <<'PY'
+          import pandas as pd
+          from pathlib import Path
+          p=Path("analysis/ireland_20261011_shadow/predictions.csv")
+          df=pd.read_csv(p)
+          assert len(df)==16
+          assert df.horse_no.nunique()==16
+          n=int(df.p_nonmarket.notna().sum())
+          assert n>=10, f"Unexpected ineligibility: {n}"
+          assert df.p_nonmarket.dropna().between(0,1).all()
+          print("MODEL_PRE_RACE_OUTPUT", df[["horse_no","horse_name","p_nonmarket","route","model_id"]].sort_values("p_nonmarket",ascending=False).to_string(index=False))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/ireland_20261011_shadow/
+          git commit -m 'analysis: publish frozen shadow probabilities for 2026 Ireland Trophy'
+          git push origin HEAD:work/ireland-trophy-20261011-model-export
