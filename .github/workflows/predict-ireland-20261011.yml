@@ -110,10 +110,26 @@ jobs:
           PY
       - name: Infer genuine out-of-sample place probabilities with frozen model
         run: |
+          python - <<'PY'
+          import json
+          import pandas as pd
+          from pathlib import Path
+          from keiba_place_lab.live_history import load_frozen_history
+          base=load_frozen_history(Path("/tmp/stage36/data/historical_processed/stage36_freeze_v1/standardized_jra_flat_source_v1.parquet"))
+          root=Path("data/live_history/2026")
+          pointer=json.loads((root/"current.json").read_text())
+          assert pointer["complete_through"]=="2026-10-04"
+          live=pd.read_parquet(root/"snapshots"/pointer["snapshot_id"]/"jra_flat_history.parquet")
+          history=pd.concat([base,live],ignore_index=True,sort=False)
+          assert not history.duplicated(["race_id","horse_id"]).any()
+          assert pd.to_datetime(history.race_date).max().date().isoformat()=="2026-10-04"
+          history.to_parquet("/tmp/ireland_audited_through_oct4.parquet",index=False)
+          print("Audited standalone source through Oct 4:",len(history),"rows")
+          PY
           python scripts/run_stage4_scope_v3.py predict \
             --roster analysis/predictions/2026-10-11_ireland/roster.csv \
-            --historical-base /tmp/stage36/data/historical_processed/stage36_freeze_v1/standardized_jra_flat_source_v1.parquet \
-            --live-history-root data/live_history/2026 \
+            --history /tmp/ireland_audited_through_oct4.parquet \
+            --max-history-age-days 7 \
             --output analysis/predictions/2026-10-11_ireland/shadow_probabilities.csv
           python - <<'PY'
           import pandas as pd
