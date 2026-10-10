@@ -1,0 +1,15 @@
+{
+  "prediction_sha256": "2938ea3d7344e76b1647ef7621eba78f015dcf61189b627382c481a7d708f9d0",
+  "model_sha256": "2135442ac31e6489bd209ca338694455b3b887569392f045b5228fc58c59321b",
+  "roster_sha256": "fed7ecbb95faec584286928f4d6a3dd120c146a17628e105419616e936283cbd",
+  "history_sources": {
+    "mode": "standalone",
+    "history_sha256": "4fb0d590da69d99ab7502abe4744704db2432b75eb4610d4c95d4f24b4e5782a",
+    "rows_before_asof_filter": 788882,
+    "rows_after_asof_filter": 788882,
+    "asof_exclusive": "2026-10-12"
+  },
+  "history_date_max": "2026-10-04",
+  "stage5_canonical": "market-only",
+  "shadow_only": true
+}
