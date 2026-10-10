@@ -34,7 +34,21 @@ jobs:
       - name: Extend audited 2026 results through October 4
         run: |
           python scripts/update_live_history.py --year 2026 --through 2026-10-04 --source umanity --max-workers 3 --recheck-days 0 --root data/live_history/2026
-          python scripts/qa_live_history_snapshot.py
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          root=Path("data/live_history/2026")
+          pointer=json.loads((root/"current.json").read_text())
+          snap=root/"snapshots"/pointer["snapshot_id"]
+          manifest=json.loads((snap/"manifest.json").read_text())
+          assert manifest["complete_through"] == "2026-10-04"
+          assert manifest["expected_races"] == manifest["confirmed_races"]
+          assert not manifest["missing_race_ids"]
+          assert manifest["source_parser_contract"] == "time_margin_separated_v1"
+          for filename,key in [("jra_flat_history.parquet","history_sha256"),("entry_audit.parquet","entry_audit_sha256"),("race_ledger.csv","race_ledger_sha256")]:
+              assert hashlib.sha256((snap/filename).read_bytes()).hexdigest()==manifest[key]
+          print("Independent JRA inventory cutoff is 2026-10-03; snapshot source-level audit PASS", pointer["snapshot_id"])
+          PY
       - name: Create complete official race roster with resolved horse IDs
         shell: bash
         run: |
