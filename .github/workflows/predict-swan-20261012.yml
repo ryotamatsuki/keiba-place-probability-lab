@@ -1,0 +1,138 @@
+name: Swan Stakes 2026-10-12 frozen model prediction
+
+on:
+  push:
+    branches: [predict-swan-20261012]
+    paths:
+      - .github/workflows/predict-swan-20261012.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  predict:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install frozen model environment
+        run: python -m pip install -e ".[dev,historical,modeldev]" -c requirements-scope.txt
+      - name: Download frozen historical data from original training run
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Check 2026-10-04 snapshot provenance
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          root=Path("data/live_history/2026")
+          pointer=json.loads((root/"current.json").read_text())
+          assert pointer["complete_through"]=="2026-10-04"
+          snap=root/"snapshots"/pointer["snapshot_id"]
+          manifest=json.loads((snap/"manifest.json").read_text())
+          assert manifest["complete_through"]=="2026-10-04"
+          assert manifest["expected_races"]==manifest["confirmed_races"]
+          assert not manifest["missing_race_ids"]
+          assert manifest["source_parser_contract"]=="time_margin_separated_v1"
+          for filename,key in [("jra_flat_history.parquet","history_sha256"),("entry_audit.parquet","entry_audit_sha256"),("race_ledger.csv","race_ledger_sha256")]:
+              assert hashlib.sha256((snap/filename).read_bytes()).hexdigest()==manifest[key]
+          print("Verified Oct 4 snapshot:",pointer["snapshot_id"], "races",manifest["confirmed_races"])
+          PY
+      - name: Prepare 18-runner official Swan Stakes roster and horse IDs
+        run: |
+          mkdir -p analysis/predictions/2026-10-12_swan
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import pandas as pd
+          base=Path("/tmp/stage36/data/historical_processed/stage36_freeze_v1/standardized_jra_flat_source_v1.parquet")
+          root=Path("data/live_history/2026")
+          pointer=json.loads((root/"current.json").read_text())
+          live=root/"snapshots"/pointer["snapshot_id"]/"jra_flat_history.parquet"
+          h=pd.concat([pd.read_parquet(base)[["horse_name","horse_id","race_date"]],pd.read_parquet(live)[["horse_name","horse_id","race_date"]]],ignore_index=True)
+          horses=[
+              (1,"ダイヤモンドノット",3,"M",55),
+              (2,"ショウナンザナドゥ",4,"F",55),
+              (3,"レイベリング",6,"M",57),
+              (4,"スズハローム",6,"M",57),
+              (5,"ビッグシーザー",6,"M",57),
+              (6,"ウインマーベル",7,"M",57),
+              (7,"ネオトキオ",6,"M",57),
+              (8,"サンダーストラック",3,"M",55),
+              (9,"オフトレイル",5,"M",58),
+              (10,"ララマセラシオン",5,"M",57),
+              (11,"レザベーション",3,"M",56),
+              (12,"アイサンサン",4,"F",55),
+              (13,"マイネルチケット",4,"M",57),
+              (14,"ワイドラトゥール",5,"F",55),
+              (15,"ジョイフルニュース",4,"F",55),
+              (16,"ランフォーヴァウ",4,"F",55),
+              (17,"ミニトランザット",4,"M",57),
+              (18,"エリカエクスプレス",4,"F",55),
+          ]
+          rows=[]
+          for number,name,age,sex,weight in horses:
+              matching=h.loc[h.horse_name.eq(name)]
+              ids=matching.loc[matching.horse_id.astype(str).str.startswith(str(2026-age)),"horse_id"].astype(str).unique().tolist()
+              if len(ids)!=1:
+                  if name=="ネオトキオ" and not ids: ids=["2020101301"]
+                  else: raise ValueError(f"Missing or ambiguous horse ID {name} age {age}: {ids}")
+              rows.append(dict(race_id="202608040511",race_date="2026-10-12",racecourse="京都",
+                  surface="turf",distance_m=1400,turn_direction="right",race_class="Open",
+                  horse_id=ids[0],horse_name=name,horse_no=number,sex=sex,age=age,
+                  assigned_weight_kg=float(weight),field_size=18,declared_field_size=18))
+          roster=pd.DataFrame(rows)
+          assert roster.horse_id.nunique()==18
+          path=Path("analysis/predictions/2026-10-12_swan/roster.csv")
+          roster.to_csv(path,index=False)
+          print(roster[["horse_no","horse_name","horse_id","age","assigned_weight_kg"]].to_string(index=False))
+          PY
+      - name: Produce actual frozen XGBoost place probabilities
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import pandas as pd
+          from keiba_place_lab.live_history import load_frozen_history
+          base=load_frozen_history(Path("/tmp/stage36/data/historical_processed/stage36_freeze_v1/standardized_jra_flat_source_v1.parquet"))
+          root=Path("data/live_history/2026")
+          pointer=json.loads((root/"current.json").read_text())
+          live=pd.read_parquet(root/"snapshots"/pointer["snapshot_id"]/"jra_flat_history.parquet")
+          history=pd.concat([base,live],ignore_index=True,sort=False)
+          assert not history.duplicated(["race_id","horse_id"]).any()
+          assert pd.to_datetime(history.race_date).max().date().isoformat()=="2026-10-04"
+          history.to_parquet("/tmp/swan_history_to_oct4.parquet",index=False)
+          print("Audited standalone source:",len(history),"rows through 2026-10-04")
+          PY
+          python scripts/run_stage4_scope_v3.py predict \
+            --roster analysis/predictions/2026-10-12_swan/roster.csv \
+            --history /tmp/swan_history_to_oct4.parquet \
+            --max-history-age-days 8 \
+            --output analysis/predictions/2026-10-12_swan/shadow_probabilities.csv
+          python - <<'PY'
+          import pandas as pd
+          p="analysis/predictions/2026-10-12_swan/shadow_probabilities.csv"
+          d=pd.read_csv(p)
+          print(d.sort_values("p_nonmarket",ascending=False)[["horse_no","horse_name","p_nonmarket","route","model_id"]].to_string(index=False))
+          assert len(d)==18 and d.horse_no.nunique()==18
+          assert d.p_nonmarket.notna().sum()>=14
+          assert d.model_id.dropna().eq("turf_G0").all()
+          PY
+      - name: Preserve auditable prediction output
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/predictions/2026-10-12_swan/
+          git commit -m "forecast: record Swan Stakes 2026 Oct 12 frozen shadow predictions"
+          git push origin HEAD:predict-swan-20261012
