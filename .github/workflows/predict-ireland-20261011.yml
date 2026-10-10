@@ -1,0 +1,92 @@
+name: Ireland Trophy 2026-10-11 frozen model prediction
+
+on:
+  push:
+    branches: [predict-ireland-trophy-20261011]
+    paths:
+      - .github/workflows/predict-ireland-20261011.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  predict:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install exact frozen scope environment
+        run: python -m pip install -e ".[dev,historical,modeldev]" -c requirements-scope.txt
+      - name: Download frozen 2010-2025 historical source
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Extend audited 2026 results through October 4
+        run: |
+          python scripts/update_live_history.py --year 2026 --through 2026-10-04 --source umanity --max-workers 3 --recheck-days 0 --root data/live_history/2026
+          python scripts/qa_live_history_snapshot.py
+      - name: Create complete official race roster with resolved horse IDs
+        shell: bash
+        run: |
+          mkdir -p analysis/predictions/2026-10-11_ireland
+          python - <<'PY'
+          import json
+          import pandas as pd
+          from pathlib import Path
+          base=Path("/tmp/stage36/data/historical_processed/stage36_freeze_v1/standardized_jra_flat_source_v1.parquet")
+          pointer=json.loads(Path("data/live_history/2026/current.json").read_text())
+          live_path=Path("data/live_history/2026/snapshots")/pointer["snapshot_id"]/"jra_flat_history.parquet"
+          history=pd.concat([pd.read_parquet(base)[["race_date","horse_name","horse_id"]],pd.read_parquet(live_path)[["race_date","horse_name","horse_id"]]],ignore_index=True)
+          history["race_date"]=pd.to_datetime(history.race_date)
+          history=history.sort_values("race_date")
+          names=[
+          ("ニシノティアモ",5,55),("チェルビアット",4,55),("クイーンズウォーク",5,55),("クランフォード",5,55),
+          ("カネラフィーナ",4,55),("ムイ",4,55),("ミラビリスマジック",5,55),("ルージュソリテール",4,55),
+          ("ウイントワイライト",4,55),("セキトバイースト",5,55),("ラヴァンダ",5,56),("ミアネーロ",5,55),
+          ("ワタシマツワ",4,55),("ハワイアンティアレ",5,55),("ジョスラン",4,55),("カムニャック",4,56)
+          ]
+          rows=[]
+          for i,(name,age,weight) in enumerate(names,1):
+              matching=history.loc[history.horse_name.eq(name)]
+              ids=matching.horse_id.astype(str).unique().tolist()
+              if len(ids)!=1: raise ValueError(f"Missing/ambiguous horse ID for {name}: {ids}")
+              rows.append(dict(race_id="202605040411",race_date="2026-10-11",racecourse="東京",surface="turf",distance_m=1800,
+                 turn_direction="left",race_class="Open",horse_id=ids[0],horse_name=name,horse_no=i,sex="F",age=age,
+                 assigned_weight_kg=float(weight),field_size=16,declared_field_size=16))
+          out=Path("analysis/predictions/2026-10-11_ireland/roster.csv")
+          pd.DataFrame(rows).to_csv(out,index=False)
+          print(pd.DataFrame(rows)[["horse_no","horse_name","horse_id"]].to_string(index=False))
+          PY
+      - name: Infer genuine out-of-sample place probabilities with frozen model
+        run: |
+          python scripts/run_stage4_scope_v3.py predict \
+            --roster analysis/predictions/2026-10-11_ireland/roster.csv \
+            --historical-base /tmp/stage36/data/historical_processed/stage36_freeze_v1/standardized_jra_flat_source_v1.parquet \
+            --live-history-root data/live_history/2026 \
+            --output analysis/predictions/2026-10-11_ireland/shadow_probabilities.csv
+          python - <<'PY'
+          import pandas as pd
+          p="analysis/predictions/2026-10-11_ireland/shadow_probabilities.csv"
+          d=pd.read_csv(p)
+          print(d.sort_values("p_nonmarket",ascending=False)[["horse_no","horse_name","p_nonmarket","route","model_id"]].to_string(index=False))
+          assert d.shape[0]==16
+          assert d.p_nonmarket.notna().sum()>=12
+          assert d.model_id.dropna().eq("turf_G0").all()
+          PY
+      - name: Commit prediction evidence to analysis branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/predictions/2026-10-11_ireland data/live_history/2026/current.json data/live_history/2026/snapshots
+          git commit -m "forecast: lock Ireland Trophy frozen shadow model probabilities" || true
+          git push origin HEAD:predict-ireland-trophy-20261011
