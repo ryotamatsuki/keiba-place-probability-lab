@@ -52,7 +52,7 @@ jobs:
               frame["schedule_row_text"]=frame.schedule_row_text.astype(str)
               additions.append(frame)
           ledger=pd.concat([original,*additions],ignore_index=True,sort=False)
-          ledger["race_date"]=pd.to_datetime(ledger.race_date)
+          ledger["race_date"]=pd.to_datetime(ledger.race_date,format="mixed").dt.strftime("%Y-%m-%d")
           ledger=ledger.sort_values(["race_date","race_id"])
           assert not ledger.race_id.duplicated().any()
           new=Path("/tmp/ireland_20261004_ledger.csv")
