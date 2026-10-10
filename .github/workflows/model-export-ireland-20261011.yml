@@ -1,0 +1,23 @@
+name: Ireland Trophy model package export
+on:
+  push:
+    branches:
+      - work/ireland-trophy-20261011-model-export
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Archive frozen model and feature source
+        run: |
+          tar -czf /tmp/ireland-model-package.tar.gz             models/stage4_scope_v3             src/keiba_place_lab             scripts/run_stage4_scope_v3.py             scripts/run_scope_expansion_completion.py             pyproject.toml requirements-scope.txt             data/live_history/2026
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ireland-20261011-frozen-model-package
+          path: /tmp/ireland-model-package.tar.gz
+          if-no-files-found: error
+          retention-days: 1
