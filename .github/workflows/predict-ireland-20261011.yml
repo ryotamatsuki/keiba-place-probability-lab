@@ -33,7 +33,33 @@ jobs:
           run-id: 37104212189
       - name: Extend audited 2026 results through October 4
         run: |
-          python scripts/update_live_history.py --year 2026 --through 2026-10-04 --source umanity --max-workers 3 --recheck-days 0 --root data/live_history/2026
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          import pandas as pd
+          from keiba_place_lab.live_history import CachedFetcher,parse_race_list
+          p=Path("analysis/live_history_2026/official_race_ledger.csv")
+          original=pd.read_csv(p,dtype={"race_id":"string","provider_id":"string","meeting_day_id":"string"})
+          fetcher=CachedFetcher(Path("/tmp/ireland_oct4_schedule"),pause_seconds=0.5)
+          additions=[]
+          for day in ["26050402","26080402"]:
+              url=f"https://sports.yahoo.co.jp/keiba/race/list/{day}"
+              html,record=fetcher.fetch(url)
+              frame=parse_race_list(html,meeting_day_id=day)
+              assert pd.to_datetime(frame.race_date).dt.date.astype(str).eq("2026-10-04").all()
+              frame["race_status"]="expected_result"
+              frame["schedule_source_url"]=url
+              frame["schedule_row_text"]=frame.schedule_row_text.astype(str)
+              additions.append(frame)
+          ledger=pd.concat([original,*additions],ignore_index=True,sort=False)
+          ledger=ledger.sort_values(["race_date","race_id"])
+          assert not ledger.race_id.duplicated().any()
+          new=Path("/tmp/ireland_20261004_ledger.csv")
+          ledger.to_csv(new,index=False)
+          new.with_suffix(".manifest.json").write_text(json.dumps({"through":"2026-10-04","ledger_sha256":hashlib.sha256(new.read_bytes()).hexdigest(),"source":"JRA official through 2026-10-03 plus Yahoo confirmed meeting-day listings for 2026-10-04"},ensure_ascii=False))
+          print("Target 2026-10-04 race inventory:",sum(x.target_flat.sum() for x in additions),flush=True)
+          PY
+          python scripts/update_live_history.py --year 2026 --through 2026-10-04 --source umanity --max-workers 3 --recheck-days 0 --ledger /tmp/ireland_20261004_ledger.csv --root data/live_history/2026
           python - <<'PY'
           import hashlib, json
           from pathlib import Path
@@ -72,7 +98,7 @@ jobs:
           rows=[]
           for i,(name,age,weight) in enumerate(names,1):
               matching=history.loc[history.horse_name.eq(name)]
-              ids=matching.horse_id.astype(str).unique().tolist()
+              ids=matching.loc[matching.horse_id.astype(str).str.startswith(str(2026-age)),"horse_id"].astype(str).unique().tolist()
               if len(ids)!=1: raise ValueError(f"Missing/ambiguous horse ID for {name}: {ids}")
               rows.append(dict(race_id="202605040411",race_date="2026-10-11",racecourse="東京",surface="turf",distance_m=1800,
                  turn_direction="left",race_class="Open",horse_id=ids[0],horse_name=name,horse_no=i,sex="F",age=age,
