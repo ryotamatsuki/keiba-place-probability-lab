@@ -44,9 +44,14 @@ assert full.race_date.max() == pd.Timestamp("2026-10-03")
 rows = []
 lookup_audit = []
 for number, name in enumerate(names, start=1):
-    found = full.loc[full.horse_name.eq(name)].sort_values("race_date")
+    age = 4 if number in four_year_olds else 5
+    birth_year = str(2026 - age)
+    found = full.loc[
+        full.horse_name.eq(name)
+        & full.horse_id.astype(str).str.startswith(birth_year)
+    ].sort_values("race_date")
     if found.empty:
-        raise ValueError(f"NO_REGISTERED_HISTORY_FOR {number}: {name}")
+        raise ValueError(f"NO_REGISTERED_HISTORY_FOR {number}: {name}, birth_year={birth_year}")
     ids = found.horse_id.dropna().unique().tolist()
     if len(ids) != 1:
         raise ValueError(f"AMBIGUOUS_HORSE_ID {name}: {ids}")
