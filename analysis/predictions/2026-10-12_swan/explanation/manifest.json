@@ -1,0 +1,18 @@
+{
+  "model_id": "turf_G0",
+  "model_sha256": "2135442ac31e6489bd209ca338694455b3b887569392f045b5228fc58c59321b",
+  "prediction_max_abs_diff": 8.326672684688674e-17,
+  "shap_reconstruction_max_abs_diff": 1.4901161193847656e-07,
+  "contributions_are": "XGBoost TreeSHAP to raw log odds; signed effects are model-internal, not causal",
+  "source_history_through": "2026-10-04",
+  "target_horses": [
+    1,
+    9,
+    11,
+    13,
+    15,
+    17,
+    18
+  ],
+  "missing_new_distance_blocks": true
+}
