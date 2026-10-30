@@ -18,11 +18,16 @@ from xgboost import __version__ as xgb_version
 from keiba_place_lab.ensemble import apply_logit_calibrator, convex_blend, fit_logit_calibrator
 from keiba_place_lab.historical_market import reconstruct_historical_market
 from keiba_place_lab.model_selection import (
-    candidate_score, paired_delta, race_loss_table, select_with_incumbent_one_se,
+    candidate_score,
+    paired_delta,
+    race_loss_table,
+    select_with_incumbent_one_se,
 )
 from keiba_place_lab.nonmarket import calibration_table
 from keiba_place_lab.probability_improvement_v1 import (
-    corrected_harville_top3, euclidean_top3_projection, fit_logit_stack,
+    corrected_harville_top3,
+    euclidean_top3_projection,
+    fit_logit_stack,
     predict_logit_stack,
 )
 from keiba_place_lab.stage4_successor import calibration_intercept_slope
