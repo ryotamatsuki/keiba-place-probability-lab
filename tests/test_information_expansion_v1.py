@@ -156,6 +156,9 @@ def test_actual_xgb_logit_offset_predicts_valid_probabilities():
         "draw_pct":rng.random(n),
         "surface":["turf"]*n,
     })
+    # Mimic the frozen parquet panel's nullable pandas Float64 + pd.NA.
+    train["draw_pct"]=train["draw_pct"].astype("Float64")
+    train.loc[1,"draw_pct"]=pd.NA
     test=train.iloc[:8].copy()
     test.race_date=pd.Timestamp("2023-01-05")
     p=fit(train,test,["draw_pct"],["surface"])
