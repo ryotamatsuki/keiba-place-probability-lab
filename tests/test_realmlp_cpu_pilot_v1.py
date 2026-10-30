@@ -7,7 +7,6 @@ from runpy import run_path
 
 import numpy as np
 import pandas as pd
-import pytest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"scripts"))
 runtime=run_path(str(Path(__file__).resolve().parents[1]/
