@@ -1,0 +1,130 @@
+{
+  "reference_sha256": "81b4f74dadb5c2ff8950f6f8ee7f0cc19c60233ba1418e0172f4887f3e00ef8a",
+  "source": {
+    "source_sha256": {
+      "jra_flat_warmup_v1.parquet": "9826b5efdd2825f384f125a41602bb3948506b852b38b6f2186709d25d51532e",
+      "jra_flat_train_v1.parquet": "1fc9702838982a574d09f03d05a0c95aa4ece319f1090f37af6772c1a9f8bbb7",
+      "jra_flat_validation_v1.parquet": "aa7263518713e62af2da6d1b6f712e5b4d3c62200365f47974a903291e7e41ff",
+      "keiba_results.csv": "fb9345273b21a7c23d41260dc77e45134a1bc2fe756899f3416b24ac0dd51de3",
+      "keiba_races.csv": "b9ba4423efbaec641f9285ff01d79895c7b3821c2146522a397127245c81fadb"
+    },
+    "raw_summary": {
+      "rows": 707067,
+      "matched": 707067
+    },
+    "market_audit": {
+      "requested_races": 26117,
+      "complete_market_races": 26117,
+      "incomplete_market_races": 0,
+      "malformed_requested_rows": 0,
+      "incomplete_reason_counts": {},
+      "excluded_races_after_full_field_check": 0,
+      "paired_eligible_races": 26117,
+      "paired_eligible_rows": 293459
+    },
+    "market_context_audit": {
+      "requested_races": 26117,
+      "complete_market_races": 26117,
+      "incomplete_market_races": 0,
+      "malformed_requested_rows": 0,
+      "incomplete_reason_counts": {}
+    },
+    "relative_coverage": [
+      {
+        "feature": "rel_career_top3_vs_others",
+        "full_field_rows": 370018,
+        "full_field_nonmissing": 370018
+      },
+      {
+        "feature": "rel_same_distance_top3_vs_others",
+        "full_field_rows": 370018,
+        "full_field_nonmissing": 370018
+      },
+      {
+        "feature": "rel_same_course_top3_vs_others",
+        "full_field_rows": 370018,
+        "full_field_nonmissing": 370018
+      },
+      {
+        "feature": "rel_recent3_finish_vs_others",
+        "full_field_rows": 370018,
+        "full_field_nonmissing": 363076
+      },
+      {
+        "feature": "rel_recent3_time_vs_others",
+        "full_field_rows": 370018,
+        "full_field_nonmissing": 363076
+      }
+    ]
+  },
+  "panel_sha256": "a85e1cebd395ee95756a2b36c4b3c0fda42f98c9876da90644a265b53340a459",
+  "registry": "F3_market_field",
+  "feature_columns": [
+    [
+      "draw_pct",
+      "age",
+      "assigned_weight_kg",
+      "assigned_weight_delta_from_prev_kg",
+      "log_days_since_prev",
+      "distance_change_from_prev_m",
+      "surface_changed_from_prev",
+      "career_top3_shrunk",
+      "log_career_starts",
+      "turf_top3_shrunk",
+      "log_turf_starts",
+      "same_distance_top3_shrunk",
+      "log_same_distance_starts",
+      "same_course_top3_shrunk",
+      "log_same_course_starts",
+      "recent3_finish_pct_mean",
+      "recent3_top3_count",
+      "recent3_open_plus_count",
+      "recent3_graded_count",
+      "recent3_relative_time_mean",
+      "recent4_early_pos_pct_mean",
+      "front_forward_share",
+      "field_size",
+      "distance_m",
+      "history_last3f_rel3",
+      "history_last3f_rel_last",
+      "history_passing_gain3",
+      "history_early_pct3",
+      "history_early_stability3",
+      "history_mass_last",
+      "history_mass_change_last",
+      "history_wet_starts",
+      "history_wet_top3_rate",
+      "history_last_jockey_prior_rate",
+      "history_last_trainer_prior_rate",
+      "history_jockey_stability",
+      "strength_elo_prior",
+      "strength_elo_vs_field",
+      "strength_opp_mean_prior",
+      "strength_previous_opponent",
+      "strength_previous_placing",
+      "strength_prior_races",
+      "market_calibrated_top3_p",
+      "market_calibrated_top3_logit",
+      "rel_career_top3_vs_others",
+      "rel_same_distance_top3_vs_others",
+      "rel_same_course_top3_vs_others",
+      "rel_recent3_finish_vs_others",
+      "rel_recent3_time_vs_others",
+      "market_win_probability",
+      "market_win_rank_pct",
+      "market_win_hhi",
+      "market_top2_win_gap",
+      "market_favorite_win_share"
+    ],
+    [
+      "sex",
+      "racecourse",
+      "race_class",
+      "surface"
+    ]
+  ],
+  "panel_rows": 293459,
+  "prepare_seconds": 280.66660791899994,
+  "status": "READ_ONLY_HISTORICAL_PANEL_CREATED_LOCAL_NO_SOURCE_COMMIT",
+  "source_signature": "c07e1f4fe7c4ca543ce9005b7f15710e65bed46802b05eb01ef604d5b3a11d33"
+}
