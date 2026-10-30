@@ -423,7 +423,7 @@ def stage_outer(args: argparse.Namespace) -> None:
     )
     existing.race_date = pd.to_datetime(existing.race_date)
     existing = _sort_keyed(existing)
-    reference = existing.loc[existing.race_date.dt.year.eq(year)].copy()
+    reference = _sort_keyed(existing.loc[existing.race_date.dt.year.eq(year)].copy())
     if not test[KEYS].equals(reference[KEYS]):
         raise ValueError("Old family baseline evaluation identities changed")
     fixed = 400 if args.family == "xgb" else 120
