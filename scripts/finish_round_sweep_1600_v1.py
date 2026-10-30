@@ -80,7 +80,15 @@ def confirmed_family(root: Path, family: str) -> tuple[
         if (m["family"] != family or m["outer_year"] != year
                 or m["source_signature"] != source["source_signature"]
                 or m["output_sha256"] != file_sha(path)
-                or m["original_fixed_parity_max_abs_error"] > 1e-8):
+                or (
+                    m["original_fixed_parity_max_abs_error"] > 1e-8
+                    and not (
+                        family == "xgb"
+                        and m.get("original_fixed_parity_contract")
+                        == "float32_2ULP_with_absolute_1e-7_cap"
+                        and m["original_fixed_parity_max_abs_error"] <= 1e-7
+                    )
+                )):
             raise ValueError(family + f": failed original prediction parity {year}")
         outer[year] = read_frame(path)
         manifests[year] = m
