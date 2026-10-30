@@ -1,0 +1,81 @@
+name: Input Learning V1 — nested Brier learning curves
+# Verified full regression/chronology tests green; run F3 model curves.
+# Complete rerun after final nested-stage lint/test updates.
+# Rerun after nested CLI import sorting; frozen curves unchanged.
+on:
+  push:
+    branches:
+      - research/input-learning-v1-20261031
+    paths:
+      - .github/workflows/input-learning-b-v1.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: input-learning-B-nested-2023-2024
+  cancel-in-progress: false
+
+jobs:
+  learning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 115
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install original pinned XGB runtime
+        run: python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+      - name: Full regression, nested-year safety and lint
+        run: |
+          ruff check .
+          pytest -q
+      - name: Fetch immutable JRA date and full starter history
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Download licensed-reuse final-odds historical Kaggle V1
+        run: |
+          python - <<'PY'
+          import kagglehub
+          print(kagglehub.dataset_download(
+            'noriyukifurufuru/japan-horse-racing-2010-2025/versions/1',
+            output_dir='/tmp/kaggle_v1'))
+          PY
+      - name: Inner OOF learning curves 2021-2023, outer F3 2023/2024
+        run: |
+          set -euo pipefail
+          RESULTS=$(find /tmp/kaggle_v1 -name keiba_results.csv -print -quit)
+          RACES=$(find /tmp/kaggle_v1 -name keiba_races.csv -print -quit)
+          test -n "$RESULTS" && test -n "$RACES"
+          python -u scripts/run_input_learning_b_v1.py \
+            --historical-dir /tmp/stage36/data/historical_processed/stage36_freeze_v1 \
+            --results-csv "$RESULTS" \
+            --races-csv "$RACES" \
+            --reference-oof analysis/information_expansion_v1/outer_oof_predictions.csv \
+            --e5-2024 analysis/model_ensemble_v1/2024_predictions.csv \
+            --output-dir /tmp/input_learning_b_v1
+      - name: Store only derived predictions and chronological diagnostics
+        if: always()
+        run: |
+          if [ ! -d /tmp/input_learning_b_v1 ]; then exit 0; fi
+          mkdir -p analysis/input_learning_v1
+          cp -f /tmp/input_learning_b_v1/* analysis/input_learning_v1/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/input_learning_v1/
+          if ! git diff --cached --quiet; then
+            git commit -m 'analysis: add nested F3 Brier curves and strictly prior alpha fits'
+            git pull --rebase origin research/input-learning-v1-20261031
+            git push origin HEAD:research/input-learning-v1-20261031
+          fi

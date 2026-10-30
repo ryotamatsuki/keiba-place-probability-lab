@@ -1,0 +1,32 @@
+{
+  "status": "FINAL_WIN_ODDS_KNOWN_DEVELOPMENT_ONLY",
+  "outer_choices": [
+    {
+      "outer_year": 2023,
+      "rounds": 400,
+      "alpha": 0.8416886805088949,
+      "alpha_trained_through": 2022,
+      "rounds_chosen_from_years": [
+        2021,
+        2022
+      ],
+      "outer_eval_rows": 32051
+    },
+    {
+      "outer_year": 2024,
+      "rounds": 400,
+      "alpha": 0.9475731031056922,
+      "alpha_trained_through": 2023,
+      "rounds_chosen_from_years": [
+        2021,
+        2022,
+        2023
+      ],
+      "outer_eval_rows": 31225
+    }
+  ],
+  "2024_E5_incumbent_retained": false,
+  "2024_best": "B_raw",
+  "source_sha256": "81b4f74dadb5c2ff8950f6f8ee7f0cc19c60233ba1418e0172f4887f3e00ef8a",
+  "no_production_promotion": true
+}

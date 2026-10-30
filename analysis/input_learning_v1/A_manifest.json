@@ -1,0 +1,130 @@
+{
+  "status": "HISTORICAL_FINAL_ODDS_DEVELOPMENT_ONLY",
+  "pre_registration_sha": "f4d12b571b27a0309f760ba60317f5eee277cbdb",
+  "training": {
+    "folds": [
+      {
+        "outer_year": 2023,
+        "training_end_date": "2022-12-28",
+        "training_rows": 161454,
+        "eval_races": 2887,
+        "eval_rows": 32051
+      },
+      {
+        "outer_year": 2024,
+        "training_end_date": "2023-12-28",
+        "training_rows": 193505,
+        "eval_races": 2844,
+        "eval_rows": 31225
+      }
+    ],
+    "F0_reproduces_frozen_X2": true,
+    "market_reproduces_frozen_M0": true,
+    "num_features": {
+      "F0_X2": 42,
+      "F1_market_surface": 44,
+      "F2_relative": 49,
+      "F3_market_field": 54
+    },
+    "categorical_features": {
+      "F0_X2": [
+        "sex",
+        "racecourse",
+        "race_class"
+      ],
+      "F1_market_surface": [
+        "sex",
+        "racecourse",
+        "race_class",
+        "surface"
+      ],
+      "F2_relative": [
+        "sex",
+        "racecourse",
+        "race_class",
+        "surface"
+      ],
+      "F3_market_field": [
+        "sex",
+        "racecourse",
+        "race_class",
+        "surface"
+      ]
+    }
+  },
+  "verdict": {
+    "outer_years": {
+      "winner": "F0_X2",
+      "incumbent_retained": true
+    },
+    "2024_vs_E5": {
+      "winner": "E5_frozen",
+      "incumbent_retained": true
+    },
+    "2024_fingerprint": "2291807521499019cb2a0c62f416c1e9e4f43f0b421711371d5f41aa97c8941a"
+  },
+  "source_oof_sha256": "81b4f74dadb5c2ff8950f6f8ee7f0cc19c60233ba1418e0172f4887f3e00ef8a",
+  "e5_oof_sha256": "11f07df73a03a405cf31366b5dbf4cff4d28bbf1740075aa713e0c77d724edc4",
+  "source_audit": {
+    "source_sha256": {
+      "jra_flat_warmup_v1.parquet": "9826b5efdd2825f384f125a41602bb3948506b852b38b6f2186709d25d51532e",
+      "jra_flat_train_v1.parquet": "1fc9702838982a574d09f03d05a0c95aa4ece319f1090f37af6772c1a9f8bbb7",
+      "jra_flat_validation_v1.parquet": "aa7263518713e62af2da6d1b6f712e5b4d3c62200365f47974a903291e7e41ff",
+      "keiba_results.csv": "fb9345273b21a7c23d41260dc77e45134a1bc2fe756899f3416b24ac0dd51de3",
+      "keiba_races.csv": "b9ba4423efbaec641f9285ff01d79895c7b3821c2146522a397127245c81fadb"
+    },
+    "raw_summary": {
+      "rows": 707067,
+      "matched": 707067
+    },
+    "market_audit": {
+      "requested_races": 26117,
+      "complete_market_races": 26117,
+      "incomplete_market_races": 0,
+      "malformed_requested_rows": 0,
+      "incomplete_reason_counts": {},
+      "excluded_races_after_full_field_check": 0,
+      "paired_eligible_races": 26117,
+      "paired_eligible_rows": 293459
+    },
+    "market_context_audit": {
+      "requested_races": 26117,
+      "complete_market_races": 26117,
+      "incomplete_market_races": 0,
+      "malformed_requested_rows": 0,
+      "incomplete_reason_counts": {}
+    },
+    "relative_coverage": [
+      {
+        "feature": "rel_career_top3_vs_others",
+        "full_field_rows": 370018,
+        "full_field_nonmissing": 370018
+      },
+      {
+        "feature": "rel_same_distance_top3_vs_others",
+        "full_field_rows": 370018,
+        "full_field_nonmissing": 370018
+      },
+      {
+        "feature": "rel_same_course_top3_vs_others",
+        "full_field_rows": 370018,
+        "full_field_nonmissing": 370018
+      },
+      {
+        "feature": "rel_recent3_finish_vs_others",
+        "full_field_rows": 370018,
+        "full_field_nonmissing": 363076
+      },
+      {
+        "feature": "rel_recent3_time_vs_others",
+        "full_field_rows": 370018,
+        "full_field_nonmissing": 363076
+      }
+    ]
+  },
+  "script_sha256": "7b84ccef1a8d55e6985a4f143f6243236362e5d915aae5d89db18587465f66c2",
+  "python": "3.11.17",
+  "xgboost": "3.2.0",
+  "seed": 20261031,
+  "no_production_change": true
+}

@@ -1,0 +1,30 @@
+# Input × Learning V1 — pre-registered BEFORE new scores
+
+Base: stacked after PR #33 commit `3e14e481b0f16b703dce3807670f24a3ac5f49fa`. This is final-win-odds-domain research only. No updates to PR31–33 model bundles, canonical Stage5 market-only, prediction locks, or historical selection results. The 2023–24 outcomes have been explored and any follow-up is **development**, not prospective or a new holdout.
+
+## Scope, information boundary and incumbent
+- Source: exact audited Stage3.6 2010–2024 full starter warmup/training/validation partitions via run 37104212189; original Kaggle version-one `keiba_results.csv` SHA256 `fb9345273b21a7c23d41260dc77e45134a1bc2fe756899f3416b24ac0dd51de3` and race metadata. Require exact previous PR32 source OOF `analysis/information_expansion_v1/outer_oof_predictions.csv`, same race/horse keys and numerical equality of F0 to X2.
+- Target: non-straight JRA flat turf+dirt 1000–2600m; actual field ≥8, prior 3 starts; full starter context includes ineligible horses. Outer 2023 (train through 2022), 2024 (train through 2023), calibration and any stopping/alpha use strictly earlier-year OOF. 2025/26 = known outcomes, not an unseen test.
+- Canonical market M0: PR32 yearly previous-data logit-calibrated final-odds Harville marginal. Reference X2: PR32 market-logit-offset XGBoost. 2024 E5: original PR33 scalar rescaling trained on 2023 OOF (alpha=1.4782533520459664), **comparison only**, not a tuning target. Same 2024 evaluation races/runner fingerprints for all candidates.
+- Primary race-macro Brier, secondary log loss; fixed repository paired date-clustered one-SE. Do not claim significance. Diagnostic calibration intercept/slope, reliability, year/surface/distance/class, source/checkpoint hashes, immutable OOF. Do not select on ROI/accuracy/G1 snippets.
+
+## Stage A — fixed F0..F3, same XGBoost tree and training
+- F0: exactly X2 original 42 numerical + three sex/racecourse/class categorical features, market logit *only* as base margin; MUST reproduce PR32 X2 OOF probabilities within `atol=1e-8`, or fail closed.
+- F1: F0 plus 2 numeric columns `market_calibrated_top3_p`, `market_calibrated_top3_logit` **as split variables** and one categorical `surface`. Use PR32 chronological fitted market OOF; do not feed target-year outcomes to calibrator.
+- F2: F1 plus the five full-field prior-only Scope-V3 leave-one-out relative features `rel_career_top3_vs_others,rel_same_distance_top3_vs_others,rel_same_course_top3_vs_others,rel_recent3_finish_vs_others,rel_recent3_time_vs_others`; compute across all actual starters with exact `add_relative_ability_features` source rule, strictly past as-of history, never eligible subset or target finish.
+- F3: F2 plus market field features computed from **complete original unnormalized final-win odds** field: `market_win_probability` (normalized share), `market_win_rank_pct`, `market_win_hhi`, `market_top2_win_gap`, `market_favorite_win_share`. Per-race aggregates use all starters, no results/payouts. This uses historical final market *only* and cannot be deployed T−10 without replacing inputs with observed checkpoint snapshots.
+- All four fixed XGB parameters: X2 original `n_estimators=120,max_depth=2,learning_rate=0.03,min_child_weight=60,subsample=0.8,colsample_bytree=0.8,reg_lambda=20,reg_alpha=2`, same weighted races, same categorical train-only encoding, random_state=20261031. No new optimizer choices after scores.
+
+## Stage B — learning curve/selection strictly inside older years, after Stage A
+- Curve candidate base F3 only, fixed `depth=2,eta=0.03,reg_lambda=20,reg_alpha=2`; rounds fixed `[60,120,240,400]`, not a posthoc continuous search. Inner chronological years for outer 2023: 2021–22 with training 2018..(t-1); for outer 2024: 2021–23, with training 2018..(t-1). Each inner training row's market base margin comes from strictly earlier-year fitted calibration. At each checkpoint, score held-aside inner year **race-macro Brier**, report log loss. Choose lowest inner pooled race-macro Brier, tie resolve fewer trees. Fit outer model on 2018..(outer−1) and predict outer. New alpha is fitted exclusively on earlier *OOF* of that selected configuration, never borrowed 1.4783 from X2.
+- Calibration: compare raw probability and a logit-residual scale `alpha` bounded [0,1.5] with penalty 0.0001*(alpha−1)^2, estimated exclusively on inner chronological out-of-time OOF. For outer 2023 use inner 2021/2022 only; outer 2024 use inner 2021/2022/2023 only. Verify F3 rows and same calibration-year keys. No outer-label fit.
+- If computational budget or source unavailable, return `BLOCKED` with exact unmet prerequisite rather than insert results. Brier custom XGBoost objectives excluded from V1 owing to potentially negative logistic-link Hessian.
+
+## Later stages C–E (separate preregistrations and evidence)
+- C: CatBoost/LightGBM (CPU), RealMLP, optional GPU TabICLv2; optional TabPFN3.5 research-only with explicit model weights license, no production/commercial uses, and pretraining overlap audit. Same F3 fields, no raw current jockey. No learner family selection from its own outer labels.
+- D: strictly chronological OOF model-by-model residual alpha and low-dimensional stacking, comparing against M0, X2 and E5 and accounting for calibration. Before training mixtures, audit errors/loss differences, not mere probability correlation.
+- E: penalized surface/distance/market-dependent alpha with common shrinkage; full-starter exactly-three subset models only if same-time complete runner predictions and exactly-three outcome definition are enforceable.
+- Production gate remains locked 1000 races / 60 dates / 90 calendar days, pre-off T−10..−9 immutable predictions and no intermediate selection changes.
+
+## Proof obligations
+A and B emit exact source hashes, candidate registry, per-year OOF values and row hashes, inner-fold candidate scores, selected-round schedule, paired cluster losses, and subgroup/calibration diagnostics. Strict no-future-label mutation tests (same day and beyond), context missing/duplicate detection and rank/popularity invariance. No raw restricted source in git.

@@ -1,0 +1,11 @@
+# RealMLP CPU small research pilot — frozen source/sample/hyperparameters before score
+
+This is a **pilot feasibility and model-diversity** test, NOT a full-sample candidate-selection contest or a new holdout. 2023 outcomes were observed previously; 2025–26 are known, no production promotion.
+
+- Original frozen PR32 all-starter JRA 2010–2024 and original Kaggle V1; same F3 input availability and no target postrace values. M0 calibrated final win odds base; X2 prior PR32 predictions from earlier fold, not available true T−10.
+- Select the **most recent complete 1,500 races before January 1, 2023** for supervised training (2018–2022 prior years; race-level subset, no horse leakage across target date from features). Select the **first 250 complete races chronologically in 2023** for evaluation. Selection by date/race ID only, before examining label outcomes. Every candidate uses the identical selected training and test cohort and same all-field F3 predictors.
+- Fixed M0, PR32 original X2 diagnostic, matched-data XGB F3-offset with 120 depth2 trees, and RealMLP-TD classifier `pytabkit==1.7.3`, CPU, `n_epochs=32,hidden_sizes=[128,128],batch_size=1024,random_state=20261031,n_cv=1,n_refit=0,n_threads=2,device='cpu',use_ls=False,val_metric_name='brier'`. No hyperparameter tuning based on 2023 test. Train-only numeric median imputation, train-only categories in supplied DataFrame, market logit as ordinary RealMLP split input (no unverified offset reimplementation).
+- RealMLP internally uses random training-only validation; source dates of ALL supplied training rows strictly precede eval 2023, so no outer leakage. This is **not** a full nested chronology-selection result; no adoption from pilot.
+- Primary race-macro Brier, log loss secondary, date-cluster paired SE vs matched-subset XGB; original full-history X2 displayed only as a richer-history, **not directly comparable training-size** context. The pilot may underperform due to 32 epochs/CPU sample size; no global learner-ranking claim.
+- Stop with `DATA_INSUFFICIENT` if installing pytabkit or CPU fitting fails; no synthetic predictions/zero fills. No large pretrained neural weights, TabPFN weights, or GPU credentials involved.
+- Forward same-time T−10 remains unavailable; prospective 1000 races/60 racing dates/90 days unchanged.
