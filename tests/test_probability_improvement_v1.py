@@ -35,7 +35,7 @@ def test_a2_full_field_probabilities(gamma, delta):
     assert np.isclose(p.sum(), 3, atol=1e-10)
 
 
-@pytest.mark.parametrize("invalid", [[0.4, 0.6], [0.4, 0.4, 0.1, 0.1],
+@pytest.mark.parametrize("invalid", [[0.4, 0.6], [0.4, 0.4, 0.1, 0.2],
                                            [1.0, 0, 0, 0]])
 def test_a2_rejects_bad_q(invalid):
     with pytest.raises(ValueError):
