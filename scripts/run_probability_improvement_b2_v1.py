@@ -13,7 +13,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from keiba_place_lab.model_selection import candidate_score, paired_delta, select_with_incumbent_one_se
+from keiba_place_lab.model_selection import paired_delta, select_with_incumbent_one_se
 from keiba_place_lab.probability_improvement_v1 import fit_market_offset, predict_market_offset
 from keiba_place_lab.stage4_successor_phase3a import add_relative_ability_features
 
