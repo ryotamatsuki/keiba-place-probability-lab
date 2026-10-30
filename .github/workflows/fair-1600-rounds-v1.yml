@@ -1,0 +1,143 @@
+name: Fair 1600-round walk-forward research V1
+# Resume third audit: align each old 2024 C1 horse reference index before baseline parity.
+# Resume saved fold checkpoints after Japanese report lint and strict numeric parity correction.
+on:
+  push:
+    branches:
+      - research/rounds-1600-fair-v1-20261031
+    paths:
+      - .github/workflows/fair-1600-rounds-v1.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  family-curves:
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        family: [xgb, lgb, cat]
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    env:
+      FAMILY: ${{ matrix.family }}
+      RESEARCH_BRANCH: research/rounds-1600-fair-v1-20261031
+      INPUT_FOLDER: /tmp/stage36/data/historical_processed/stage36_freeze_v1
+      SOURCE_FOLDER: /tmp/kaggle_v1
+      LOCAL_PANEL: /tmp/fair_rounds_f3_history.parquet
+      OUT_DIR: analysis/round_sweep_1600_v1/${{ matrix.family }}
+      REF_OOF: analysis/information_expansion_v1/outer_oof_predictions.csv
+      BRAW_OOF: analysis/input_learning_v1/B_outer_oof_predictions.csv
+      C1_OOF: analysis/input_learning_v1/C_outer_oof_predictions.csv
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install exact pinned source environment and C1 learner versions
+        run: |
+          python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+          python -m pip install 'lightgbm==4.7.0' 'catboost==1.2.10'
+      - name: Validate full regression and all new chronology/offset/prefix tests
+        run: |
+          ruff check .
+          pytest -q
+      - name: Restore original immutable Stage3.6 history artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Fetch original Kaggle final-odds version-one source
+        run: |
+          python - <<'PY'
+          import kagglehub
+          print(kagglehub.dataset_download(
+            'noriyukifurufuru/japan-horse-racing-2010-2025/versions/1',
+            output_dir='/tmp/kaggle_v1'))
+          PY
+      - name: Five stage train/eval run, with a checkpoint commit after EVERY completed fold
+        shell: bash
+        run: |
+          set -euo pipefail
+          RESULTS=$(find "$SOURCE_FOLDER" -name keiba_results.csv -print -quit)
+          RACES=$(find "$SOURCE_FOLDER" -name keiba_races.csv -print -quit)
+          test -n "$RESULTS" && test -n "$RACES"
+          export RESULTS RACES
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          timeout 100m bash -euo pipefail <<'STAGES'
+          runner() {
+            python -u scripts/run_round_sweep_1600_v1.py \
+              --family "$FAMILY" \
+              --stage "$1" \
+              --year "${2:-0}" \
+              --historical-dir "$INPUT_FOLDER" \
+              --results-csv "$RESULTS" \
+              --races-csv "$RACES" \
+              --reference-oof "$REF_OOF" \
+              --braw-oof "$BRAW_OOF" \
+              --c1-oof "$C1_OOF" \
+              --panel "$LOCAL_PANEL" \
+              --out "$OUT_DIR"
+          }
+          checkpoint() {
+            git add "$OUT_DIR"
+            if git diff --cached --quiet; then
+              return
+            fi
+            git commit -m "analysis: preserve $FAMILY fair 1600-round $1 completed stage"
+            for attempt in 1 2 3 4 5 6; do
+              git fetch origin "$RESEARCH_BRANCH"
+              git rebase "origin/$RESEARCH_BRANCH"
+              if git push origin "HEAD:$RESEARCH_BRANCH"; then
+                echo "Saved completed $FAMILY / $1 checkpoint"
+                return
+              fi
+              echo "Concurrent checkpoint push; retrying $attempt"
+            done
+            echo "Could not publish completed checkpoint; stopping"
+            exit 1
+          }
+          if [ -s "$OUT_DIR/outer_2023_manifest.json" ] &&
+             [ -s "$OUT_DIR/outer_2024_manifest.json" ]; then
+            echo "All preregistered $FAMILY outer folds already complete"
+            exit 0
+          fi
+          runner prepare
+          checkpoint "prepare"
+          for year in 2021 2022 2023; do
+            if [ -s "$OUT_DIR/inner_${year}.csv" ] &&
+               [ -s "$OUT_DIR/inner_${year}_manifest.json" ] &&
+               [ -s "$OUT_DIR/inner_${year}_metrics.csv" ]; then
+              echo "Reusing persisted $FAMILY inner $year (hash verified by outer stage)"
+              continue
+            fi
+            runner inner "$year"
+            checkpoint "inner-$year"
+          done
+          for year in 2023 2024; do
+            if [ -s "$OUT_DIR/outer_${year}.csv" ] &&
+               [ -s "$OUT_DIR/outer_${year}_manifest.json" ]; then
+              echo "Reusing persisted $FAMILY outer $year"
+              continue
+            fi
+            runner outer "$year"
+            checkpoint "outer-$year"
+          done
+          STAGES
+      - name: Show completed file inventory and immutable run boundary
+        if: always()
+        run: |
+          echo "Research family $FAMILY, frozen 1600 limit"
+          ls -lh "$OUT_DIR" || true
+          echo "No original result or JRA source committed"

@@ -1,0 +1,24 @@
+{
+  "family": "lgb",
+  "max_fitted_rounds": 1600,
+  "predicted_prefixes": [
+    60,
+    120,
+    240,
+    400,
+    800,
+    1600
+  ],
+  "train_rows": 129522,
+  "train_races": 11614,
+  "target_rows": 31932,
+  "target_races": 2889,
+  "train_max_date": "2021-12-28",
+  "target_min_date": "2022-01-05",
+  "elapsed_seconds": 29.291080348000037,
+  "seed": 20261031,
+  "prediction_sha256": "7b30cbdddc940771143393ab07077b29ab78162a6030ad81f10c9fb295e7ea4a",
+  "source_signature": "c07e1f4fe7c4ca543ce9005b7f15710e65bed46802b05eb01ef604d5b3a11d33",
+  "result_target_year": 2022,
+  "kind": "STRICT_PAST_INNER_OOF"
+}

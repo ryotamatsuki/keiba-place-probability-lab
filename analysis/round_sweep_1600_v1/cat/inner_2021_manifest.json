@@ -1,0 +1,24 @@
+{
+  "family": "cat",
+  "max_fitted_rounds": 1600,
+  "predicted_prefixes": [
+    60,
+    120,
+    240,
+    400,
+    800,
+    1600
+  ],
+  "train_rows": 97205,
+  "train_races": 8721,
+  "target_rows": 32317,
+  "target_races": 2893,
+  "train_max_date": "2020-12-27",
+  "target_min_date": "2021-01-05",
+  "elapsed_seconds": 61.608539546999964,
+  "seed": 20261031,
+  "prediction_sha256": "cbf9a82fba83e7e20d0b175a28690e47927711d0d56536b76cd1be80b43aeac9",
+  "source_signature": "c07e1f4fe7c4ca543ce9005b7f15710e65bed46802b05eb01ef604d5b3a11d33",
+  "result_target_year": 2021,
+  "kind": "STRICT_PAST_INNER_OOF"
+}
