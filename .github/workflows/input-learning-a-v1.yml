@@ -1,4 +1,5 @@
 name: Input Design V1 — frozen F0 F1 F2 F3
+# Complete rerun with all runnable nested-stage source lint fixes.
 # Rerun after sorted script imports; frozen candidates and outer rows unchanged.
 on:
   push:
