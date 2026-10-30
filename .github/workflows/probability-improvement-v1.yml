@@ -10,7 +10,7 @@ on:
 
 permissions:
   actions: read
-  contents: read
+  contents: write
 
 jobs:
   research:
@@ -75,11 +75,21 @@ jobs:
               > /tmp/probability-improvement-v1/C_BLOCKED.json
             cat /tmp/probability-improvement-v1/C_BLOCKED.json
           fi
-      - name: Publish bounded research-only result artifact
+      - name: Commit rights-cleared derived diagnostics (GitHub artifact quota exhausted)
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: probability-improvement-v1-research
-          path: /tmp/probability-improvement-v1/
-          if-no-files-found: warn
-          retention-days: 30
+        shell: bash
+        run: |
+          if [ ! -d /tmp/probability-improvement-v1 ]; then
+            echo "No research output to publish"
+            exit 0
+          fi
+          mkdir -p analysis/probability_improvement_v1
+          cp -f /tmp/probability-improvement-v1/* analysis/probability_improvement_v1/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/probability_improvement_v1/
+          if ! git diff --cached --quiet; then
+            git commit -m "analysis: publish historical final-odds research V1 diagnostics"
+            git pull --rebase origin research/probability-improvement-v1-20261031
+            git push origin HEAD:research/probability-improvement-v1-20261031
+          fi
