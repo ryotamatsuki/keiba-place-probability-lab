@@ -1,0 +1,46 @@
+{
+  "status": "HISTORICAL_FINAL_ODDS_RESEARCH_ONLY",
+  "winner": "market_A1",
+  "incumbent_retained": true,
+  "rows": 3119,
+  "races": 245,
+  "comparisons": [
+    {
+      "candidate": "market_A1",
+      "market_minus_candidate": 0.0,
+      "paired_date_se": 0.0,
+      "calibration_intercept": 0.021097272307900202,
+      "calibration_slope": 1.0107435296741387
+    },
+    {
+      "candidate": "A1_C0_w005",
+      "market_minus_candidate": 5.696065491665995e-05,
+      "paired_date_se": 0.00011387069194452936,
+      "calibration_intercept": 0.048440062559547116,
+      "calibration_slope": 1.0385836311264705
+    },
+    {
+      "candidate": "A1_C1_w005",
+      "market_minus_candidate": 0.00010755076660716517,
+      "paired_date_se": 0.00010969556548193241,
+      "calibration_intercept": 0.04898456433446936,
+      "calibration_slope": 1.0389221490512135
+    },
+    {
+      "candidate": "A1_C2_w005",
+      "market_minus_candidate": 6.604565419140891e-05,
+      "paired_date_se": 0.00011107238538699404,
+      "calibration_intercept": 0.04877939019103317,
+      "calibration_slope": 1.0384457397385367
+    },
+    {
+      "candidate": "A2_C0_w005",
+      "market_minus_candidate": 5.44576030585965e-06,
+      "paired_date_se": 0.00022246829608293467,
+      "calibration_intercept": 0.03996290392652346,
+      "calibration_slope": 1.0366475746005632
+    }
+  ],
+  "a_oof_sha256": "4444de80461f8e8b9edf81c9ee8213755ecf15ac04a07c56c85d1941740c0ea3",
+  "c_oof_sha256": "b52b0b9eefe490a118bf08d2c0ff9d5e72ceb1c8c6b8b32a49548dacd2a7113c"
+}
