@@ -1,0 +1,97 @@
+{
+  "status": "HISTORICAL_FINAL_ODDS_2024_DEVELOPMENT_AUDIT_ONLY",
+  "source_oof_sha256": "81b4f74dadb5c2ff8950f6f8ee7f0cc19c60233ba1418e0172f4887f3e00ef8a",
+  "source_2023_2024_fingerprint": "cb984b2553647d423e05742d0625988da3129dab3183f79b6fb84c74776a582f",
+  "evaluation_2024_fingerprint": "2291807521499019cb2a0c62f416c1e9e4f43f0b421711371d5f41aa97c8941a",
+  "alpha_fitted_only_on_2023": 1.4782533520459664,
+  "alpha_penalty": 0.0001,
+  "meta_fit_max_date": "2023-12-28",
+  "evaluation_min_date": "2024-01-06",
+  "evaluation_rows": 31225,
+  "evaluation_races": 2844,
+  "candidate_names": [
+    "M0",
+    "X2",
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E5"
+  ],
+  "market_gate": {
+    "winner": "E5",
+    "incumbent_retained": false
+  },
+  "X2_gate": {
+    "winner": "E5",
+    "incumbent_retained": false
+  },
+  "scores": {
+    "M0": {
+      "name": "M0",
+      "race_macro_brier": 0.13637651883224383,
+      "race_macro_log_loss": 0.4221362477256603,
+      "runner_micro_brier": 0.1338321881127957,
+      "runner_micro_log_loss": 0.4161811266986294,
+      "races": 2844,
+      "rows": 31225
+    },
+    "X2": {
+      "name": "X2",
+      "race_macro_brier": 0.13593940047355282,
+      "race_macro_log_loss": 0.42090708494621587,
+      "runner_micro_brier": 0.13344444353628934,
+      "runner_micro_log_loss": 0.41505829182027,
+      "races": 2844,
+      "rows": 31225
+    },
+    "E1": {
+      "name": "E1",
+      "race_macro_brier": 0.135982257389824,
+      "race_macro_log_loss": 0.42100568049890197,
+      "runner_micro_brier": 0.13348304535402364,
+      "runner_micro_log_loss": 0.41515937538604314,
+      "races": 2844,
+      "rows": 31225
+    },
+    "E2": {
+      "name": "E2",
+      "race_macro_brier": 0.13598213490550248,
+      "race_macro_log_loss": 0.4210044814307014,
+      "runner_micro_brier": 0.13348295697082507,
+      "runner_micro_log_loss": 0.41515836444221627,
+      "races": 2844,
+      "rows": 31225
+    },
+    "E3": {
+      "name": "E3",
+      "race_macro_brier": 0.1359722319379766,
+      "race_macro_log_loss": 0.4210097118905425,
+      "runner_micro_brier": 0.13345693960777766,
+      "runner_micro_log_loss": 0.4150977616540256,
+      "races": 2844,
+      "rows": 31225
+    },
+    "E4": {
+      "name": "E4",
+      "race_macro_brier": 0.13596923836589742,
+      "race_macro_log_loss": 0.42099136335507387,
+      "runner_micro_brier": 0.13347009332181653,
+      "runner_micro_log_loss": 0.41513441450550215,
+      "races": 2844,
+      "rows": 31225
+    },
+    "E5": {
+      "name": "E5",
+      "race_macro_brier": 0.13583865402744472,
+      "race_macro_log_loss": 0.42063277498543256,
+      "runner_micro_brier": 0.13336220035972787,
+      "runner_micro_log_loss": 0.41481514851257184,
+      "races": 2844,
+      "rows": 31225
+    }
+  },
+  "not_a_new_unseen_test": true,
+  "not_a_t_minus_10_market_test": true,
+  "no_live_model_change": true
+}
