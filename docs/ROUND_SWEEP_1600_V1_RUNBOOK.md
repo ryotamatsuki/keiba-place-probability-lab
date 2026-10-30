@@ -73,3 +73,8 @@ The aggregate writes `manifest.json` with A/B/C/D decision, original model repro
 ## Artifact organization and rights
 
 The research branch contains only licensed-safe derived predicted probabilities and metrics, source identities/hashes, scripts, environment and independent tests. Never commit original `keiba_results.csv`, `keiba_races.csv`, historical runner parquet, model credentials or anything from private JRA-VAN.
+
+
+## Reproduction incident (2026-10-31, before evaluating new 2024 scores)
+
+The first archived B_raw 400-tree check on outer 2023 failed at maximum probability difference `2.9796600298226394e-08`, at float32 probability rounding granularity; no new outer score was accepted. Research-spec erratum records a per-row XGBoost tolerance of at most two float32 ULP plus a strict absolute 1e-7 cap; other learners continue to require 1e-8. Original train years, data keys, features, parameters, number-of-trees candidates, decision gate and model fit procedure are identical. The first LightGBM outer 2024 source-row comparison also failed solely because pandas preserved earlier year-filtered index labels; both frames are now explicitly sorted and reset before comparing the composite keys. This correction does not alter race/horse inclusion or target labels. Each complete prior inner fold has a saved hash/provenance manifest and can be reused instead of wasting CPU on identical reruns.
