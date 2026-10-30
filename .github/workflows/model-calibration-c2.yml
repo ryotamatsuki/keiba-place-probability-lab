@@ -1,4 +1,5 @@
 name: Model Calibration C2 — 2023-only learner alpha
+# Source-run rerun after common Ruff import cleanup and all regression fixes.
 on:
   push:
     branches:
