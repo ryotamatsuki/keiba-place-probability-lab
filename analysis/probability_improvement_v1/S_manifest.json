@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "data_domain": "historical_final_win_odds",
+  "projection": "Euclidean capped simplex sum 3",
+  "market_races": 2317,
+  "max_abs_projected_minus_original": 0.0,
+  "market_probability_sum_is_3": true,
+  "eligible_only_projection_no_nonincrease_guarantee": true,
+  "nonmarket_fullfield_brier": "DATA_INSUFFICIENT: no all-runner nonmarket OOF"
+}
