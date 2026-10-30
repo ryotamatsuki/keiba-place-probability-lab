@@ -1,4 +1,5 @@
 name: Fair 1600-round walk-forward research V1
+# Resume third audit: align each old 2024 C1 horse reference index before baseline parity.
 # Resume saved fold checkpoints after Japanese report lint and strict numeric parity correction.
 on:
   push:
