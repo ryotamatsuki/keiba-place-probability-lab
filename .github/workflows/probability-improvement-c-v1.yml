@@ -1,0 +1,113 @@
+name: Probability Improvement V1 C-window and A+C research
+on:
+  push:
+    branches:
+      - research/probability-improvement-v1-20261031
+    paths:
+      - .github/workflows/probability-improvement-c-v1.yml
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: probability-improvement-v1-C-full-context
+  cancel-in-progress: false
+
+jobs:
+  c-and-combinations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 115
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install pinned XGBoost 3.2.0 and tests
+        run: python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+      - name: Check lint and regression
+        run: |
+          ruff check .
+          pytest -q
+      - name: Retrieve audited frozen source with warmup history
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Reconstruct complete 2010-2025 as-of historical context
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          import json
+          import pandas as pd
+
+          root=Path("/tmp/stage36/data/historical_processed/stage36_freeze_v1")
+          names=(
+              "jra_flat_warmup_v1.parquet",
+              "jra_flat_train_v1.parquet",
+              "jra_flat_validation_v1.parquet",
+              "jra_flat_test_v1.parquet",
+          )
+          missing=[name for name in names if not (root/name).is_file()]
+          if missing:
+              raise FileNotFoundError(f"Strict warmup/history prerequisite unavailable: {missing}")
+          frames=[]
+          fingerprints={}
+          for name in names:
+              p=root/name
+              fingerprints[name]=hashlib.sha256(p.read_bytes()).hexdigest()
+              frame=pd.read_parquet(p)
+              frames.append(frame)
+          full=pd.concat(frames,ignore_index=True,sort=False)
+          full["race_date"]=pd.to_datetime(full["race_date"])
+          if full.duplicated(["race_id","horse_id"]).any():
+              raise ValueError("Duplicate complete context runner keys")
+          if full.race_date.dt.year.min()!=2010 or full.race_date.dt.year.max()!=2025:
+              raise ValueError("Missing complete warmup through 2025")
+          full=full.sort_values(["race_date","race_id","horse_no"],kind="stable")
+          target=Path("/tmp/jra_flat_historical_panel_rebuilt_v1.parquet")
+          full.to_parquet(target,index=False)
+          print(json.dumps({"rows":len(full),"races":full.race_id.nunique(),
+                            "first_date":str(full.race_date.min()),
+                            "last_date":str(full.race_date.max()),
+                            "inputs_sha256":fingerprints},indent=2))
+          PY
+      - name: C0/C1/C2 matched outer-fold XGB research
+        run: |
+          mkdir -p /tmp/probability-improvement-c-v1
+          python -u scripts/run_probability_improvement_c_v1.py \
+            --full-historical-panel /tmp/jra_flat_historical_panel_rebuilt_v1.parquet \
+            --a-oof analysis/probability_improvement_v1/A_oof_predictions.csv \
+            --output-dir /tmp/probability-improvement-c-v1
+      - name: Frozen 2024 A+C combos on identical rows
+        run: |
+          python -u scripts/run_probability_improvement_combinations_v1.py \
+            --a-oof analysis/probability_improvement_v1/A_oof_predictions.csv \
+            --c-oof /tmp/probability-improvement-c-v1/C_oof_predictions.csv \
+            --output-dir /tmp/probability-improvement-c-v1
+      - name: Commit derived results only (artifact quota exhausted)
+        if: always()
+        shell: bash
+        run: |
+          if [ ! -d /tmp/probability-improvement-c-v1 ]; then
+            echo "No C research outputs"
+            exit 0
+          fi
+          mkdir -p analysis/probability_improvement_v1
+          cp -f /tmp/probability-improvement-c-v1/* analysis/probability_improvement_v1/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/probability_improvement_v1
+          if ! git diff --cached --quiet; then
+            git commit -m "analysis: publish C-window and A+C outer evaluation V1"
+            git pull --rebase origin research/probability-improvement-v1-20261031
+            git push origin HEAD:research/probability-improvement-v1-20261031
+          fi
