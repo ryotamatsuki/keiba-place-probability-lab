@@ -1,5 +1,5 @@
 name: Information Expansion V1 — full scope preregistered ablation
-# Rerun after mandatory synthetic frozen-label fixture correction; preregistration frozen.
+# Rerun after confirmed source coverage and native float64 conversion of nullable panel features.
 on:
   push:
     branches:
