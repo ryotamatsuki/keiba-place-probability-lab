@@ -413,9 +413,13 @@ def main() -> None:
     print("Stage 2: exact raw JRA reconciliation",flush=True)
     enriched,raw_audit=build_feature_panel(
         full,args.results_csv,args.races_csv)
+    (out/"raw_source_coverage.json").write_text(
+        json.dumps(raw_audit,indent=2,ensure_ascii=False)+"\n")
     eligible=eligibility(enriched)
     print("Stage 3: reconstruct FINAL win market and all-runner exclusions",flush=True)
     paired,market_audit=merge_complete_market(eligible,args.results_csv)
+    (out/"market_coverage.json").write_text(
+        json.dumps(market_audit,indent=2,ensure_ascii=False)+"\n")
     print("Stage 4: strictly chronological outer folds",flush=True)
     predictions,training=predict_outer(paired)
     selection=report(predictions,out)
