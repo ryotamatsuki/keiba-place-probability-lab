@@ -14,9 +14,7 @@ import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 
-from keiba_place_lab.model_selection import (
-    candidate_score, paired_delta, select_with_incumbent_one_se,
-)
+from keiba_place_lab.model_selection import select_with_incumbent_one_se
 from keiba_place_lab.scope_expansion import full_context_for_races, straight_course_mask
 from keiba_place_lab.scope_features import (
     augment_distance_history, block_columns, predict_scope_candidate, scope_features,
