@@ -1,5 +1,6 @@
 name: Probability Improvement V1 research (frozen)
 # Rerun after reviewed source and fixture fixes; protocol unchanged.
+# Strict regression gate rerun with runtime script-import test fixed.
 on:
   push:
     branches:
