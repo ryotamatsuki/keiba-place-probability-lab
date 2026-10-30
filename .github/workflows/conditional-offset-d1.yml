@@ -1,4 +1,5 @@
 name: Conditional Offset D1 — 2023-only fit and 2024 E5 audit
+# Rerun after common CatBoost native-object category dtype fix.
 on:
   push:
     branches:
