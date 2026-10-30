@@ -1,0 +1,20 @@
+{
+  "status": "HISTORICAL_FINAL_ODDS_KNOWN_2024_ONLY",
+  "pre_registration_sha": "5eaf5748d7920db871d957a07e0d6578fe51250a",
+  "alpha_only_2023": {
+    "LightGBM": 1.390367643731276,
+    "CatBoost": 1.4625231926038156
+  },
+  "rows": 31225,
+  "races": 2844,
+  "score_selection": {
+    "winner": "LightGBM_scaled",
+    "E5_incumbent_retained": false
+  },
+  "source_sha256": {
+    "C1": "c777bbd99e8064f091f2bd80bc2f1aed2928b40ae641c08d491cc544fcacecab",
+    "X2": "81b4f74dadb5c2ff8950f6f8ee7f0cc19c60233ba1418e0172f4887f3e00ef8a",
+    "E5": "11f07df73a03a405cf31366b5dbf4cff4d28bbf1740075aa713e0c77d724edc4"
+  },
+  "not_a_prospective_test": true
+}
