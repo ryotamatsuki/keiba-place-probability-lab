@@ -36,7 +36,7 @@ def fixtures():
 
 
 def test_relative_uses_ineligible_fourth_starter():
-    eligible,full,market=fixtures()
+    eligible,full,_market=fixtures()
     enriched,coverage=full_starter_relative(eligible,full)
     assert len(enriched)==6 and len(coverage)==5
     # Horse 1 faces horses 2,3,4, not only eligible 2,3.
@@ -73,7 +73,7 @@ def test_incomplete_market_or_relative_context_fail_closed():
 
 
 def test_target_outcome_changes_do_not_affect_feature_values():
-    eligible,full,market=fixtures()
+    eligible,full,_market=fixtures()
     full["top3_label"]=[1,1,1,0]*2
     first,_=full_starter_relative(eligible,full)
     full["top3_label"]=[0,0,0,1]*2
