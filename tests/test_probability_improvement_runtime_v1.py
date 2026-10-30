@@ -66,3 +66,42 @@ def test_licensed_odds_persist_and_replay(tmp_path):
     assert len(pd.read_csv(selected)) == 2
     with pytest.raises(FileExistsError):
         select(ledger, roster, 10, selected)
+
+
+def test_offset_serialization_roundtrip(tmp_path):
+    import joblib
+    from keiba_place_lab.probability_improvement_v1 import (
+        fit_market_offset, predict_market_offset,
+    )
+
+    rng = np.random.default_rng(20261031)
+    p = rng.uniform(0.15, 0.75, size=60)
+    x = rng.normal(size=(60, 5))
+    y = rng.integers(0, 2, size=60)
+    dates = np.array(["2023-01-01"] * 60)
+    fitted = fit_market_offset(p, x, y, dates, max_training_date="2024-01-01")
+    expected = predict_market_offset(p, x, fitted)
+    path = tmp_path/"offset_model.joblib"
+    joblib.dump(fitted, path)
+    loaded = joblib.load(path)
+    actual = predict_market_offset(p, x, loaded)
+    np.testing.assert_array_equal(expected, actual)
+
+
+def test_joint_selection_rejects_mismatched_starters():
+    same_evaluation_keys = run_path(
+        str(_SCRIPTS / "run_probability_improvement_joint_v1.py")
+    )["same_evaluation_keys"]
+    a = pd.DataFrame({
+        "race_date": ["2024-01-01"] * 2, "race_id": ["r"] * 2,
+        "horse_id": ["h1", "h2"], "horse_no": [1, 2],
+        "top3_label": [0, 1],
+    })
+    b = a.copy()
+    b.loc[1, "horse_id"] = "h3"
+    with pytest.raises(ValueError, match="evaluation keys"):
+        same_evaluation_keys(a, b, "synthetic test")
+    b = a.copy()
+    b.loc[1, "top3_label"] = 0
+    with pytest.raises(ValueError, match="outcome"):
+        same_evaluation_keys(a, b, "synthetic test")
