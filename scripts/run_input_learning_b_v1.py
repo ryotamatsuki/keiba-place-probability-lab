@@ -128,7 +128,6 @@ def alpha_fit_from_prior_oof(inner: pd.DataFrame, outer_year: int,
         raise ValueError("Future outer labels entered alpha")
     m=_offset_margin(usable.p_market_oof.to_numpy(float))
     x=_offset_margin(usable["p_rounds_"+str(rounds)].to_numpy(float))
-    target=usable.top3_label.to_numpy(int)
     def objective(alpha):
         pred=expit(m+alpha*(x-m))
         return candidate_score(usable,pred,name="alpha").race_macro_brier + (
