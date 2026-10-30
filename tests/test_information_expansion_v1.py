@@ -25,7 +25,7 @@ def sample_events():
         "horse_id": ["a","b","c","d","a","c"],
         "horse_no": [1,2,1,2,1,2],
         "field_size": [2]*6,
-        "finish_position": [1,2,1,2,2,1],
+        "raw_finish_position": [1,2,1,2,2,1],
         "top3_label": [1,1,1,1,1,1],
         "raw_last3f": [33,35,32,36,34,35],
         "raw_last3f_rel": [1,0,1,0,1,0],
@@ -74,7 +74,7 @@ def test_all_today_elo_read_before_any_today_result_or_label_change():
     assert (baseline.loc[baseline.race_date.eq("2023-01-01"),
                          "strength_elo_vs_field"] == 0).all()
     future = sample_events()
-    future.loc[future.race_date.eq("2023-01-08"),"finish_position"] = [1,2]
+    future.loc[future.race_date.eq("2023-01-08"),"raw_finish_position"] = [1,2]
     changed = add_opponent_elo(future)
     for col in NEW_STRENGTH:
         np.testing.assert_allclose(
@@ -87,7 +87,7 @@ def test_all_today_elo_read_before_any_today_result_or_label_change():
 def test_elo_stronger_opponents_affect_forward_ability():
     a = sample_events()
     b = a.copy()
-    b.loc[b.race_id.eq("r1"),"finish_position"] = [2,1]
+    b.loc[b.race_id.eq("r1"),"raw_finish_position"] = [2,1]
     first = add_opponent_elo(a)
     flipped = add_opponent_elo(b)
     v1 = first.loc[first.race_id.eq("r3"),"strength_elo_prior"].to_numpy()
