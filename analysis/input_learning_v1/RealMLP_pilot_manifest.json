@@ -1,0 +1,62 @@
+{
+  "status": "CPU_FEASIBILITY_ONLY_NOT_FULL_SCOPE_SELECTION",
+  "training_rows": 16833,
+  "training_races": 1500,
+  "evaluation_rows": 2601,
+  "evaluation_races": 250,
+  "training_last_date": "2022-12-28",
+  "test_first_date": "2023-01-05",
+  "realmlp_epochs": 32,
+  "network": [
+    128,
+    128
+  ],
+  "source_F3_numeric": 54,
+  "source_F3_categorical": [
+    "sex",
+    "racecourse",
+    "race_class",
+    "surface"
+  ],
+  "different_objective_weights": "RealMLP direct classifier; matched XGB offset race weighting",
+  "scores": [
+    {
+      "name": "M0",
+      "race_macro_brier": 0.13491658932807057,
+      "race_macro_log_loss": 0.41421747265234626,
+      "runner_micro_brier": 0.1314747906751837,
+      "runner_micro_log_loss": 0.40618041576917935,
+      "races": 250,
+      "rows": 2601
+    },
+    {
+      "name": "X2_full_history",
+      "race_macro_brier": 0.1344876615190307,
+      "race_macro_log_loss": 0.41278166656190823,
+      "runner_micro_brier": 0.13112115136065103,
+      "runner_micro_log_loss": 0.40499838120892145,
+      "races": 250,
+      "rows": 2601
+    },
+    {
+      "name": "XGB_1500_races",
+      "race_macro_brier": 0.13468352883504872,
+      "race_macro_log_loss": 0.41336622192247047,
+      "runner_micro_brier": 0.1311521324378962,
+      "runner_micro_log_loss": 0.40525599373554133,
+      "races": 250,
+      "rows": 2601
+    },
+    {
+      "name": "RealMLP_1500_races",
+      "race_macro_brier": 0.13492110049188277,
+      "race_macro_log_loss": 0.4143260485235691,
+      "runner_micro_brier": 0.13143189212981074,
+      "runner_micro_log_loss": 0.4060071790306444,
+      "races": 250,
+      "rows": 2601
+    }
+  ],
+  "no_model_selection": true,
+  "not_t_minus_10": true
+}
