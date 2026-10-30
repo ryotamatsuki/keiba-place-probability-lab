@@ -135,3 +135,30 @@ def test_exact_raw_join_on_official_jra_keys_and_never_source_date(tmp_path):
     result.to_csv(rp,index=False)
     with pytest.raises(ValueError,match="horse number mismatch"):
         raw_observations(full,rp,cp)
+
+
+
+def test_actual_xgb_logit_offset_predicts_valid_probabilities():
+    """Detect XGBoost sklearn wrapper base_margin/transform integration failures."""
+    from pathlib import Path
+    from runpy import run_path
+
+    script=Path(__file__).resolve().parents[1]/"scripts"/"run_information_expansion_v1.py"
+    runtime=run_path(str(script))
+    fit=runtime["_fit_xgb"]
+    rng=np.random.default_rng(17)
+    n=80
+    train=pd.DataFrame({
+        "race_id":np.repeat(np.arange(20).astype(str),4),
+        "race_date":pd.Timestamp("2022-12-30"),
+        "top3_label":rng.integers(0,2,size=n),
+        "p_market_oof":rng.uniform(.15,.75,size=n),
+        "draw_pct":rng.random(n),
+        "surface":["turf"]*n,
+    })
+    test=train.iloc[:8].copy()
+    test.race_date=pd.Timestamp("2023-01-05")
+    p=fit(train,test,["draw_pct"],["surface"])
+    assert p.shape==(len(test),)
+    assert np.isfinite(p).all()
+    assert ((p>=0)&(p<=1)).all()
