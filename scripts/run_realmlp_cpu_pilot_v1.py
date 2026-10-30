@@ -7,7 +7,6 @@ weighting; no formal best-model claim.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 from pathlib import Path
 
@@ -24,7 +23,6 @@ from sklearn.impute import SimpleImputer
 from keiba_place_lab.model_selection import (
     candidate_score,
     paired_delta,
-    select_with_incumbent_one_se,
 )
 
 SEED=20261031
