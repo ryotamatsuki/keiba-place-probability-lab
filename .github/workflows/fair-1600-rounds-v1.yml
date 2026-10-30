@@ -106,13 +106,29 @@ jobs:
             echo "Could not publish completed checkpoint; stopping"
             exit 1
           }
+          if [ -s "$OUT_DIR/outer_2023_manifest.json" ] &&
+             [ -s "$OUT_DIR/outer_2024_manifest.json" ]; then
+            echo "All preregistered $FAMILY outer folds already complete"
+            exit 0
+          fi
           runner prepare
           checkpoint "prepare"
           for year in 2021 2022 2023; do
+            if [ -s "$OUT_DIR/inner_${year}.csv" ] &&
+               [ -s "$OUT_DIR/inner_${year}_manifest.json" ] &&
+               [ -s "$OUT_DIR/inner_${year}_metrics.csv" ]; then
+              echo "Reusing persisted $FAMILY inner $year (hash verified by outer stage)"
+              continue
+            fi
             runner inner "$year"
             checkpoint "inner-$year"
           done
           for year in 2023 2024; do
+            if [ -s "$OUT_DIR/outer_${year}.csv" ] &&
+               [ -s "$OUT_DIR/outer_${year}_manifest.json" ]; then
+              echo "Reusing persisted $FAMILY outer $year"
+              continue
+            fi
             runner outer "$year"
             checkpoint "outer-$year"
           done
