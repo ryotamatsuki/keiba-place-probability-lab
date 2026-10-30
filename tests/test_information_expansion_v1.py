@@ -112,6 +112,7 @@ def test_exact_raw_join_on_official_jra_keys_and_never_source_date(tmp_path):
         "race_date":pd.to_datetime(["2023-01-01"]*2),
         "race_id":["r1","r1"],"horse_id":["a","b"],
         "horse_no":[1,2],"field_size":[2,2],
+        "top3_label":[1,1],
     })
     result = pd.DataFrame({
         "race_id":["r1","r1"],"horse_id":["a","b"],
