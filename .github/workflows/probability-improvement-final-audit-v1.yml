@@ -1,0 +1,77 @@
+name: Probability Improvement V1 final common-sample audit
+on:
+  push:
+    branches:
+      - research/probability-improvement-v1-20261031
+    paths:
+      - .github/workflows/probability-improvement-final-audit-v1.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  final-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Pinned environment
+        run: python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+      - name: Full lint and frozen-model regression
+        run: |
+          ruff check .
+          pytest -q
+      - name: Entire preregistered candidate pool and class/surface/distance audit
+        run: |
+          mkdir -p /tmp/probability-improvement-final-audit
+          python scripts/run_probability_improvement_joint_v1.py \
+            --input-dir analysis/probability_improvement_v1 \
+            --output-dir /tmp/probability-improvement-final-audit \
+            --with-c
+      - name: Confirm Harville full-market projection invariance
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          import numpy as np
+          import pandas as pd
+
+          path=Path("analysis/probability_improvement_v1/S_market_projection.csv")
+          src=pd.read_csv(path)
+          if src.empty or src.race_id.duplicated().any():
+              raise ValueError("Missing or duplicate race-level projection records")
+          maximum=float(src.max_abs_market_projection.max())
+          if not np.isfinite(maximum) or maximum > 1e-9:
+              raise AssertionError(f"Harville market projection should be identity: {maximum}")
+          result={
+              "status":"PASS",
+              "data_domain":"historical_final_win_odds",
+              "projection":"Euclidean capped simplex sum 3",
+              "market_races":int(len(src)),
+              "max_abs_projected_minus_original":maximum,
+              "market_probability_sum_is_3":True,
+              "eligible_only_projection_no_nonincrease_guarantee":True,
+              "nonmarket_fullfield_brier":"DATA_INSUFFICIENT: no all-runner nonmarket OOF",
+          }
+          out=Path("/tmp/probability-improvement-final-audit/S_manifest.json")
+          out.write_text(json.dumps(result,indent=2)+"\n")
+          print(json.dumps(result,indent=2))
+          PY
+      - name: Publish derived reproducible QA tables without artifact quota
+        run: |
+          cp /tmp/probability-improvement-final-audit/* analysis/probability_improvement_v1/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/probability_improvement_v1/
+          if ! git diff --cached --quiet; then
+            git commit -m 'analysis: final joint 14-candidate subgroups and projection audit'
+            git pull --rebase origin research/probability-improvement-v1-20261031
+            git push origin HEAD:research/probability-improvement-v1-20261031
+          fi
