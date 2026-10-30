@@ -76,7 +76,7 @@ def _categorical_input(frame:pd.DataFrame,
         x[col]=pd.to_numeric(x[col],errors="coerce").to_numpy(
             dtype=float,na_value=np.nan)
     for col in categorical:
-        x[col]=x[col].astype("string").fillna("MISSING").astype(str)
+        x[col]=x[col].astype("string").fillna("MISSING").astype("object")
     return x
 
 
