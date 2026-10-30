@@ -1,0 +1,80 @@
+name: Model Families C1 — preregistered CPU CatBoost/LightGBM
+on:
+  push:
+    branches:
+      - research/input-learning-v1-20261031
+    paths:
+      - .github/workflows/model-families-c1.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: model-families-C1-chronological-CPU
+  cancel-in-progress: false
+
+jobs:
+  models:
+    runs-on: ubuntu-latest
+    timeout-minutes: 105
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install pinned original frozen plus independent learner versions
+        run: |
+          python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+          python -m pip install 'lightgbm==4.7.0' 'catboost==1.2.10'
+      - name: Full existing regression and LightGBM/CatBoost offset integration
+        run: |
+          ruff check .
+          pytest -q
+      - name: Download original full as-of 2010–2024 history
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Download Kaggle V1 final odds source with exact SHA verification
+        run: |
+          python - <<'PY'
+          import kagglehub
+          print(kagglehub.dataset_download(
+            'noriyukifurufuru/japan-horse-racing-2010-2025/versions/1',
+            output_dir='/tmp/kaggle_v1'))
+          PY
+      - name: Fit strictly past CatBoost and LightGBM offset to same market
+        run: |
+          set -euo pipefail
+          RESULTS=$(find /tmp/kaggle_v1 -name keiba_results.csv -print -quit)
+          RACES=$(find /tmp/kaggle_v1 -name keiba_races.csv -print -quit)
+          test -n "$RESULTS" && test -n "$RACES"
+          python -u scripts/run_model_families_c1.py \
+            --historical-dir /tmp/stage36/data/historical_processed/stage36_freeze_v1 \
+            --results-csv "$RESULTS" \
+            --races-csv "$RACES" \
+            --reference-oof analysis/information_expansion_v1/outer_oof_predictions.csv \
+            --e5-2024 analysis/model_ensemble_v1/2024_predictions.csv \
+            --output-dir /tmp/model_families_c1
+      - name: Save only derived audit predictions/scores and metrics
+        if: always()
+        run: |
+          if [ ! -d /tmp/model_families_c1 ]; then exit 0; fi
+          mkdir -p analysis/input_learning_v1
+          cp -f /tmp/model_families_c1/* analysis/input_learning_v1/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/input_learning_v1/
+          if ! git diff --cached --quiet; then
+            git commit -m 'analysis: publish C1 CPU learner outcomes'
+            git pull --rebase origin research/input-learning-v1-20261031
+            git push origin HEAD:research/input-learning-v1-20261031
+          fi
