@@ -1,9 +1,155 @@
 {
-  "category": "D",
+  "category": "A",
   "status": {
-    "xgb": "INCOMPLETE: 'source_signature'",
-    "lgb": "INCOMPLETE: 'source_signature'",
-    "cat": "INCOMPLETE: 'source_signature'"
+    "xgb": "COMPLETE",
+    "lgb": "COMPLETE",
+    "cat": "COMPLETE"
   },
-  "reason": "No complete learner has produced both outer years"
+  "status_explanation": "Selected boosting count produces a candidate passing B_raw one-SE",
+  "selection": {
+    "winner": "XC_75_25_logit",
+    "point_brier_best": "XC_75_25_logit",
+    "B_raw_retained": false,
+    "selection_reason": "point-Brier-best selected: no incumbent was supplied or the incumbent fell outside the paired one-SE Brier retention band"
+  },
+  "optional_ensemble_2023_gate": {
+    "2023_xgb_brier": 0.13733607802224054,
+    "2023_candidate_brier": {
+      "lgb": 0.13735187916498523,
+      "cat": 0.13732588482419572
+    },
+    "2023_market_residual_correlations": {
+      "lgb": 0.9726233607390317,
+      "cat": 0.8962837832420247
+    },
+    "individual_trigger": {
+      "lgb": false,
+      "cat": true
+    },
+    "run_three_preregistered_ensembles": true
+  },
+  "optional_ensemble_2023_weights": {
+    "weights_xgb_lgb_cat": [
+      1.0415197262185647,
+      0.09592646102675778,
+      0.12421521857492422
+    ],
+    "regularized_train_objective": 0.13730139710707923,
+    "fit_years": [
+      2023
+    ],
+    "fit_rows": 32051,
+    "fit_races": 2887,
+    "fit_max_date": "2023-12-28"
+  },
+  "selected_rounds_and_alpha": [
+    {
+      "family": "xgb",
+      "outer_year": 2023,
+      "selected_rounds": 400,
+      "alpha": 0.8416887544843182,
+      "alpha_fit_years": "2021,2022",
+      "train_max_date": "2022-12-28",
+      "eval_min_date": "2023-01-05",
+      "selected_model_fit_seconds": 6.599155437000036,
+      "baseline_fit_seconds": 0.0,
+      "original_fixed_parity_max_error": 2.9796600298226394e-08,
+      "upper_bound_selected": false
+    },
+    {
+      "family": "xgb",
+      "outer_year": 2024,
+      "selected_rounds": 800,
+      "alpha": 0.8142472085674173,
+      "alpha_fit_years": "2021,2022,2023",
+      "train_max_date": "2023-12-28",
+      "eval_min_date": "2024-01-06",
+      "selected_model_fit_seconds": 13.757057556000007,
+      "baseline_fit_seconds": 7.900482979000003,
+      "original_fixed_parity_max_error": 2.9797363243488917e-08,
+      "upper_bound_selected": false
+    },
+    {
+      "family": "lgb",
+      "outer_year": 2023,
+      "selected_rounds": 120,
+      "alpha": 0.9342243526783376,
+      "alpha_fit_years": "2021,2022",
+      "train_max_date": "2022-12-28",
+      "eval_min_date": "2023-01-05",
+      "selected_model_fit_seconds": 4.117243891999976,
+      "baseline_fit_seconds": 0.0,
+      "original_fixed_parity_max_error": 1.1102230246251565e-16,
+      "upper_bound_selected": false
+    },
+    {
+      "family": "lgb",
+      "outer_year": 2024,
+      "selected_rounds": 120,
+      "alpha": 1.0673051346576812,
+      "alpha_fit_years": "2021,2022,2023",
+      "train_max_date": "2023-12-28",
+      "eval_min_date": "2024-01-06",
+      "selected_model_fit_seconds": 2.9486978570000133,
+      "baseline_fit_seconds": 0.0,
+      "original_fixed_parity_max_error": 1.1102230246251565e-16,
+      "upper_bound_selected": false
+    },
+    {
+      "family": "cat",
+      "outer_year": 2023,
+      "selected_rounds": 240,
+      "alpha": 0.918399060605477,
+      "alpha_fit_years": "2021,2022",
+      "train_max_date": "2022-12-28",
+      "eval_min_date": "2023-01-05",
+      "selected_model_fit_seconds": 15.499573191999957,
+      "baseline_fit_seconds": 5.664709775999995,
+      "original_fixed_parity_max_error": 1.1102230246251565e-16,
+      "upper_bound_selected": false
+    },
+    {
+      "family": "cat",
+      "outer_year": 2024,
+      "selected_rounds": 400,
+      "alpha": 0.9272829493288433,
+      "alpha_fit_years": "2021,2022,2023",
+      "train_max_date": "2023-12-28",
+      "eval_min_date": "2024-01-06",
+      "selected_model_fit_seconds": 30.207814153000015,
+      "baseline_fit_seconds": 6.672248121999985,
+      "original_fixed_parity_max_error": 1.1102230246251565e-16,
+      "upper_bound_selected": false
+    }
+  ],
+  "input_sha256": {
+    "b": "93b7f97959173febbd9ca55380c9dd0d42df5e2583d8f38dd4bc9cb9015d1cd4",
+    "c1": "c777bbd99e8064f091f2bd80bc2f1aed2928b40ae641c08d491cc544fcacecab",
+    "x2": "81b4f74dadb5c2ff8950f6f8ee7f0cc19c60233ba1418e0172f4887f3e00ef8a",
+    "e5": "11f07df73a03a405cf31366b5dbf4cff4d28bbf1740075aa713e0c77d724edc4"
+  },
+  "2024_runner_fingerprint": "2291807521499019cb2a0c62f416c1e9e4f43f0b421711371d5f41aa97c8941a",
+  "evaluation_rows": 31225,
+  "evaluation_races": 2844,
+  "candidate_names": [
+    "M0",
+    "X2",
+    "E5",
+    "B_raw",
+    "LightGBM120",
+    "CatBoost120",
+    "xgb_selected_raw",
+    "xgb_selected_scaled",
+    "lgb_selected_raw",
+    "lgb_selected_scaled",
+    "cat_selected_raw",
+    "cat_selected_scaled",
+    "XL_75_25_logit",
+    "XC_75_25_logit",
+    "XLC_ridge_2023"
+  ],
+  "not_a_prospective_test": true,
+  "market_is_final_odds_not_T_minus_10": true,
+  "production_model_unchanged": true,
+  "forward_gate": "1000 complete races, >=60 distinct dates, >=90 days"
 }
