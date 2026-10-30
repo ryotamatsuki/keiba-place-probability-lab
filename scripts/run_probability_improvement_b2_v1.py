@@ -16,6 +16,7 @@ import pandas as pd
 from keiba_place_lab.model_selection import paired_delta, select_with_incumbent_one_se
 from keiba_place_lab.probability_improvement_v1 import fit_market_offset, predict_market_offset
 from keiba_place_lab.stage4_successor_phase3a import add_relative_ability_features
+from run_probability_improvement_v1 import report_scores
 
 FEATURES = (
     "rel_recent3_finish_vs_others",
@@ -99,12 +100,10 @@ def main() -> None:
                             max_training_date="2024-01-01", penalty=1.0)
     base = test.p_A1_calibrated.to_numpy(float)
     challenger = predict_market_offset(base, Xtest, fit)
-    decision, scores = select_with_incumbent_one_se(test, {
+    decision, _scores = select_with_incumbent_one_se(test, {
         "B0_market": base, "B2_offset": challenger}, incumbent="B0_market")
-    scores.to_csv(out/"B2_scores.csv", index=False)
-    test["p_B0_market"] = base
-    test["p_B2_offset"] = challenger
-    test.to_csv(out/"B2_oof_predictions.csv", index=False)
+    report_scores(test.copy(), {"B0_market": base, "B2_offset": challenger},
+                  "B0_market", out, "B2")
     diff = paired_delta(test, base, challenger, candidate_name="B0_market",
                         reference_name="B2_offset")
     manifest = {
