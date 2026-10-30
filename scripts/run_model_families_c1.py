@@ -119,13 +119,13 @@ def fit_predict_catboost(train:pd.DataFrame,target:pd.DataFrame,
 
     if train.race_date.max()>=target.race_date.min():
         raise ValueError("CatBoost target-year label leak")
-    tr=train.sort_values(["race_date","race_id","horse_no"],kind="stable")
-    te=target.sort_values(["race_date","race_id","horse_no"],kind="stable")
-    # Caller eval frame is sorted identically; fail before data alignment.
-    if not te[KEYS].reset_index(drop=True).equals(
-        target[KEYS].reset_index(drop=True)
-    ):
-        raise ValueError("Target must be sorted in strict chronological order")
+    tr=train.sort_values(KEYS,kind="stable")
+    # Inference must preserve target's exact runner order; predictions are
+    # positionally aligned with the original frozen PR32 OOF. CatBoost's
+    # has_time=True applies to TRAINING only, not the evaluation order.
+    te=target.copy()
+    if not te.race_date.is_monotonic_increasing:
+        raise ValueError("Target must be chronological without reordering runner keys")
     X=_categorical_input(tr,numeric,categorical)
     Z=_categorical_input(te,numeric,categorical)
     m_train=_market_margin(tr)
