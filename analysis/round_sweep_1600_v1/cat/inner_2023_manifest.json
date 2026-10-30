@@ -1,0 +1,24 @@
+{
+  "family": "cat",
+  "max_fitted_rounds": 1600,
+  "predicted_prefixes": [
+    60,
+    120,
+    240,
+    400,
+    800,
+    1600
+  ],
+  "train_rows": 161454,
+  "train_races": 14503,
+  "target_rows": 32051,
+  "target_races": 2887,
+  "train_max_date": "2022-12-28",
+  "target_min_date": "2023-01-05",
+  "elapsed_seconds": 97.723941061,
+  "seed": 20261031,
+  "prediction_sha256": "38e7560bb360afb3e0d0b41d26f4798e60f3f5b9adee4dd358924e2d4f4442b4",
+  "source_signature": "c07e1f4fe7c4ca543ce9005b7f15710e65bed46802b05eb01ef604d5b3a11d33",
+  "result_target_year": 2023,
+  "kind": "STRICT_PAST_INNER_OOF"
+}
