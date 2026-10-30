@@ -1,0 +1,50 @@
+{
+  "status": "HISTORICAL_FINAL_ODDS_2024_DEVELOPMENT_ONLY",
+  "pre_registration_sha": "9881f3c02f5fae07e4523dc6ba6f83ec6cee469c",
+  "component_source_sha256": {
+    "PR32": "81b4f74dadb5c2ff8950f6f8ee7f0cc19c60233ba1418e0172f4887f3e00ef8a",
+    "C1": "c777bbd99e8064f091f2bd80bc2f1aed2928b40ae641c08d491cc544fcacecab",
+    "E5": "11f07df73a03a405cf31366b5dbf4cff4d28bbf1740075aa713e0c77d724edc4"
+  },
+  "2023_fit": {
+    "weights": [
+      1.0637138439309222,
+      0.283142852005402,
+      0.158562557416017
+    ],
+    "train_rows": 32051,
+    "train_races": 2887,
+    "train_max_date": "2023-12-28",
+    "train_regularized_objective": 0.13747268825687833
+  },
+  "2024_races": 2844,
+  "2024_rows": 31225,
+  "2024_fingerprint": "2291807521499019cb2a0c62f416c1e9e4f43f0b421711371d5f41aa97c8941a",
+  "frozen_candidate_weights": {
+    "D0": [
+      0.5,
+      0.5,
+      0
+    ],
+    "D1": [
+      0.5,
+      0,
+      0.5
+    ],
+    "D2": [
+      0.3333333333333333,
+      0.3333333333333333,
+      0.3333333333333333
+    ],
+    "D3": [
+      1.0637138439309222,
+      0.283142852005402,
+      0.158562557416017
+    ]
+  },
+  "verdict": {
+    "winner": "D3",
+    "incumbent_E5_retained": false
+  },
+  "production_unchanged": true
+}
