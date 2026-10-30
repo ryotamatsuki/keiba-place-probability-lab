@@ -1,4 +1,5 @@
 name: Probability Improvement V1 C-window and A+C research
+# Rerun after removing unused import; frozen preregistration unchanged.
 on:
   push:
     branches:
