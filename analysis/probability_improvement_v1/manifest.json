@@ -59,13 +59,14 @@
       "a2_slope": 0.9742758236917126
     }
   ],
-  "B2": "BLOCKED: awaiting audited prior-feature OOF and same ScopeV3 model",
-  "C": "BLOCKED: training-window refits must be run from complete as-of historical panel",
+  "B2": "Evaluated separately: B2_manifest.json; pairwise one-SE pass, global market retained",
+  "C": "Evaluated in independently frozen C run; C_manifest.json in branch",
   "S": "market projection only; labelled full-field outcomes not joined",
   "xgboost": "3.2.0",
   "sklearn": "1.9.1",
   "numpy": "2.4.6",
   "pandas": "3.0.6",
   "python": "3.11.17",
-  "seed": 20261031
+  "seed": 20261031,
+  "joint_gate": "A1_market_only retained (JOINT_manifest.json)"
 }
