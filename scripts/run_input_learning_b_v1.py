@@ -13,6 +13,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from run_information_expansion_v1 import _build_pipeline
+from run_input_learning_a_v1 import (
+    check_reference,
+    feature_registry,
+    prepare_dataset,
+)
 from scipy.optimize import minimize_scalar
 from scipy.special import expit, logit
 
@@ -20,12 +25,6 @@ from keiba_place_lab.model_selection import (
     candidate_score,
     paired_delta,
     select_with_incumbent_one_se,
-)
-
-from run_input_learning_a_v1 import (
-    check_reference,
-    feature_registry,
-    prepare_dataset,
 )
 
 # Registered in docs/INPUT_LEARNING_V1_SPEC.md before any A/B scores.
