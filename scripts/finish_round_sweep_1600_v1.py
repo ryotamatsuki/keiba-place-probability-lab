@@ -77,8 +77,25 @@ def confirmed_family(root: Path, family: str) -> tuple[
         if not path.exists() or not report.exists():
             raise FileNotFoundError(family + f": outer_{year} checkpoint missing")
         m = json.loads(report.read_text())
+        # Some earlier completed year checkpoints precede introduction of
+        # source_signature into the OUTER manifest schema. They hold a
+        # sha256 of the then-current source_manifest (including changing
+        # prepare wall-time). For these, verify the original old-model OOF
+        # reference SHA in summarize(), plus full same-runner M0/labels,
+        # checkpoint content SHA, inner signature, and old baseline parity.
+        # Do not silently relabel the old source_manifest SHA as a stable
+        # signature. All new outer outputs must expose source_signature.
+        source_identity = m.get("source_signature")
+        legacy_sha = m.get("source_manifest_sha256")
+        if source_identity is None:
+            provenance_ok = (
+                isinstance(legacy_sha, str) and len(legacy_sha) == 64
+                and all(v in "0123456789abcdef" for v in legacy_sha)
+            )
+        else:
+            provenance_ok = source_identity == source["source_signature"]
         if (m["family"] != family or m["outer_year"] != year
-                or m["source_signature"] != source["source_signature"]
+                or not provenance_ok
                 or m["output_sha256"] != file_sha(path)
                 or (
                     m["original_fixed_parity_max_abs_error"] > 1e-8
@@ -338,7 +355,14 @@ def summarize(
     for name in FAMILIES:
         try:
             outer, manifests, metrics = confirmed_family(folder, name)
+            expected_model_source = file_sha(
+                references["b"] if name == "xgb" else references["c1"]
+            )
             for year in (2023, 2024):
+                if manifests[year]["original_frozen_prediction_hash"] != expected_model_source:
+                    raise ValueError(
+                        name + f" year {year}: frozen old-model OOF hash changed"
+                    )
                 check = outer[year]
                 ref = original.loc[original.race_date.dt.year.eq(year)].copy()
                 ref = ref.reset_index(drop=True)
