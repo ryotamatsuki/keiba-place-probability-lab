@@ -1,6 +1,6 @@
 name: Probability Improvement V1 C-window and A+C research
 # Rerun after removing unused import; frozen preregistration unchanged.
-# Strict regression gate rerun with runtime script-import test fixed.
+# Strict regression gate rerun with runner-import formatting and global-selection check.
 on:
   push:
     branches:
@@ -95,6 +95,15 @@ jobs:
             --a-oof analysis/probability_improvement_v1/A_oof_predictions.csv \
             --c-oof /tmp/probability-improvement-c-v1/C_oof_predictions.csv \
             --output-dir /tmp/probability-improvement-c-v1
+      - name: Apply one global paired one-SE gate across A, B and C candidates
+        run: |
+          for part in A B_shadow_v2 B2; do
+            cp "analysis/probability_improvement_v1/${part}_oof_predictions.csv" /tmp/probability-improvement-c-v1/
+          done
+          python -u scripts/run_probability_improvement_joint_v1.py \
+            --input-dir /tmp/probability-improvement-c-v1 \
+            --output-dir /tmp/probability-improvement-c-v1 \
+            --with-c
       - name: Commit derived results only (artifact quota exhausted)
         if: always()
         shell: bash
