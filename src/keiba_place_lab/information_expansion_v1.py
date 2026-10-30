@@ -91,7 +91,7 @@ def raw_observations(full: pd.DataFrame, results_path: Path,
     if races.race_id.duplicated().any():
         raise ValueError("Duplicate raw JRA race conditions")
     x = x.merge(
-        results[keys + ["source_horse_no", "jockey_name", "trainer",
+        results[keys + ["rank", "source_horse_no", "jockey_name", "trainer",
                         "last_3f", "passing", "horse_weight"]],
         on=keys, how="left", validate="one_to_one", indicator=True,
     )
@@ -102,6 +102,19 @@ def raw_observations(full: pd.DataFrame, results_path: Path,
     inconsistent = source_no.notna() & source_no.ne(pd.to_numeric(x.horse_no))
     if inconsistent.any():
         raise ValueError("Official runner/source horse number mismatch")
+    # Historical rank is absent from the model-safe frozen panel on purpose.
+    # Restore it only as a POSTRACE update signal for Elo, never as a feature
+    # of the target horse. Reject any conflict with the frozen binary label.
+    rank_text=x["rank"].astype("string").str.extract(
+        r"^(\\d{1,2})(?:\\((?:降|再)\\))?$", expand=False
+    )
+    x["raw_finish_position"]=pd.to_numeric(rank_text,errors="coerce")
+    outcome_conflict=(
+        x.raw_finish_position.notna()
+        & x.raw_finish_position.between(1,3).ne(x.top3_label.astype(bool))
+    )
+    conflicts=int(outcome_conflict.sum())
+    x.loc[outcome_conflict,"raw_finish_position"]=np.nan
     x["raw_last3f"] = _parse_3f(x.last_3f)
     pos = x.passing.map(_parse_passing)
     x["raw_corner_first"] = pos.map(lambda z: z[0])
@@ -127,6 +140,7 @@ def raw_observations(full: pd.DataFrame, results_path: Path,
     audit = {
         "total_official_rows": len(x), "matched_raw_runner_rows": matched,
         "unmatched_raw_runner_rows": int(len(x)-matched),
+        "raw_rank_label_conflicts_excluded": conflicts,
         "raw_result_duplicate_keys": 0,
         "raw_race_duplicate_ids": 0,
         "usable": {column: int(x[column].notna().sum()) for column in (
@@ -235,7 +249,7 @@ def add_opponent_elo(data: pd.DataFrame, *, rating_scale: float = 400,
                 pre - (pre.sum()-pre)/(n-1))
             outputs["strength_opp_mean_prior"][idx] = (pre.sum()-pre)/(n-1)
             outputs["strength_prior_races"][idx] = [count[h] for h in horses]
-            rank = pd.to_numeric(race.finish_position,errors="coerce").to_numpy(float)
+            rank = pd.to_numeric(race.raw_finish_position,errors="coerce").to_numpy(float)
             valid = np.isfinite(rank)
             if valid.sum()<2:
                 continue
@@ -260,7 +274,7 @@ def add_opponent_elo(data: pd.DataFrame, *, rating_scale: float = 400,
         x[key] = vals
     x["strength_previous_opponent"] = _lagged_feature(
         x,"strength_opp_mean_prior",periods=1)
-    previous_pct = (pd.to_numeric(x.finish_position,errors="coerce")-1) / (
+    previous_pct = (pd.to_numeric(x.raw_finish_position,errors="coerce")-1) / (
         pd.to_numeric(x.field_size,errors="coerce")-1)
     x["_previous_placing"] = previous_pct
     x["strength_previous_placing"] = _lagged_feature(
