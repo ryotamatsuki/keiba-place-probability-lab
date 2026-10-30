@@ -1,4 +1,5 @@
 name: Model Families C1 — preregistered CPU CatBoost/LightGBM
+# Rerun after pandas 3 native-object category compatibility regression fix.
 on:
   push:
     branches:
