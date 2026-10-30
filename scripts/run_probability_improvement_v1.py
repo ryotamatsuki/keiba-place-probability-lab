@@ -232,6 +232,15 @@ def main() -> None:
                                                    set(panel.race_id.astype(str)))
     panel = aligned_panel(panel, market)
     eval_frame = aligned_panel(frozen, market).sort_values(KEYS).reset_index(drop=True)
+    # Frozen Stage4 OOF stores only runner identities; restore immutable race metadata
+    # from the exact Stage3.6 panel, never from current- or future-race outcomes.
+    metadata_cols = ["surface", "distance_m", "race_class"]
+    eval_frame = eval_frame.merge(
+        panel[KEYS + metadata_cols],
+        on=KEYS, how="left", validate="one_to_one",
+    )
+    if eval_frame[metadata_cols].isna().any().any():
+        raise ValueError("Missing historical race metadata for subgroup diagnostics")
     if not set(eval_frame.race_id).issubset(set(panel.race_id)):
         raise ValueError("No matching training/validation race panel")
     panel = panel.sort_values(KEYS).reset_index(drop=True)
