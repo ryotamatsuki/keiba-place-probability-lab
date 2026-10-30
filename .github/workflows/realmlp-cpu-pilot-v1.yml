@@ -1,0 +1,75 @@
+name: RealMLP CPU Pilot V1 — fixed matched sample
+on:
+  push:
+    branches:
+      - research/input-learning-v1-20261031
+    paths:
+      - .github/workflows/realmlp-cpu-pilot-v1.yml
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  small-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install frozen dependencies and pin RealMLP research package
+        run: |
+          python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+          python -m pip install 'pytabkit==1.7.3'
+      - name: Full regression and RealMLP pilot cohort checks
+        run: |
+          ruff check .
+          pytest -q
+      - name: Fetch original historically audited JRA starters
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Fetch original versioned Kaggle final-odds source
+        run: |
+          python - <<'PY'
+          import kagglehub
+          print(kagglehub.dataset_download(
+            'noriyukifurufuru/japan-horse-racing-2010-2025/versions/1',
+            output_dir='/tmp/kaggle_v1'))
+          PY
+      - name: Run locked CPU 1500-race RealMLP vs identical-sample XGBoost
+        run: |
+          set -euo pipefail
+          RESULTS=$(find /tmp/kaggle_v1 -name keiba_results.csv -print -quit)
+          RACES=$(find /tmp/kaggle_v1 -name keiba_races.csv -print -quit)
+          test -n "$RESULTS" && test -n "$RACES"
+          python -u scripts/run_realmlp_cpu_pilot_v1.py \
+            --historical-dir /tmp/stage36/data/historical_processed/stage36_freeze_v1 \
+            --results-csv "$RESULTS" \
+            --races-csv "$RACES" \
+            --reference-oof analysis/information_expansion_v1/outer_oof_predictions.csv \
+            --output-dir /tmp/realmlp_cpu_pilot
+      - name: Commit non-raw matched pilot diagnostic only
+        if: always()
+        run: |
+          if [ ! -f /tmp/realmlp_cpu_pilot/RealMLP_pilot_manifest.json ]; then exit 0; fi
+          mkdir -p analysis/input_learning_v1
+          cp -f /tmp/realmlp_cpu_pilot/* analysis/input_learning_v1/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/input_learning_v1/
+          if ! git diff --cached --quiet; then
+            git commit -m 'analysis: publish fixed-size RealMLP CPU feasibility pilot'
+            git pull --rebase origin research/input-learning-v1-20261031
+            git push origin HEAD:research/input-learning-v1-20261031
+          fi
