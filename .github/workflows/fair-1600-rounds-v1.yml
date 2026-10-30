@@ -70,6 +70,7 @@ jobs:
           RESULTS=$(find "$SOURCE_FOLDER" -name keiba_results.csv -print -quit)
           RACES=$(find "$SOURCE_FOLDER" -name keiba_races.csv -print -quit)
           test -n "$RESULTS" && test -n "$RACES"
+          export RESULTS RACES
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           timeout 100m bash -euo pipefail <<'STAGES'
