@@ -1,4 +1,5 @@
 name: Probability Improvement V1 research (frozen)
+# Rerun after reviewed source and fixture fixes; protocol unchanged.
 on:
   push:
     branches:
