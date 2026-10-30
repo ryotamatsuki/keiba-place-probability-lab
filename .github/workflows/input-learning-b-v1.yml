@@ -1,4 +1,5 @@
 name: Input Learning V1 — nested Brier learning curves
+# Verified full regression/chronology tests green; run F3 model curves.
 # Complete rerun after final nested-stage lint/test updates.
 # Rerun after nested CLI import sorting; frozen curves unchanged.
 on:
