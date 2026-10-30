@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys
 from pathlib import Path
 from runpy import run_path
 
@@ -11,6 +12,7 @@ import pandas as pd
 import pytest
 from scipy.special import expit, logit
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 MODULE = run_path(str(
     Path(__file__).resolve().parents[1] / "scripts/run_round_sweep_1600_v1.py"
 ))
