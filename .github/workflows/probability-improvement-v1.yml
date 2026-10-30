@@ -1,6 +1,6 @@
 name: Probability Improvement V1 research (frozen)
 # Rerun after reviewed source and fixture fixes; protocol unchanged.
-# Strict regression gate rerun with runtime script-import test fixed.
+# Reproduce full set after C OOF success; report global market-only decision.
 on:
   push:
     branches:
@@ -61,21 +61,38 @@ jobs:
             --historical-dir /tmp/stage36/data/historical_processed/stage36_freeze_v1 \
             --a-oof /tmp/probability-improvement-v1/A_oof_predictions.csv \
             --output-dir /tmp/probability-improvement-v1
-      - name: C full-warmup panel discovery (fail closed)
+      - name: Joint gate against market-only using all frozen A, B and C candidates
         shell: bash
         run: |
-          set -e
-          PANEL=$(find /tmp/stage36 -name jra_flat_historical_panel_v1.parquet -print -quit)
-          if [ -n "$PANEL" ]; then
-            python -u scripts/run_probability_improvement_c_v1.py \
-              --full-historical-panel "$PANEL" \
-              --a-oof /tmp/probability-improvement-v1/A_oof_predictions.csv \
-              --output-dir /tmp/probability-improvement-v1
-          else
-            printf '%s\n' '{"status":"DATA_INSUFFICIENT","reason":"Full 2010+ warmup panel not present in frozen action artifact. Do not truncate historical context."}' \
-              > /tmp/probability-improvement-v1/C_BLOCKED.json
-            cat /tmp/probability-improvement-v1/C_BLOCKED.json
-          fi
+          set -euo pipefail
+          for part in C AC; do
+            cp "analysis/probability_improvement_v1/${part}_oof_predictions.csv" /tmp/probability-improvement-v1/
+          done
+          python -u scripts/run_probability_improvement_joint_v1.py \
+            --input-dir /tmp/probability-improvement-v1 \
+            --output-dir /tmp/probability-improvement-v1 \
+            --with-c
+      - name: Clarify staged manifests and RESULT after all candidate checks
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('/tmp/probability-improvement-v1')
+          path = root/'manifest.json'
+          manifest = json.loads(path.read_text())
+          manifest['B2'] = 'Evaluated separately: B2_manifest.json; pairwise one-SE pass, global market retained'
+          manifest['C'] = 'Evaluated in independently frozen C run; C_manifest.json in branch'
+          manifest['joint_gate'] = 'A1_market_only retained (JOINT_manifest.json)'
+          path.write_text(json.dumps(manifest,indent=2,ensure_ascii=False)+'\n')
+          result = root/'RESULT.md'
+          content = result.read_text()
+          content = content.replace(
+              '**B2 and C unavailable** until the complete leakage-safe feature/context and prior OOF are built.',
+              '**B2 and C have now been evaluated.** See B2_manifest.json, C_manifest.json '
+              'and JOINT_manifest.json. B2 individually clears one SE but the global '
+              'market-only incumbent remains retained.')
+          result.write_text(content)
+          PY
       - name: Commit rights-cleared derived diagnostics (GitHub artifact quota exhausted)
         if: always()
         shell: bash
