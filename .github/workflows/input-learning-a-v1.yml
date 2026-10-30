@@ -1,4 +1,5 @@
 name: Input Design V1 — frozen F0 F1 F2 F3
+# Rerun after lint cleanup; preregistered candidate blocks unchanged.
 on:
   push:
     branches:
