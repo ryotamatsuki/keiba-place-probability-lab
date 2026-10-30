@@ -14,12 +14,12 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import sklearn
-from scipy.special import expit
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
-from xgboost import XGBClassifier, __version__ as xgboost_version
+from xgboost import XGBClassifier
+from xgboost import __version__ as xgboost_version
 
 from keiba_place_lab.ensemble import (
     apply_logit_calibrator,
@@ -40,6 +40,7 @@ from keiba_place_lab.model_selection import (
     select_with_incumbent_one_se,
 )
 from keiba_place_lab.nonmarket import (
+    calibration_table,
     engineer_features,
     feature_columns,
 )
@@ -49,16 +50,15 @@ from keiba_place_lab.probability_improvement_v1 import (
 )
 from keiba_place_lab.scope_expansion import straight_course_mask
 from keiba_place_lab.stage4_successor import calibration_intercept_slope
-from keiba_place_lab.nonmarket import calibration_table
 
 SOURCE_SHA = "fb9345273b21a7c23d41260dc77e45134a1bc2fe756899f3416b24ac0dd51de3"
 KEYS = ["race_date","race_id","horse_id","horse_no"]
-FIXED_MODEL = dict(
-    n_estimators=120, max_depth=2, learning_rate=0.03,
-    min_child_weight=60, subsample=0.8, colsample_bytree=0.8,
-    reg_lambda=20.0, reg_alpha=2.0, tree_method="hist", n_jobs=2,
-    random_state=20261031, objective="binary:logistic", eval_metric="logloss",
-)
+FIXED_MODEL = {
+    "n_estimators":120,"max_depth":2,"learning_rate":0.03,
+    "min_child_weight":60,"subsample":0.8,"colsample_bytree":0.8,
+    "reg_lambda":20.0,"reg_alpha":2.0,"tree_method":"hist","n_jobs":2,
+    "random_state":20261031,"objective":"binary:logistic","eval_metric":"logloss",
+}
 CANDIDATES = ("M0_market","L0_linear_old","X0_nonlinear_old",
               "X1_nonlinear_history","X2_nonlinear_strength")
 
