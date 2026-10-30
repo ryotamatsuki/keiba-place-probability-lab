@@ -1,0 +1,44 @@
+name: Information Expansion V1 — factor attribution final audit
+on:
+  push:
+    branches:
+      - research/information-expansion-v1-20261031
+    paths:
+      - .github/workflows/information-expansion-factor-audit-v1.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  factor-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install original pinned research runtime
+        run: python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+      - name: Full old and new unit tests
+        run: |
+          ruff check .
+          pytest -q
+      - name: Verify historical final-odds results and quantify only preregistered factors
+        run: |
+          python -u scripts/summarize_information_expansion_v1.py \
+            --result-dir analysis/information_expansion_v1
+      - name: Persist derived diagnostics
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/information_expansion_v1/
+          if ! git diff --cached --quiet; then
+            git commit -m 'analysis: record fixed factor-attribution and paired uncertainty'
+            git pull --rebase origin research/information-expansion-v1-20261031
+            git push origin HEAD:research/information-expansion-v1-20261031
+          fi
