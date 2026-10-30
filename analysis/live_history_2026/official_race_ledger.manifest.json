@@ -1,9 +1,9 @@
 {
-  "through": "2026-10-03",
-  "rows": 2640,
-  "meeting_days": 220,
-  "calendar_days": 83,
-  "conditions_sha256": "c29ca268b1caf94bbc9cb92df2c65883c14d0b0d9d9819b3e591690f5b98171e",
-  "ledger_sha256": "d3083e4de4c5d567eb5825f57086a21d1857bfd26f990538b3bc1ffc9434fc29",
-  "latest_race_date": "2026-10-03"
+  "through": "2026-10-25",
+  "rows": 2856,
+  "meeting_days": 238,
+  "calendar_days": 91,
+  "conditions_sha256": "1210b0d6f12f3e2a0f4b6112a6403b38c395af9a9492ca9404902038a786c647",
+  "ledger_sha256": "d6f13dc26d0c6494a227b303fce82224b94d7c4b5f7dd475434afb5c0731640f",
+  "latest_race_date": "2026-10-25"
 }

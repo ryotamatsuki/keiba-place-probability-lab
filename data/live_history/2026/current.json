@@ -1,6 +1,6 @@
 {
   "schema_version": "jra_flat_live_history_v1",
-  "snapshot_id": "jra_flat_live_history_v1-20261003-f6ef42cd4ce3",
-  "complete_through": "2026-10-03",
-  "history_sha256": "1acbdfd7654f48ad97903df64bbfbd2a13b31179d2a3c203d70034b44d2b9f02"
+  "snapshot_id": "jra_flat_live_history_v1-20261025-207a5edcdb94",
+  "complete_through": "2026-10-25",
+  "history_sha256": "c4ef41ad4492c607edf26cbaeb512df8e00981f1d63358906b0a884fde86dd36"
 }
