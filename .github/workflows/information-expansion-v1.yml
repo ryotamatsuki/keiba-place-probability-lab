@@ -1,4 +1,5 @@
 name: Information Expansion V1 — full scope preregistered ablation
+# Rerun after code lint corrections; preregistration frozen.
 on:
   push:
     branches:
