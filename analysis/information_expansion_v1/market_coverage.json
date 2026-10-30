@@ -1,0 +1,10 @@
+{
+  "requested_races": 26117,
+  "complete_market_races": 26117,
+  "incomplete_market_races": 0,
+  "malformed_requested_rows": 0,
+  "incomplete_reason_counts": {},
+  "excluded_races_after_full_field_check": 0,
+  "paired_eligible_races": 26117,
+  "paired_eligible_rows": 293459
+}
