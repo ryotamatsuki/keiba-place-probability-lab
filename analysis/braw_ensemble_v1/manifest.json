@@ -1,0 +1,128 @@
+{
+  "status": "HISTORICAL_FINAL_ODDS_KNOWN_2024_DEVELOPMENT_ONLY",
+  "pre_registration": "docs/BRAW_ENSEMBLE_V1_SPEC.md",
+  "pre_registration_commit": "52d0ae7306b864a6cff3ad770bd8dedb4abdd494",
+  "source_audit": {
+    "input_sha256": {
+      "b": "93b7f97959173febbd9ca55380c9dd0d42df5e2583d8f38dd4bc9cb9015d1cd4",
+      "c": "c777bbd99e8064f091f2bd80bc2f1aed2928b40ae641c08d491cc544fcacecab",
+      "x2": "81b4f74dadb5c2ff8950f6f8ee7f0cc19c60233ba1418e0172f4887f3e00ef8a",
+      "e5": "11f07df73a03a405cf31366b5dbf4cff4d28bbf1740075aa713e0c77d724edc4",
+      "c2": "b459211ae0634fa851e7473e51c24e18950e816899cea08cafefd7ca059d2f64",
+      "d3": "6c6ca33de58efea2dda371d8b7601c1b49ae558bb2dd3411b95ea0256cfc75b8"
+    },
+    "full_row_fingerprint": "cb984b2553647d423e05742d0625988da3129dab3183f79b6fb84c74776a582f",
+    "2024_row_fingerprint": "2291807521499019cb2a0c62f416c1e9e4f43f0b421711371d5f41aa97c8941a",
+    "2023_train_rows": 32051,
+    "2024_eval_rows": 31225,
+    "2023_train_max_date": "2023-12-28",
+    "2024_eval_min_date": "2024-01-06",
+    "all_sources_identical_runner_rows": true,
+    "all_sources_identical_market_probability": true
+  },
+  "evaluation_races": 2844,
+  "evaluation_rows": 31225,
+  "same_race_same_horse_all_candidates": true,
+  "candidate_registry": [
+    "M0",
+    "X2",
+    "E5",
+    "B_raw",
+    "LGB_raw",
+    "CAT_raw",
+    "LGB_scaled",
+    "CAT_scaled",
+    "D3_old",
+    "BL_prob_75_25",
+    "BL_logit_75_25",
+    "BL_logit_50_50",
+    "BC_logit_75_25",
+    "BC_logit_50_50",
+    "BLC_logit_50_25_25",
+    "BLC_logit_equal",
+    "BL_scalL_logit_75_25",
+    "BLC_ridge_2023",
+    "BL_ridge_2023"
+  ],
+  "candidate_registry_sha256": "d1b326010611591421f63f271b11010b6f00527458eef09e5c44ccfbebcee0ea",
+  "fixed_correction_weights": {
+    "BL_logit_75_25": [
+      0.75,
+      0.25,
+      0.0
+    ],
+    "BL_logit_50_50": [
+      0.5,
+      0.5,
+      0.0
+    ],
+    "BC_logit_75_25": [
+      0.75,
+      0.0,
+      0.25
+    ],
+    "BC_logit_50_50": [
+      0.5,
+      0.0,
+      0.5
+    ],
+    "BLC_logit_50_25_25": [
+      0.5,
+      0.25,
+      0.25
+    ],
+    "BLC_logit_equal": [
+      0.3333333333333333,
+      0.3333333333333333,
+      0.3333333333333333
+    ]
+  },
+  "ridge": {
+    "BLC_ridge_2023": {
+      "weights_B_LGB_CAT": [
+        1.0656791635228429,
+        0.11632567802938618,
+        0.052787394984307984
+      ],
+      "training_races": 2887,
+      "training_rows": 32051,
+      "training_max_date": "2023-12-28",
+      "regularized_train_objective": 0.13730985634447768,
+      "unregularized_train_brier": 0.13729954038199801,
+      "optimizer_success": true
+    },
+    "BL_ridge_2023": {
+      "weights_B_LGB_CAT": [
+        1.0769672503881729,
+        0.12622676480522965,
+        0.0
+      ],
+      "training_races": 2887,
+      "training_rows": 32051,
+      "training_max_date": "2023-12-28",
+      "regularized_train_objective": 0.13731153176253974,
+      "unregularized_train_brier": 0.137300603185647,
+      "optimizer_success": true
+    }
+  },
+  "incumbent": "B_raw",
+  "selection": {
+    "winner": "B_raw",
+    "point_brier_best": "BLC_ridge_2023",
+    "B_raw_retained": true,
+    "reason": "incumbent retained: race-macro Brier is within one paired date-clustered SE of the point-Brier-best"
+  },
+  "versions": {
+    "python": "3.11.17",
+    "numpy": "2.4.6",
+    "pandas": "3.0.6",
+    "scipy": "1.17.1",
+    "sklearn": "1.9.1",
+    "seed": 20261031
+  },
+  "runner_file_sha256": "079ea71734a9c53ab71b993d94654e2561ab5d15120b9669e1ea497c0f2acced",
+  "source_is_final_odds_not_T_minus_10": true,
+  "development_period_not_unseen": true,
+  "live_production_unchanged": true,
+  "forward_gate": "1000 races / 60 race dates / 90 days, frozen model"
+}
