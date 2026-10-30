@@ -1,0 +1,62 @@
+name: B_raw Ensemble V1 — preregistered 2023 OOF 2024 audit
+on:
+  push:
+    branches:
+      - research/braw-ensemble-v1-20261031
+    paths:
+      - .github/workflows/braw-ensemble-v1.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: braw-ensemble-v1-strict-OOF
+  cancel-in-progress: false
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install pinned research environment
+        run: python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+      - name: All original and B_raw-ensemble tests and lint
+        run: |
+          ruff check .
+          pytest -q
+      - name: Verify original frozen OOF and run B_raw-anchored ensembles
+        run: |
+          python -u scripts/run_braw_ensemble_v1.py \
+            --b-oof analysis/input_learning_v1/B_outer_oof_predictions.csv \
+            --c-oof analysis/input_learning_v1/C_outer_oof_predictions.csv \
+            --x2-oof analysis/information_expansion_v1/outer_oof_predictions.csv \
+            --e5-2024 analysis/model_ensemble_v1/2024_predictions.csv \
+            --c2-2024 analysis/input_learning_v1/C2_2024_oof_predictions.csv \
+            --d3-2024 analysis/input_learning_v1/D2_2024_oof_predictions.csv \
+            --output-dir /tmp/braw_ensemble_v1
+      - name: Persist only derived research scores and OOF predictions
+        if: always()
+        shell: bash
+        run: |
+          if [ ! -f /tmp/braw_ensemble_v1/manifest.json ]; then
+            echo 'No validated experiment output; report failure in previous step'
+            exit 0
+          fi
+          mkdir -p analysis/braw_ensemble_v1
+          cp -f /tmp/braw_ensemble_v1/* analysis/braw_ensemble_v1/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/braw_ensemble_v1/
+          if ! git diff --cached --quiet; then
+            git commit -m 'analysis: publish B_raw-anchored preregistered ensemble comparison'
+            git pull --rebase origin research/braw-ensemble-v1-20261031
+            git push origin HEAD:research/braw-ensemble-v1-20261031
+          fi
