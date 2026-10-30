@@ -32,7 +32,6 @@ from keiba_place_lab.model_selection import (
 from keiba_place_lab.nonmarket import calibration_table
 from keiba_place_lab.stage4_successor import calibration_intercept_slope
 
-
 EXPECTED_YEAR_2024 = (
     "2291807521499019cb2a0c62f416c1e9e4f43f0b421711371d5f41aa97c8941a"
 )
