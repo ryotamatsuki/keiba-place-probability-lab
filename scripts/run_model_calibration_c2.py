@@ -8,6 +8,11 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from run_diverse_ensemble_d2 import (
+    KEYS,
+    common_outer,
+    read_checked,
+)
 from scipy.optimize import minimize_scalar
 from scipy.special import expit, logit
 
@@ -16,12 +21,6 @@ from keiba_place_lab.model_selection import (
     paired_delta,
     race_loss_table,
     select_with_incumbent_one_se,
-)
-
-from run_diverse_ensemble_d2 import (
-    KEYS,
-    common_outer,
-    read_checked,
 )
 
 PENALTY=0.0001
