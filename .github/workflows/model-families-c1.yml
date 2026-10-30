@@ -1,4 +1,5 @@
 name: Model Families C1 — preregistered CPU CatBoost/LightGBM
+# Reattempt with CatBoost sorted training but exact original target output order.
 # Rerun after pandas 3 native-object category compatibility regression fix.
 on:
   push:
@@ -68,7 +69,7 @@ jobs:
       - name: Save only derived audit predictions/scores and metrics
         if: always()
         run: |
-          if [ ! -d /tmp/model_families_c1 ]; then exit 0; fi
+          if [ ! -f /tmp/model_families_c1/C_manifest.json ]; then exit 0; fi
           mkdir -p analysis/input_learning_v1
           cp -f /tmp/model_families_c1/* analysis/input_learning_v1/
           git config user.name 'github-actions[bot]'
