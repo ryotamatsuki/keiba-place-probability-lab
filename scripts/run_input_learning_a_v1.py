@@ -13,26 +13,37 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from run_information_expansion_v1 import (
+    KEYS,
+    _features,
+    _fit_xgb,
+    _sort_keyed,
+    build_feature_panel,
+    eligibility,
+    fold_calibrated_market,
+    hashfile,
+    load_full_panel,
+    merge_complete_market,
+)
 from xgboost import __version__ as xgb_version
 
 from keiba_place_lab.historical_market import reconstruct_historical_market
+from keiba_place_lab.information_expansion_v1 import NEW_HISTORY, NEW_STRENGTH
 from keiba_place_lab.input_learning_v1 import (
-    MARKET_FIELD, MARKET_SPLITS, add_calibrated_market_splits,
+    MARKET_FIELD,
+    MARKET_SPLITS,
+    add_calibrated_market_splits,
     attach_information,
 )
 from keiba_place_lab.model_selection import (
-    candidate_score, paired_delta, race_loss_table, select_with_incumbent_one_se,
+    candidate_score,
+    paired_delta,
+    race_loss_table,
+    select_with_incumbent_one_se,
 )
 from keiba_place_lab.nonmarket import calibration_table
 from keiba_place_lab.stage4_successor import calibration_intercept_slope
 from keiba_place_lab.stage4_successor_phase3a import RELATIVE_FEATURES
-
-from run_information_expansion_v1 import (
-    SOURCE_SHA, KEYS, _features, _fit_xgb, _sort_keyed, build_feature_panel,
-    eligibility, fold_calibrated_market, hashfile, load_full_panel,
-    merge_complete_market,
-)
-from keiba_place_lab.information_expansion_v1 import NEW_HISTORY, NEW_STRENGTH
 
 REFERENCE_YEAR_FINGERPRINT = "cb984b2553647d423e05742d0625988da3129dab3183f79b6fb84c74776a582f"
 F_NAMES=("F0_X2","F1_market_surface","F2_relative","F3_market_field")
