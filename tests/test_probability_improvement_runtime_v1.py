@@ -70,8 +70,10 @@ def test_licensed_odds_persist_and_replay(tmp_path):
 
 def test_offset_serialization_roundtrip(tmp_path):
     import joblib
+
     from keiba_place_lab.probability_improvement_v1 import (
-        fit_market_offset, predict_market_offset,
+        fit_market_offset,
+        predict_market_offset,
     )
 
     rng = np.random.default_rng(20261031)
