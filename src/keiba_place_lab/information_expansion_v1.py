@@ -106,7 +106,7 @@ def raw_observations(full: pd.DataFrame, results_path: Path,
     # Restore it only as a POSTRACE update signal for Elo, never as a feature
     # of the target horse. Reject any conflict with the frozen binary label.
     rank_text=x["rank"].astype("string").str.extract(
-        r"^(\\d{1,2})(?:\\((?:降|再)\\))?$", expand=False
+        r"^(\d{1,2})(?:\((?:降|再)\))?$", expand=False
     )
     x["raw_finish_position"]=pd.to_numeric(rank_text,errors="coerce")
     outcome_conflict=(
