@@ -21,14 +21,11 @@ from keiba_place_lab.model_selection import (
     paired_delta,
     select_with_incumbent_one_se,
 )
-from keiba_place_lab.probability_improvement_v1 import fit_logit_stack
 
 from run_input_learning_a_v1 import (
-    F_NAMES,
     check_reference,
     feature_registry,
     prepare_dataset,
-    row_fingerprint,
 )
 
 # Registered in docs/INPUT_LEARNING_V1_SPEC.md before any A/B scores.
@@ -60,7 +57,6 @@ def fit_curve(train: pd.DataFrame, target: pd.DataFrame,
     for col in categorical:
         a[col]=a[col].astype("object").where(a[col].notna(),None)
         b[col]=b[col].astype("object").where(b[col].notna(),None)
-    from run_information_expansion_v1 import FIXED_MODEL
     fit=_build_pipeline(numeric,categorical)
     fit.named_steps["model"].set_params(n_estimators=max(CHECKPOINTS))
     size=a.groupby("race_id").race_id.transform("size").to_numpy(float)
@@ -122,7 +118,7 @@ def select_rounds(scores: pd.DataFrame, outer_year: int) -> int:
     aggregated=older.groupby("rounds",sort=False).agg(
         total=("weighted_brier","sum"), races=("races","sum"))
     aggregated["average"]=aggregated.total/aggregated.races
-    winner=aggregated.sort_values(["average","rounds"]).index[0]
+    winner=aggregated.reset_index().sort_values(["average","rounds"]).iloc[0]["rounds"]
     return int(winner)
 
 
