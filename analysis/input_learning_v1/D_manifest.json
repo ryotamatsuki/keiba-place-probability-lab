@@ -1,0 +1,40 @@
+{
+  "status": "KNOWN_2024_FINAL_ODDS_RESEARCH_ONLY",
+  "pre_registration_sha": "ff98d95ab92b6f39efb31cf71bfa205dfde0fbf8",
+  "source_sha256": "81b4f74dadb5c2ff8950f6f8ee7f0cc19c60233ba1418e0172f4887f3e00ef8a",
+  "e5_source_sha256": "11f07df73a03a405cf31366b5dbf4cff4d28bbf1740075aa713e0c77d724edc4",
+  "train_only_2023": {
+    "D1": {
+      "candidate": "D1",
+      "params": [
+        1.4576574844001693,
+        -0.014901249107134444
+      ],
+      "train_rows": 32051,
+      "train_races": 2887,
+      "train_max_date": "2023-12-28",
+      "training_objective": 0.13753058229345527
+    },
+    "D2": {
+      "candidate": "D2",
+      "params": [
+        1.4730845265927859,
+        -0.01080212401303486,
+        -5.610128795269318e-05,
+        0.0034821607827470917
+      ],
+      "train_rows": 32051,
+      "train_races": 2887,
+      "train_max_date": "2023-12-28",
+      "training_objective": 0.13753048645131938
+    }
+  },
+  "2024_fingerprint": "2291807521499019cb2a0c62f416c1e9e4f43f0b421711371d5f41aa97c8941a",
+  "2024_rows": 31225,
+  "2024_races": 2844,
+  "selection": {
+    "winner": "E5",
+    "incumbent_retained": true
+  },
+  "no_production_adoption": true
+}
