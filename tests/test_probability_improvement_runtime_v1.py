@@ -1,11 +1,18 @@
 """Frozen C-window/decay and licensed market ledger regression tests."""
 
+from pathlib import Path
+from runpy import run_path
+
 import numpy as np
 import pandas as pd
 import pytest
 
-from scripts.capture_market_odds_v1 import ingest, select
-from scripts.run_probability_improvement_c_v1 import training_weights
+_SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
+_capture = run_path(str(_SCRIPTS / "capture_market_odds_v1.py"))
+ingest, select = _capture["ingest"], _capture["select"]
+training_weights = run_path(
+    str(_SCRIPTS / "run_probability_improvement_c_v1.py")
+)["training_weights"]
 
 
 def test_c0_c1_c2_target_windows_keep_history_separate():
