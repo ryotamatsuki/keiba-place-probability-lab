@@ -1,4 +1,5 @@
 """Render final Japanese research memo solely from saved Python evaluation files."""
+# ruff: noqa: ISC004  # Intentional adjacent Japanese prose strings in report list.
 from __future__ import annotations
 
 import argparse
