@@ -235,13 +235,28 @@ def _fit_xgb(train: pd.DataFrame, evaluate: pd.DataFrame,
 
 
 def _fit_linear(train: pd.DataFrame,evaluate: pd.DataFrame,
-                predictors: list[str]) -> np.ndarray:
-    a=train[predictors].apply(pd.to_numeric,errors="coerce")
-    b=evaluate[predictors].apply(pd.to_numeric,errors="coerce")
-    # Imputation fit only on pre-evaluation training rows.
-    impute=SimpleImputer(strategy="median",add_indicator=True)
-    x=impute.fit_transform(a)
-    z=impute.transform(b)
+                predictors: list[str], categorical: list[str]) -> np.ndarray:
+    # Same information columns as X0; one-hot learned on TRAIN ONLY.
+    # Median/missing flags are needed by the linear model, while XGB routes
+    # NaN natively. This is a model-family comparison, not an information gap.
+    a=train[predictors+categorical].copy()
+    b=evaluate[predictors+categorical].copy()
+    for col in predictors:
+        a[col]=pd.to_numeric(a[col],errors="coerce")
+        b[col]=pd.to_numeric(b[col],errors="coerce")
+    for col in categorical:
+        a[col]=a[col].astype("object").where(a[col].notna(),None)
+        b[col]=b[col].astype("object").where(b[col].notna(),None)
+    pipeline=ColumnTransformer([
+        ("num",SimpleImputer(strategy="median",add_indicator=True),predictors),
+        ("cat",Pipeline([
+            ("impute",SimpleImputer(strategy="constant",fill_value="MISSING")),
+            ("onehot",OneHotEncoder(
+                handle_unknown="ignore",min_frequency=5,sparse_output=False)),
+        ]),categorical),
+    ],remainder="drop",sparse_threshold=0.0)
+    x=pipeline.fit_transform(a)
+    z=pipeline.transform(b)
     fit=fit_market_offset(
         train.p_market_oof.to_numpy(float),x,
         train.top3_label.to_numpy(int),train.race_date.to_numpy(),
@@ -285,7 +300,7 @@ def predict_outer(frame: pd.DataFrame) -> tuple[pd.DataFrame,dict]:
         }
         output={
             "M0_market":test.p_market_oof.to_numpy(float),
-            "L0_linear_old":_fit_linear(train,test,predictors["L0_linear_old"]),
+            "L0_linear_old":_fit_linear(train,test,predictors["L0_linear_old"],categorical),
         }
         for label in ("X0_nonlinear_old","X1_nonlinear_history",
                       "X2_nonlinear_strength"):
