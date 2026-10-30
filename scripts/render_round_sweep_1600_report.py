@@ -25,13 +25,46 @@ def render(folder: Path) -> Path:
         raise FileNotFoundError("Run the Python numerical evaluation first")
     m = json.loads(manifest_path.read_text())
     category = m["category"]
-    classification = m.get("status_explanation", "未完了")
+    explanations = {
+        "A": "時系列で選択した学習回数によりB_rawを上回り、開催日paired one-SEを通過。",
+        "B": "点推定では改善するがpaired one-SEを通過しないためB_rawを維持。",
+        "C": "事前固定した本数・特徴量・学習器で追加改善を確認できず。",
+        "D": "不足する年次・モデルがあるため採否は判定不能。",
+    }
+    classification = explanations[category]
+    summary = []
+    if category != "D" and (folder / "2024_candidate_scores.csv").exists():
+        scores = pd.read_csv(folder / "2024_candidate_scores.csv").set_index("name")
+        paired = pd.read_csv(folder / "2024_paired_vs_B_raw.csv").set_index("candidate")
+        winner = m["selection"]["winner"]
+        best = scores.loc[winner]
+        baseline = scores.loc["B_raw"]
+        delta = paired.loc[winner]
+        xgb = scores.loc["xgb_selected_raw"]
+        xgb_delta = paired.loc["xgb_selected_raw"]
+        summary = [
+            f"**採用判断：研究上の勝者は {winner}。**"
+            f" 2024年のBrierは {best.race_macro_brier:.9f}、"
+            f"既存B_rawは {baseline.race_macro_brier:.9f}。",
+            f"B_rawとの差は {delta.B_raw_minus_candidate_brier:.9f}、"
+            f"開催日クラスタpaired SEは {delta.date_cluster_SE_brier:.9f}。"
+            " 事前のone-SEゲートを通過した。"
+            if winner != "B_raw" else "採用ゲートによりB_rawを維持。",
+            f"**単体XGBoostの学習回数変更：** 800本の2024年Brier"
+            f" {xgb.race_macro_brier:.9f}、B_raw比改善"
+            f" {xgb_delta.B_raw_minus_candidate_brier:.9f}、"
+            f"paired SE {xgb_delta.date_cluster_SE_brier:.9f}。",
+            "アンサンブルの補完効果と単体800本への単純な補正強度変更の"
+            "効果を混同せず、同じ2024年レースで別々に比較した。",
+        ]
     lines = [
         "# B_rawの400本上限・公平な3学習器比較：実データ研究報告",
         "",
         "## 最終判断",
         "",
         "**分類：" + category + "。** " + classification,
+        "",
+        *summary,
         "",
         "評価は既知の2023・2024年であり、未見の将来テストではない。"
         "過去の最終単勝オッズを発走10分前のオッズと扱わない。",
@@ -111,9 +144,11 @@ def render(folder: Path) -> Path:
         "",
         "## 検証、データ権利と本番運用",
         "",
-        "元の400本B_rawと120本LightGBM/CatBoostは同じ前処理と年で再fitし、"
-        "保存済み旧予測との最大絶対差が1e−8を超えたら比較を中断。"
-        "古いM0と正解ラベル、全レース・全馬の行は厳密に照合。",
+        "旧400本B_rawと旧120本LightGBM/CatBoostを同じ前処理と年で再fit。"
+        "LightGBMとCatBoostは最大絶対差1e−8以内、XGBoostは保存予測が"
+        "float32のため各馬で最大2 ULPかつ全体絶対差1e−7以下の厳格な"
+        "再現条件を適用（実測最大差は約2.98e−8）。"
+        "古いM0、正解ラベル、全レース・全馬を照合。",
         "AGENTS.mdは親ブランチの再帰ツリーで見つからなかった。"
         "README・モデル選択規約・PR #34/#35の仕様とログを確認した。",
         "古いモデルと本番Stage5の市場のみモデルは変更していない。",
