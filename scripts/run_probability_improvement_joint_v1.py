@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 
 from keiba_place_lab.model_selection import (
+    candidate_score,
     paired_delta,
     race_loss_table,
     select_with_incumbent_one_se,
@@ -101,6 +102,13 @@ def run(folder: Path, out: Path, *, with_c: bool) -> dict:
     scores_extra = []
     losses = []
     reliability = []
+    subgroup_results = []
+    band = pd.cut(
+        frame.distance_m.astype(float),
+        bins=[0.0, 1400.0, 2000.0, 2600.0],
+        labels=["up_to_1400", "1401_2000", "2001_2600"],
+        include_lowest=True,
+    )
     for name, p in preds.items():
         prediction["p_" + name] = p
         paired = paired_delta(frame, preds[BASE], p, candidate_name=BASE,
@@ -119,12 +127,28 @@ def run(folder: Path, out: Path, *, with_c: bool) -> dict:
         rel = calibration_table(frame, p)
         rel["candidate"] = name
         reliability.append(rel)
+        grouping = {
+            "surface": frame.surface.astype(str),
+            "distance_band": band.astype(str),
+            "race_class": frame.race_class.fillna("MISSING").astype(str),
+        }
+        for group_name, group_values in grouping.items():
+            for value in sorted(group_values.unique()):
+                mask = group_values.eq(value).to_numpy()
+                score = candidate_score(frame.loc[mask], p[mask], name=name)
+                subgroup_results.append({
+                    "candidate": name, "group": group_name, "value": value,
+                    "rows": int(mask.sum()), "races": int(frame.loc[mask].race_id.nunique()),
+                    "race_macro_brier": score.race_macro_brier,
+                    "race_macro_log_loss": score.race_macro_log_loss,
+                })
     detail = pd.DataFrame(scores_extra)
     detail.to_csv(out / "JOINT_paired_and_calibration.csv", index=False)
     prediction.to_csv(out / "JOINT_2024_oof_predictions.csv", index=False)
     losses = pd.concat(losses, ignore_index=True)
     losses.to_csv(out / "JOINT_race_losses.csv", index=False)
     pd.concat(reliability).to_csv(out / "JOINT_reliability.csv", index=False)
+    pd.DataFrame(subgroup_results).to_csv(out / "JOINT_subgroups.csv", index=False)
     first = losses.loc[losses.candidate.eq(BASE),
                         ["race_id","block","brier","log_loss"]].rename(columns={
                             "brier":"baseline_brier","log_loss":"baseline_log_loss"})
