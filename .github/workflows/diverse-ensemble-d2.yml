@@ -1,4 +1,5 @@
 name: Diverse Residual Ensemble D2 — only after verified C1
+# Source-run rerun after common Ruff import cleanup and all regression fixes.
 on:
   push:
     branches:
