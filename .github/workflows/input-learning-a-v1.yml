@@ -1,0 +1,79 @@
+name: Input Design V1 — frozen F0 F1 F2 F3
+on:
+  push:
+    branches:
+      - research/input-learning-v1-20261031
+    paths:
+      - .github/workflows/input-learning-a-v1.yml
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: input-learning-F0-F3-outer
+  cancel-in-progress: false
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install frozen parent dependencies
+        run: python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+      - name: Lint plus all historical regression and new input tests
+        run: |
+          ruff check .
+          pytest -q
+      - name: Fetch unchanged original Stage3.6 frozen all-starter panel
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Fetch and verify final-win-odds original Kaggle V1 source
+        run: |
+          python - <<'PY'
+          import kagglehub
+          print(kagglehub.dataset_download(
+            "noriyukifurufuru/japan-horse-racing-2010-2025/versions/1",
+            output_dir="/tmp/kaggle_v1",
+          ))
+          PY
+      - name: Strict F0 baseline parity and F1/F2/F3 comparison
+        run: |
+          set -euo pipefail
+          RESULTS=$(find /tmp/kaggle_v1 -name keiba_results.csv -print -quit)
+          RACES=$(find /tmp/kaggle_v1 -name keiba_races.csv -print -quit)
+          test -n "$RESULTS" && test -n "$RACES"
+          python -u scripts/run_input_learning_a_v1.py \
+            --historical-dir /tmp/stage36/data/historical_processed/stage36_freeze_v1 \
+            --results-csv "$RESULTS" \
+            --races-csv "$RACES" \
+            --reference-oof analysis/information_expansion_v1/outer_oof_predictions.csv \
+            --e5-2024 analysis/model_ensemble_v1/2024_predictions.csv \
+            --output-dir /tmp/input_learning_a_v1
+      - name: Commit rights-reviewed derived scores, not source racing rows
+        if: always()
+        run: |
+          if [ ! -d /tmp/input_learning_a_v1 ]; then exit 0; fi
+          mkdir -p analysis/input_learning_v1
+          cp -f /tmp/input_learning_a_v1/* analysis/input_learning_v1/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/input_learning_v1
+          if ! git diff --cached --quiet; then
+            git commit -m 'analysis: publish full-field F0-F3 preregistered diagnostics'
+            git pull --rebase origin research/input-learning-v1-20261031
+            git push origin HEAD:research/input-learning-v1-20261031
+          fi
