@@ -14,13 +14,16 @@ import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 
+from keiba_place_lab.historical_panel import select_phase_a_cohort
 from keiba_place_lab.model_selection import select_with_incumbent_one_se
 from keiba_place_lab.scope_expansion import full_context_for_races, straight_course_mask
 from keiba_place_lab.scope_features import (
-    augment_distance_history, block_columns, predict_scope_candidate, scope_features,
+    augment_distance_history,
+    block_columns,
+    predict_scope_candidate,
+    scope_features,
 )
 from keiba_place_lab.stage4_successor_phase3a import make_xgb01_relative_pipeline
-from keiba_place_lab.historical_panel import select_phase_a_cohort
 
 CANDIDATES = ("C0", "C1", "C2")
 CONTEXT_BLOCKS = ("regime",)
