@@ -1,4 +1,5 @@
 name: Fair 1600-round walk-forward research V1
+# Resume saved fold checkpoints after Japanese report lint and strict numeric parity correction.
 on:
   push:
     branches:
