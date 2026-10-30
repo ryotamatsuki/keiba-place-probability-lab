@@ -1,4 +1,5 @@
 name: RealMLP CPU Pilot V1 — fixed matched sample
+# Source-run rerun after common Ruff import cleanup and all regression fixes.
 on:
   push:
     branches:
