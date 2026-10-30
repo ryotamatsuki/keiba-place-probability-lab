@@ -1,0 +1,4 @@
+candidate,incumbent_minus_candidate_brier,paired_date_se
+A0_raw,-0.0009752436544442347,0.0004774452548496073
+A1_calibrated,0.0,0.0
+A2_corrected,-1.4477587034028901e-05,0.00011635367927461682

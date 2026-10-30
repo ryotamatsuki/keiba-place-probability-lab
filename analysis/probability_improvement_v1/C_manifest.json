@@ -1,0 +1,68 @@
+{
+  "status": "RESEARCH_ONLY",
+  "winner": "C1",
+  "incumbent_retained": false,
+  "training": [
+    {
+      "year": 2023,
+      "candidate": "C0",
+      "training_rows": 23656,
+      "training_min_date": "2016-01-09",
+      "training_max_date": "2022-12-28",
+      "prior": 0.20350016909029423,
+      "weight_min": 1.0,
+      "weight_max": 1.0
+    },
+    {
+      "year": 2023,
+      "candidate": "C1",
+      "training_rows": 16819,
+      "training_min_date": "2018-01-06",
+      "training_max_date": "2022-12-28",
+      "prior": 0.20524406920744395,
+      "weight_min": 1.0,
+      "weight_max": 1.0
+    },
+    {
+      "year": 2023,
+      "candidate": "C2",
+      "training_rows": 23656,
+      "training_min_date": "2016-01-09",
+      "training_max_date": "2022-12-28",
+      "prior": 0.20487148296760802,
+      "weight_min": 0.1995264709261454,
+      "weight_max": 0.9981040660038859
+    },
+    {
+      "year": 2024,
+      "candidate": "C0",
+      "training_rows": 26850,
+      "training_min_date": "2016-01-09",
+      "training_max_date": "2023-12-28",
+      "prior": 0.20409683426443204,
+      "weight_min": 1.0,
+      "weight_max": 1.0
+    },
+    {
+      "year": 2024,
+      "candidate": "C1",
+      "training_rows": 16535,
+      "training_min_date": "2019-01-05",
+      "training_max_date": "2023-12-28",
+      "prior": 0.20665255518596914,
+      "weight_min": 1.0,
+      "weight_max": 1.0
+    },
+    {
+      "year": 2024,
+      "candidate": "C2",
+      "training_rows": 26850,
+      "training_min_date": "2016-01-09",
+      "training_max_date": "2023-12-28",
+      "prior": 0.2057697843910374,
+      "weight_min": 0.15838931133386291,
+      "weight_max": 0.9981040660038859
+    }
+  ],
+  "input_sha256": "cee9ae9a099f521f12b1bcdd371c25a3d7b9ba3555fbcf5a46f2c9098f59a33d"
+}

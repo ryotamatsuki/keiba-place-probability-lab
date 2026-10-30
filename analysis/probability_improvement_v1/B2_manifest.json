@@ -1,0 +1,24 @@
+{
+  "status": "RESEARCH_ONLY_FINAL_ODDS",
+  "training_max_date": "2023-12-28",
+  "fitted_coefficients": [
+    0.0004038818645490734,
+    0.002507966818570089,
+    0.0006377724570293191,
+    0.0011329683820039335,
+    -0.002555961263855678,
+    0.004027292913389988
+  ],
+  "coefficients_zero_recover_baseline": true,
+  "selection": {
+    "winner": "B2_offset",
+    "incumbent_retained": false
+  },
+  "paired_market_minus_b2": {
+    "brier": 2.247486318372068e-05,
+    "date_clustered_se": 1.84364130487185e-05
+  },
+  "rows": 3119,
+  "races": 245,
+  "source_a_oof_sha256": "4444de80461f8e8b9edf81c9ee8213755ecf15ac04a07c56c85d1941740c0ea3"
+}

@@ -1,0 +1,71 @@
+{
+  "status": "PARTIAL_RESULTS_NOT_LIVE_ADOPTION",
+  "domain": "historical_FINAL_odds_only",
+  "base_main_sha": "a82cb4788190d9d82f9684cedc228a60d1077311",
+  "spec_sha256": "98ce800ea19c09556361fd5673ed3a0c98b061edb04f608b3f99224a1d9b350a",
+  "kaggle_sha256": "fb9345273b21a7c23d41260dc77e45134a1bc2fe756899f3416b24ac0dd51de3",
+  "phase3a_sha256": "5d85d00805efdf0a59c00f17d0435e4642619301a17371966bae85d9ecf41621",
+  "historical_train_sha256": "713b18bf533d8cabe16dc2d4d494bbe231533b62660ee4a52edf5ec0e8fde92c",
+  "historical_validation_sha256": "5ed596c686fb3b019c2f745235d6d7072a759fa3d5fbdd55e478889c755ef18a",
+  "code_sha256": {
+    "runner": "9782b2f2d5509a7e281041f822431c5fc43cadb252868176ecf70a3c61b9af4e",
+    "library": "d5429d52fee47dda301f5ce590659aa14ffb7635e7b5b0317704da78f9154e95",
+    "frozen_market": "3ff9c6e5be0f6af8c55189a514b7c192a10a873ddad64cb072f5012c326a90ee"
+  },
+  "market_audit": {
+    "requested_races": 2317,
+    "complete_market_races": 2317,
+    "incomplete_market_races": 0,
+    "malformed_requested_rows": 0,
+    "incomplete_reason_counts": {}
+  },
+  "A": {
+    "winner": "A1_calibrated",
+    "incumbent_retained": true,
+    "point_brier_best": "A1_calibrated",
+    "rows": 6313,
+    "races": 495,
+    "row_fingerprint": "ae7b639a4ed48e9f91aa4b673dfabc7d7536753ac652b02ad21f37089e83a1cd"
+  },
+  "B_shadow_stage4_v2": {
+    "winner": "B0_market",
+    "incumbent_retained": true,
+    "point_brier_best": "B1_logit_stack",
+    "rows": 3119,
+    "races": 245,
+    "row_fingerprint": "5e8bacbaba3781966e6d964901ab92d6b7166c8dfbafa31c2220cddb0b97ca67"
+  },
+  "A2_grid": [
+    {
+      "outer_year": 2023,
+      "gamma": 0.75,
+      "delta": 0.75,
+      "train_rows": 23656,
+      "test_rows": 3194,
+      "a1_intercept": -0.20056040432011374,
+      "a1_slope": 0.7928931827034995,
+      "a2_intercept": -0.004221392487829504,
+      "a2_slope": 0.9743927877040859
+    },
+    {
+      "outer_year": 2024,
+      "gamma": 0.75,
+      "delta": 0.75,
+      "train_rows": 26850,
+      "test_rows": 3119,
+      "a1_intercept": -0.19970080831186413,
+      "a1_slope": 0.7931222569167531,
+      "a2_intercept": -0.004276988226139989,
+      "a2_slope": 0.9742758236917126
+    }
+  ],
+  "B2": "BLOCKED: awaiting audited prior-feature OOF and same ScopeV3 model",
+  "C": "BLOCKED: training-window refits must be run from complete as-of historical panel",
+  "S": "market projection only; labelled full-field outcomes not joined",
+  "xgboost": "3.2.0",
+  "sklearn": "1.9.1",
+  "numpy": "2.4.6",
+  "pandas": "3.0.6",
+  "python": "3.11.17",
+  "seed": 20261031
+}
