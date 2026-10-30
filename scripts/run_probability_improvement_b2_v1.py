@@ -48,7 +48,7 @@ def features_for_year(historical: Path, evaluation: pd.DataFrame, year: int
                           all_cohort.race_id.isin(evaluation.race_id)].copy()
     part["race_date"] = pd.to_datetime(part.race_date)
     prior = float(old.top3_label.mean())
-    engineered, coverage = add_relative_ability_features(
+    engineered, _coverage = add_relative_ability_features(
         part, context, prior_mean=prior)
     if len(engineered) != len(part):
         raise ValueError("Full-field feature engineering changed sample")
