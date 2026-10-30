@@ -1,5 +1,6 @@
 name: Probability Improvement V1 C-window and A+C research
 # Rerun after removing unused import; frozen preregistration unchanged.
+# Strict regression gate rerun with runtime script-import test fixed.
 on:
   push:
     branches:
