@@ -1,0 +1,63 @@
+{
+  "family": "cat",
+  "outer_year": 2024,
+  "inner_years": [
+    2021,
+    2022,
+    2023
+  ],
+  "selected_rounds": 400,
+  "original_fixed_rounds": 120,
+  "original_fixed_parity_max_abs_error": 1.1102230246251565e-16,
+  "original_fixed_parity_contract": "absolute_1e-8",
+  "original_frozen_prediction_hash": "c777bbd99e8064f091f2bd80bc2f1aed2928b40ae641c08d491cc544fcacecab",
+  "training": {
+    "family": "cat",
+    "max_fitted_rounds": 400,
+    "predicted_prefixes": [
+      400
+    ],
+    "train_rows": 193505,
+    "train_races": 17390,
+    "target_rows": 31225,
+    "target_races": 2844,
+    "train_max_date": "2023-12-28",
+    "target_min_date": "2024-01-06",
+    "elapsed_seconds": 30.207814153000015,
+    "seed": 20261031
+  },
+  "baseline_retrain_seconds": 6.672248121999985,
+  "alpha": {
+    "alpha": 0.9272829493288433,
+    "regularized_inner_loss": 0.1364348084593607,
+    "fit_years": [
+      2021,
+      2022,
+      2023
+    ],
+    "fit_rows": 96300,
+    "fit_races": 8669,
+    "fit_max_date": "2023-12-28"
+  },
+  "selected_is_upper_bound": false,
+  "raw_score": {
+    "name": "raw",
+    "race_macro_brier": 0.13567437356280232,
+    "race_macro_log_loss": 0.4202017034836943,
+    "runner_micro_brier": 0.13316331541584994,
+    "runner_micro_log_loss": 0.4142821360266151,
+    "races": 2844,
+    "rows": 31225
+  },
+  "scaled_score": {
+    "name": "scaled",
+    "race_macro_brier": 0.1356938446061906,
+    "race_macro_log_loss": 0.4202532500793484,
+    "runner_micro_brier": 0.13318247020158405,
+    "runner_micro_log_loss": 0.4143383931562769,
+    "races": 2844,
+    "rows": 31225
+  },
+  "output_sha256": "821ecb6448fd2b515507a6d01fc7daac54f164c3e449ccc36cceb7dcec857957",
+  "source_manifest_sha256": "31f480f1cefcacdfed0ff27e06a8f491db14c8f528824782d924bd89e7e355d0"
+}
