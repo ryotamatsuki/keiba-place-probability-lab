@@ -1,0 +1,84 @@
+name: Probability Improvement V1 research (frozen)
+on:
+  push:
+    branches:
+      - research/probability-improvement-v1-20261031
+    paths:
+      - .github/workflows/probability-improvement-v1.yml
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install pinned reproduction environment
+        run: python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+      - name: Lint and existing regression tests
+        run: |
+          ruff check .
+          pytest -q
+      - name: Download audited frozen 2010-2025 panel artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Download exact CC0 Kaggle version-one final odds source
+        run: |
+          python - <<'PY'
+          import kagglehub
+          print(kagglehub.dataset_download(
+              'noriyukifurufuru/japan-horse-racing-2010-2025/versions/1',
+              output_dir='/tmp/kaggle_v1',
+          ))
+          PY
+      - name: Preregistered A and 2024 B1 shadow execution
+        run: |
+          RESULTS=$(find /tmp/kaggle_v1 -name keiba_results.csv -print -quit)
+          test -n "$RESULTS"
+          python -u scripts/run_probability_improvement_v1.py \
+            --historical-dir /tmp/stage36/data/historical_processed/stage36_freeze_v1 \
+            --results-csv "$RESULTS" \
+            --phase3a-oof analysis/stage4_successor_phase3a/phase3a_outer_predictions.csv \
+            --output-dir /tmp/probability-improvement-v1
+      - name: B2 prior-only correction experiment
+        run: |
+          python -u scripts/run_probability_improvement_b2_v1.py \
+            --historical-dir /tmp/stage36/data/historical_processed/stage36_freeze_v1 \
+            --a-oof /tmp/probability-improvement-v1/A_oof_predictions.csv \
+            --output-dir /tmp/probability-improvement-v1
+      - name: C full-warmup panel discovery (fail closed)
+        shell: bash
+        run: |
+          set -e
+          PANEL=$(find /tmp/stage36 -name jra_flat_historical_panel_v1.parquet -print -quit)
+          if [ -n "$PANEL" ]; then
+            python -u scripts/run_probability_improvement_c_v1.py \
+              --full-historical-panel "$PANEL" \
+              --a-oof /tmp/probability-improvement-v1/A_oof_predictions.csv \
+              --output-dir /tmp/probability-improvement-v1
+          else
+            printf '%s\n' '{"status":"DATA_INSUFFICIENT","reason":"Full 2010+ warmup panel not present in frozen action artifact. Do not truncate historical context."}' \
+              > /tmp/probability-improvement-v1/C_BLOCKED.json
+            cat /tmp/probability-improvement-v1/C_BLOCKED.json
+          fi
+      - name: Publish bounded research-only result artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: probability-improvement-v1-research
+          path: /tmp/probability-improvement-v1/
+          if-no-files-found: warn
+          retention-days: 30
