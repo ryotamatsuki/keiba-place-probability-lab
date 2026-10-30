@@ -189,7 +189,17 @@ def report_scores(frame: pd.DataFrame, probs: dict[str, np.ndarray],
                                     "calibration_intercept": intercept if subgroup=="all" else np.nan,
                                     "calibration_slope": slope if subgroup=="all" else np.nan})
     pd.concat(reliability).to_csv(out / f"{label}_reliability.csv", index=False)
-    pd.concat(race_losses).to_csv(out / f"{label}_race_losses.csv", index=False)
+    loss_table = pd.concat(race_losses, ignore_index=True)
+    loss_table.to_csv(out / f"{label}_race_losses.csv", index=False)
+    ref_loss = loss_table.loc[loss_table.candidate.eq(incumbent),
+                               ["race_id", "block", "brier", "log_loss"]]
+    ref_loss = ref_loss.rename(columns={"brier": "market_brier",
+                                         "log_loss": "market_log_loss"})
+    differences = loss_table.merge(ref_loss, on=["race_id", "block"], validate="many_to_one")
+    differences["market_minus_candidate_brier"] = differences.market_brier - differences.brier
+    differences["market_minus_candidate_log_loss"] = (
+        differences.market_log_loss - differences.log_loss)
+    differences.to_csv(out / f"{label}_race_differences.csv", index=False)
     pd.DataFrame(diagnostics).to_csv(out / f"{label}_diagnostics.csv", index=False)
     for name, p in probs.items():
         frame[f"p_{name}"] = p
@@ -293,7 +303,17 @@ def main() -> None:
                 "domain": "historical_FINAL_odds_only",
                 "base_main_sha": "a82cb4788190d9d82f9684cedc228a60d1077311",
                 "spec_sha256": sha(SPEC), "kaggle_sha256": sha(args.results_csv),
-                "phase3a_sha256": sha(args.phase3a_oof), "market_audit": market_audit,
+                "phase3a_sha256": sha(args.phase3a_oof),
+                "historical_train_sha256": sha(
+                    args.historical_dir / "phase_a_turf_1200_train_v1.parquet"),
+                "historical_validation_sha256": sha(
+                    args.historical_dir / "phase_a_turf_1200_validation_v1.parquet"),
+                "code_sha256": {
+                    "runner": sha(Path(__file__)),
+                    "library": sha(ROOT / "src/keiba_place_lab/probability_improvement_v1.py"),
+                    "frozen_market": sha(ROOT / "src/keiba_place_lab/market.py"),
+                },
+                "market_audit": market_audit,
                 "A": aresult, "B_shadow_stage4_v2": bresult,
                 "A2_grid": selected_grids,
                 "B2": "BLOCKED: awaiting audited prior-feature OOF and same ScopeV3 model",
