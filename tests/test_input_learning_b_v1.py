@@ -56,7 +56,7 @@ def test_alpha_2023_never_uses_2023_outcomes():
     data=oof()
     prior=alpha_fit_from_prior_oof(data,2023,120)
     changed=data.copy()
-    changed.loc[changed.race_date.dt.year.eq(2023),"top3_label"]=0
+    changed.loc[changed.race_date.dt.year.eq(2023),"top3_label"]=False
     assert alpha_fit_from_prior_oof(changed,2023,120)==prior
     assert 0<=prior<=1.5
 
