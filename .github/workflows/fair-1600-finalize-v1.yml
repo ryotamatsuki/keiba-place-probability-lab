@@ -1,4 +1,5 @@
 name: Fair 1600-round ensemble-free adjudication and research report
+# Re-render measured A verdict and traceable float32 parity interpretation.
 # Re-audit legacy outer manifest source hashes vs frozen model OOF after schema evolution.
 # Run final 2024 paired B_raw gate after all 3 outer_2024 manifests are committed.
 on:
