@@ -298,6 +298,16 @@ def stage_prepare(args: argparse.Namespace) -> None:
         "prepare_seconds": float(time.perf_counter() - start),
         "status": "READ_ONLY_HISTORICAL_PANEL_CREATED_LOCAL_NO_SOURCE_COMMIT",
     }
+    identity = {
+        "reference_sha256": record["reference_sha256"],
+        "source_sha256": audit["source_sha256"],
+        "feature_columns": record["feature_columns"],
+        "panel_rows": record["panel_rows"],
+        "registry": record["registry"],
+    }
+    record["source_signature"] = hashlib.sha256(
+        json.dumps(identity, ensure_ascii=False, sort_keys=True).encode(),
+    ).hexdigest()
     (args.out / "source_manifest.json").write_text(
         json.dumps(record, ensure_ascii=False, indent=2) + "\n",
     )
@@ -334,7 +344,9 @@ def stage_inner(args: argparse.Namespace) -> None:
     )
     info.update({
         "prediction_sha256": file_sha(args.out / f"inner_{year}.csv"),
-        "source_manifest_sha256": file_sha(args.out / "source_manifest.json"),
+        "source_signature": json.loads(
+            (args.out / "source_manifest.json").read_text(),
+        )["source_signature"],
         "result_target_year": year,
         "kind": "STRICT_PAST_INNER_OOF",
     })
@@ -362,9 +374,9 @@ def _inner_bundle(args: argparse.Namespace, year: int
         record = json.loads(meta.read_text())
         if (record["family"] != args.family
                 or record["prediction_sha256"] != file_sha(source)
-                or record["source_manifest_sha256"] != file_sha(
-                    args.out / "source_manifest.json"
-                )
+                or record["source_signature"] != json.loads(
+                    (args.out / "source_manifest.json").read_text(),
+                )["source_signature"]
                 or record["max_fitted_rounds"] != 1600):
             raise ValueError(f"Inner-{iy} provenance failed")
         df = pd.read_csv(source, dtype={"race_id": str, "horse_id": str})
