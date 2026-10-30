@@ -1,0 +1,9 @@
+{
+  "category": "D",
+  "status": {
+    "xgb": "INCOMPLETE: 'source_signature'",
+    "lgb": "INCOMPLETE: 'source_signature'",
+    "cat": "INCOMPLETE: 'source_signature'"
+  },
+  "reason": "No complete learner has produced both outer years"
+}
