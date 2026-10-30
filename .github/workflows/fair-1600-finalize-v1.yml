@@ -1,0 +1,64 @@
+name: Fair 1600-round ensemble-free adjudication and research report
+on:
+  push:
+    branches:
+      - research/rounds-1600-fair-v1-20261031
+    paths:
+      - .github/workflows/fair-1600-finalize-v1.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: 1600-round-finalization
+  cancel-in-progress: false
+
+jobs:
+  numerical-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: research/rounds-1600-fair-v1-20261031
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install pinned full research environment
+        run: |
+          python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+          python -m pip install 'lightgbm==4.7.0' 'catboost==1.2.10'
+      - name: Complete static, chronology and model-equivalence tests
+        run: |
+          ruff check .
+          pytest -q
+      - name: Audit every saved family OOF and judge against B_raw
+        run: |
+          python -u scripts/finish_round_sweep_1600_v1.py \
+            --folder analysis/round_sweep_1600_v1 \
+            --b-oof analysis/input_learning_v1/B_outer_oof_predictions.csv \
+            --c1-oof analysis/input_learning_v1/C_outer_oof_predictions.csv \
+            --x2-oof analysis/information_expansion_v1/outer_oof_predictions.csv \
+            --e5-2024 analysis/model_ensemble_v1/2024_predictions.csv \
+            --out analysis/round_sweep_1600_v1/FINAL
+          python -u scripts/render_round_sweep_1600_report.py \
+            --folder analysis/round_sweep_1600_v1/FINAL
+      - name: Commit derived report and full paired uncertainty only
+        if: always()
+        run: |
+          test -f analysis/round_sweep_1600_v1/FINAL/manifest.json || exit 0
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/round_sweep_1600_v1/FINAL/
+          if ! git diff --cached --quiet; then
+            git commit -m 'analysis: publish registered 1600-tree fair-model B_raw selection and report'
+            for attempt in 1 2 3 4 5; do
+              git fetch origin research/rounds-1600-fair-v1-20261031
+              git rebase origin/research/rounds-1600-fair-v1-20261031
+              if git push origin HEAD:research/rounds-1600-fair-v1-20261031; then exit 0; fi
+            done
+            exit 1
+          fi
