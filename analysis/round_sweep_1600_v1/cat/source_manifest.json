@@ -124,7 +124,7 @@
     ]
   ],
   "panel_rows": 293459,
-  "prepare_seconds": 290.160340218,
+  "prepare_seconds": 310.2540214,
   "status": "READ_ONLY_HISTORICAL_PANEL_CREATED_LOCAL_NO_SOURCE_COMMIT",
   "source_signature": "c07e1f4fe7c4ca543ce9005b7f15710e65bed46802b05eb01ef604d5b3a11d33"
 }
