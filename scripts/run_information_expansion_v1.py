@@ -209,8 +209,10 @@ def _fit_xgb(train: pd.DataFrame, evaluate: pd.DataFrame,
     train=train.copy()
     evaluate=evaluate.copy()
     for col in predictors:
-        train[col]=pd.to_numeric(train[col],errors="coerce")
-        evaluate[col]=pd.to_numeric(evaluate[col],errors="coerce")
+        train[col]=pd.to_numeric(train[col],errors="coerce").to_numpy(
+            dtype=float,na_value=np.nan)
+        evaluate[col]=pd.to_numeric(evaluate[col],errors="coerce").to_numpy(
+            dtype=float,na_value=np.nan)
     for col in categorical:
         train[col]=train[col].astype("object").where(train[col].notna(),None)
         evaluate[col]=evaluate[col].astype("object").where(evaluate[col].notna(),None)
@@ -242,8 +244,10 @@ def _fit_linear(train: pd.DataFrame,evaluate: pd.DataFrame,
     a=train[predictors+categorical].copy()
     b=evaluate[predictors+categorical].copy()
     for col in predictors:
-        a[col]=pd.to_numeric(a[col],errors="coerce")
-        b[col]=pd.to_numeric(b[col],errors="coerce")
+        a[col]=pd.to_numeric(a[col],errors="coerce").to_numpy(
+            dtype=float,na_value=np.nan)
+        b[col]=pd.to_numeric(b[col],errors="coerce").to_numpy(
+            dtype=float,na_value=np.nan)
     for col in categorical:
         a[col]=a[col].astype("object").where(a[col].notna(),None)
         b[col]=b[col].astype("object").where(b[col].notna(),None)
