@@ -307,9 +307,19 @@ def stage_prepare(args: argparse.Namespace) -> None:
     record["source_signature"] = hashlib.sha256(
         json.dumps(identity, ensure_ascii=False, sort_keys=True).encode(),
     ).hexdigest()
-    (args.out / "source_manifest.json").write_text(
-        json.dumps(record, ensure_ascii=False, indent=2) + "\n",
-    )
+    metadata_path = args.out / "source_manifest.json"
+    if metadata_path.is_file():
+        previous = json.loads(metadata_path.read_text())
+        if previous.get("source_signature") != record["source_signature"]:
+            raise ValueError(
+                "Cached input source signature differs; refusing to overwrite"
+            )
+        # Preserve immutable original manifest, including prior wall time.
+        # Avoid conflicts from repeat preparation across parallel CI runs.
+    else:
+        metadata_path.write_text(
+            json.dumps(record, ensure_ascii=False, indent=2) + "\n",
+        )
     print(json.dumps({
         "stage": "prepare", "family": args.family,
         "rows": len(frame), "time_seconds": record["prepare_seconds"],
