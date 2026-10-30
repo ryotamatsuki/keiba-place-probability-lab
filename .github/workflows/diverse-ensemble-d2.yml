@@ -1,5 +1,10 @@
 name: Diverse Residual Ensemble D2 — only after verified C1
 on:
+  push:
+    branches:
+      - research/input-learning-v1-20261031
+    paths:
+      - .github/workflows/diverse-ensemble-d2.yml
   workflow_run:
     workflows:
       - Model Families C1 — preregistered CPU CatBoost/LightGBM
@@ -12,7 +17,7 @@ permissions:
 
 jobs:
   full-OOF-ensemble:
-    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'research/input-learning-v1-20261031')
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'research/input-learning-v1-20261031')
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
