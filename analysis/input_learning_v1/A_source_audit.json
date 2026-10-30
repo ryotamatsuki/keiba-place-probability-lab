@@ -1,0 +1,57 @@
+{
+  "source_sha256": {
+    "jra_flat_warmup_v1.parquet": "9826b5efdd2825f384f125a41602bb3948506b852b38b6f2186709d25d51532e",
+    "jra_flat_train_v1.parquet": "1fc9702838982a574d09f03d05a0c95aa4ece319f1090f37af6772c1a9f8bbb7",
+    "jra_flat_validation_v1.parquet": "aa7263518713e62af2da6d1b6f712e5b4d3c62200365f47974a903291e7e41ff",
+    "keiba_results.csv": "fb9345273b21a7c23d41260dc77e45134a1bc2fe756899f3416b24ac0dd51de3",
+    "keiba_races.csv": "b9ba4423efbaec641f9285ff01d79895c7b3821c2146522a397127245c81fadb"
+  },
+  "raw_summary": {
+    "rows": 707067,
+    "matched": 707067
+  },
+  "market_audit": {
+    "requested_races": 26117,
+    "complete_market_races": 26117,
+    "incomplete_market_races": 0,
+    "malformed_requested_rows": 0,
+    "incomplete_reason_counts": {},
+    "excluded_races_after_full_field_check": 0,
+    "paired_eligible_races": 26117,
+    "paired_eligible_rows": 293459
+  },
+  "market_context_audit": {
+    "requested_races": 26117,
+    "complete_market_races": 26117,
+    "incomplete_market_races": 0,
+    "malformed_requested_rows": 0,
+    "incomplete_reason_counts": {}
+  },
+  "relative_coverage": [
+    {
+      "feature": "rel_career_top3_vs_others",
+      "full_field_rows": 370018,
+      "full_field_nonmissing": 370018
+    },
+    {
+      "feature": "rel_same_distance_top3_vs_others",
+      "full_field_rows": 370018,
+      "full_field_nonmissing": 370018
+    },
+    {
+      "feature": "rel_same_course_top3_vs_others",
+      "full_field_rows": 370018,
+      "full_field_nonmissing": 370018
+    },
+    {
+      "feature": "rel_recent3_finish_vs_others",
+      "full_field_rows": 370018,
+      "full_field_nonmissing": 363076
+    },
+    {
+      "feature": "rel_recent3_time_vs_others",
+      "full_field_rows": 370018,
+      "full_field_nonmissing": 363076
+    }
+  ]
+}
