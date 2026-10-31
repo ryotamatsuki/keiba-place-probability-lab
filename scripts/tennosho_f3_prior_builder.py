@@ -21,6 +21,7 @@ import pandas as pd
 from run_information_expansion_v1 import SOURCE_SHA
 from run_input_learning_a_v1 import feature_registry
 from tennosho_f3_raw_audit import raw_result, umanity_raw_result
+from tennosho_f3_2025_identity_repair import repair_frozen_2025_identities
 
 from keiba_place_lab import live_umanity
 from keiba_place_lab.historical_panel import REQUIRED_COLUMNS, build_historical_panel
@@ -353,6 +354,13 @@ def rebuild(a):
     if sha(a.standardized_base) != FROZEN_HISTORY_SHA256:
         raise ValueError("2010-2025 base does not match original standardized SHA")
     base = load_frozen_history(a.standardized_base)
+    # The original immutable 2010-2025 source is never modified. Four
+    # independently audited late-2025 source races have seven incorrect
+    # frozen horse identities; verify against BOTH published full-field
+    # sources and repair only those known rows in memory.
+    base, identity_repairs = repair_frozen_2025_identities(
+        base, a.cache / "audited_2025_identity_repair"
+    )
     # Historical JRA starter identities in the immutable base mix a legacy
     # jra: namespace with bare ten-digit IDs. Normalize in memory AFTER the
     # frozen SHA check so earlier and later starts refer to the same horse.
@@ -511,6 +519,7 @@ def rebuild(a):
         "last3f_mass_early_elo_coverage": raw_target_coverage,
         "raw_original_audit": raw_audit,
         "source_injection_audit": injection_audit,
+        "independently_verified_2025_identity_repairs": identity_repairs,
         "agent_identity_audit": agent_audit,
         "2025_supplement_races": supplement_sources,
         "relative_feature_coverage": relative_audit.to_dict(orient="records"),
