@@ -1,0 +1,47 @@
+name: Tennosho F3 alternate detailed result source probe
+on:
+  push:
+    branches: [research/tennosho-akiten-preoff-20261101]
+    paths: [.github/workflows/tennosho-f3-umanity-probe.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install requests beautifulsoup4
+      - name: Inspect published fallback data fields without horse result modification
+        run: |
+          python - <<'PY'
+          import requests
+          from bs4 import BeautifulSoup
+          from urllib.parse import urlsplit
+          from pathlib import Path
+          from sys import path
+          path.insert(0, str(Path('src').resolve()))
+          from keiba_place_lab.live_umanity import source_id, metadata
+          rid, date='202605040211','2026-10-04'
+          sid=source_id(rid,date)
+          url=f'https://umanity.jp/racing/result.php?race_id={sid}'
+          r=requests.get(url,timeout=30,headers={'User-Agent':'Mozilla/5.0'})
+          print('source',urlsplit(r.url).path,'status',r.status_code,'bytes',len(r.content),flush=True)
+          r.raise_for_status()
+          soup,meta=metadata(r.text,rid,date)
+          print('identity',meta,flush=True)
+          for t in soup.select('table'):
+              if not t.select_one('td.td_order'):
+                  continue
+              print('heads',[(th.get_text(' ',strip=True),th.get('class')) for th in t.select('th')][:45],flush=True)
+              for tr in t.select('tr'):
+                  cells=tr.find_all('td',recursive=False)
+                  if cells:
+                      print('row',[(i,c.get('class'),c.get_text(' ',strip=True)[:130]) for i,c in enumerate(cells)][:22],flush=True)
+                      break
+          print('race header',soup.get_text(' ',strip=True)[:600],flush=True)
+          PY
