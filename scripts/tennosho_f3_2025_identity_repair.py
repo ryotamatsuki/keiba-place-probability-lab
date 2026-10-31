@@ -19,7 +19,6 @@ from keiba_place_lab import live_umanity
 from keiba_place_lab.live_history import RESULT_URL, CachedFetcher
 from keiba_place_lab.live_public import metadata
 
-
 # race_id -> horse_no -> (frozen bad ID, actual verified ID, frozen bad name, rank)
 CORRECTIONS = {
     "202506050706": {
