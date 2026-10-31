@@ -47,6 +47,10 @@ jobs:
                       break
           print('race header',soup.get_text(' ',strip=True)[:600],flush=True)
           from tennosho_f3_raw_audit import umanity_raw_result, raw_result
+          for row in next(t for t in soup.select('table') if t.select_one('td.td_order')).select('tr'):
+              cells=row.find_all('td',recursive=False)
+              if cells and cells[1].get_text(strip=True) in ('14','4','9','16'):
+                  print('weight raw',cells[1].get_text(strip=True),repr(cells[3].get_text(' ',strip=True)),flush=True)
           alt = umanity_raw_result(r.text, rid, date)
           print('alternate parsed',len(alt),alt[['horse_no','horse_id','last_3f','passing','horse_weight','jockey_name','trainer']].head(3).to_dict(orient='records'),flush=True)
           yahoo = requests.get('https://sports.yahoo.co.jp/keiba/race/result/2605040211',timeout=30)
