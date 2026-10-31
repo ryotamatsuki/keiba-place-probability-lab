@@ -1,0 +1,102 @@
+{
+  "status": "F3_TRIO_PROVISIONAL_20261031_NOT_NOV1_T10",
+  "race_id": "202605041111",
+  "full_starter_count": 17,
+  "combination_count": 680,
+  "preview_input_file": "f3_preview_20261031T173406.csv",
+  "preview_input_sha256": "595ac9b010fbdd019717bb197056054828709038c727b99f19820d8a5e957a94",
+  "frozen_f3_model_sha256": "f8db9efe4245782165a0732945f5ab50c9c845d52fec25f20150d65e6ab096aa",
+  "f3_original_sum": 2.9404379701721,
+  "f3_projected_sum": 3.0,
+  "maximum_f3_marginal_projection_shift": 0.0077595162047897626,
+  "max_marginal_inverse_error": 1.1291900070542482e-07,
+  "f3_joint_sum": 1.0,
+  "market_pl_joint_sum": 1.000000000000001,
+  "win_odds_overround": 1.2751076661453806,
+  "historical_trio_calibration_proven": false,
+  "frozen_f3_not_modified": true,
+  "actual_trio_odds_not_supplied": true,
+  "top_10": [
+    {
+      "horse_1": 1,
+      "horse_2": 3,
+      "horse_3": 7,
+      "p_f3_trio_raw": 0.09582992996880406,
+      "p_market_pl_trio": 0.1371306791356195,
+      "break_even_odds_f3_raw": 10.43515319614169
+    },
+    {
+      "horse_1": 1,
+      "horse_2": 7,
+      "horse_3": 17,
+      "p_f3_trio_raw": 0.0792511556567238,
+      "p_market_pl_trio": 0.1187089893429919,
+      "break_even_odds_f3_raw": 12.618112527361717
+    },
+    {
+      "horse_1": 1,
+      "horse_2": 7,
+      "horse_3": 11,
+      "p_f3_trio_raw": 0.07168788828276076,
+      "p_market_pl_trio": 0.11538955431822032,
+      "break_even_odds_f3_raw": 13.949357750024229
+    },
+    {
+      "horse_1": 1,
+      "horse_2": 6,
+      "horse_3": 7,
+      "p_f3_trio_raw": 0.03769681351372808,
+      "p_market_pl_trio": 0.04690315955553075,
+      "break_even_odds_f3_raw": 26.527441096203773
+    },
+    {
+      "horse_1": 1,
+      "horse_2": 7,
+      "horse_3": 13,
+      "p_f3_trio_raw": 0.02622820580369767,
+      "p_market_pl_trio": 0.035005279249562045,
+      "break_even_odds_f3_raw": 38.12689314261136
+    },
+    {
+      "horse_1": 1,
+      "horse_2": 3,
+      "horse_3": 17,
+      "p_f3_trio_raw": 0.025092003239382907,
+      "p_market_pl_trio": 0.019071297360578915,
+      "break_even_odds_f3_raw": 39.85333456479313
+    },
+    {
+      "horse_1": 1,
+      "horse_2": 3,
+      "horse_3": 11,
+      "p_f3_trio_raw": 0.02269736901764587,
+      "p_market_pl_trio": 0.018533580736333374,
+      "break_even_odds_f3_raw": 44.05796985644278
+    },
+    {
+      "horse_1": 3,
+      "horse_2": 7,
+      "horse_3": 17,
+      "p_f3_trio_raw": 0.020998594643542756,
+      "p_market_pl_trio": 0.020371470450870476,
+      "break_even_odds_f3_raw": 47.62223458166084
+    },
+    {
+      "horse_1": 1,
+      "horse_2": 4,
+      "horse_3": 7,
+      "p_f3_trio_raw": 0.020682698355808205,
+      "p_market_pl_trio": 0.025462301631082856,
+      "break_even_odds_f3_raw": 48.34959069637912
+    },
+    {
+      "horse_1": 1,
+      "horse_2": 7,
+      "horse_3": 10,
+      "p_f3_trio_raw": 0.01914526078940819,
+      "p_market_pl_trio": 0.02713052387970244,
+      "break_even_odds_f3_raw": 52.23224749976945
+    }
+  ],
+  "trio_csv_sha256": "5b72f344ba01d1354ed798a4d88d1993f557286b3cd3597aa35aa495f7269bd6"
+}
