@@ -350,6 +350,50 @@ def _verify_umanity_jockey_profiles(
     return verified, audit
 
 
+# Public 2026 trainer registries, not string-only guesswork. JRA's 2026
+# opening announcements identify all seven March entrants, the July/October
+# newcomers, and the active dates. NAR and Umanity identify visitors.
+_VERIFIED_2026_TRAINERS = {
+    "三樹祐": ("三樹祐輔", "2026-10-21",
+        "https://www.jra.go.jp/news/202609/091102.html"),
+    "八木正": ("八木正喜", "2026-01-01",
+        "https://www.oddspark.com/keiba/TrainerDetail.do?trainerNb=011081"),
+    "古賀大": ("古賀大生", "2026-07-21",
+        "https://www.jra.go.jp/news/202606/061202.html"),
+    "室井潔": ("室井潔", "2026-03-04",
+        "https://www.jra.go.jp/news/202512/122401.html"),
+    "平岩大": ("平岩大典", "2026-03-04",
+        "https://www.jra.go.jp/news/202512/122401.html"),
+    "松尾卓": ("松尾卓哉", "2026-03-04",
+        "https://www.jra.go.jp/news/202512/122401.html"),
+    "柴田卓": ("柴田卓", "2026-03-04",
+        "https://www.jra.go.jp/news/202512/122401.html"),
+    "榎屋充": ("榎屋充", "2026-01-01",
+        "https://www.keiba.go.jp/KeibaWeb/DataRoom/TrainerMark?k_trainerLicenseNo=11475"),
+    "橋田宜": ("橋田宜長", "2026-03-04",
+        "https://www.jra.go.jp/news/202512/122401.html"),
+    "秋本大": ("秋本大介", "2026-03-04",
+        "https://www.jra.go.jp/news/202512/122401.html"),
+    "酒井一": ("酒井一則", "2026-01-01",
+        "https://www.oddspark.com/keiba/TrainerDetail.do?trainerNb=011228"),
+    "Ｃ．イ": ("Ｃ．イプ", "2026-01-01",
+        "https://umanity.jp/racing/database/trainer_result.php?trainer_id=05792"),
+}
+
+
+def _audited_trainer_identity(alias: str, race_date: object) -> tuple[str, dict]:
+    if alias not in _VERIFIED_2026_TRAINERS:
+        raise ValueError(f"Unknown trainer public-identity exception: {alias!r}")
+    name, start, url = _VERIFIED_2026_TRAINERS[alias]
+    date = pd.Timestamp(race_date)
+    if date < pd.Timestamp(start) or date > ALLOWED_LATEST_SOURCE:
+        raise ValueError(f"Trainer {alias} published start/cutoff contradicts {date}")
+    if not _agent_key(name).startswith(_agent_key(alias)):
+        raise ValueError("Independent trainer registry does not match published alias")
+    return name, {"published_alias": alias, "full_name": name,
+                  "publication": url, "active_from": start}
+
+
 def _canonicalize_extra_agents(
     original: pd.DataFrame, extra: pd.DataFrame,
     verified_jockey_aliases: dict[str, str] | None = None,
@@ -406,6 +450,7 @@ def _canonicalize_extra_agents(
             }
 
         resolved_aliases: set[str] = set()
+        publication_verified_trainers: dict[str, dict] = {}
         starter_verified = 0
         ambiguous: list[str] = []
         alt = x.source_provider.eq("umanity")
@@ -433,6 +478,9 @@ def _canonicalize_extra_agents(
                 resolved = verified_jockey_aliases[name]
                 if not _agent_key(resolved).startswith(key):
                     raise ValueError("Published profile cannot verify jockey alias")
+            elif col == "trainer" and name in _VERIFIED_2026_TRAINERS:
+                resolved, proof = _audited_trainer_identity(name, row["race_date"])
+                publication_verified_trainers[name] = proof
             elif key in exact:
                 resolved = exact[key]
             elif key in active_keys:
@@ -465,6 +513,10 @@ def _canonicalize_extra_agents(
             "same_starter_source_verified": starter_verified,
             "2026_yahoo_full_name_identities": len(active_keys),
             "historical_full_name_identities": len(historical_keys),
+            "independently_published_trainer_identities": [
+                publication_verified_trainers[k]
+                for k in sorted(publication_verified_trainers)
+            ] if col == "trainer" else [],
         }
     if x.loc[x.source_provider.eq("umanity"), ["jockey_name", "trainer"]].isna().any().any():
         raise ValueError("Unresolved raw alternate agent alias")
