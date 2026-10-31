@@ -1,0 +1,57 @@
+name: Tennosho F3 targeted passage diagnostic
+on:
+  push:
+    branches: [research/tennosho-akiten-preoff-20261101]
+    paths: [.github/workflows/tennosho-f3-passage-diagnostic.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/tennosho-akiten-preoff-20261101
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -e '.[historical]' -c requirements-scope.txt
+      - name: Inspect only two identified raw passage anomalies
+        run: |
+          python - <<'PY'
+          import json,re,requests,pandas as pd
+          from pathlib import Path
+          from bs4 import BeautifulSoup
+          from keiba_place_lab import live_umanity
+          root=Path('data/live_history/2026')
+          m=json.loads((root/'current.json').read_text())
+          h=pd.read_parquet(root/'snapshots'/m['snapshot_id']/'jra_flat_history.parquet')
+          h.race_id=h.race_id.astype(str)
+          for rid in ['202603020610','202601020106']:
+              row=h.loc[h.race_id.eq(rid)].iloc[0]
+              date=pd.Timestamp(row.race_date)
+              sid=live_umanity.source_id(rid,date)
+              url=f'https://umanity.jp/racing/result.php?race_id={sid}'
+              resp=requests.get(url,timeout=(10,30),headers={'User-Agent':'Mozilla/5.0'})
+              resp.raise_for_status()
+              soup,meta=live_umanity.metadata(resp.text,rid,date)
+              tables=[t for t in soup.select('table') if t.select_one('td.td_order')]
+              assert len(tables)==1
+              bad=[]
+              for tr in tables[0].select('tr'):
+                  c=tr.find_all('td',recursive=False)
+                  if len(c)<11:continue
+                  passage=c[7].get_text(' ',strip=True)
+                  times=re.findall(r'(?<![\\d.])([2-6]\\d\\.\\d)(?!\\d)',passage)
+                  ahead=passage[:passage.rfind(times[-1])].strip() if times else passage
+                  blocks=re.findall(r'\\b\\d{1,2}\\b',ahead)
+                  if len(blocks)>4:
+                      bad.append({'horse_no':c[1].get_text(strip=True),
+                                  'passage':passage[:250],'ahead':ahead[:250],
+                                  'blocks':blocks})
+              print(json.dumps({'race_id':rid,'date':str(date.date()),
+                                'source_url':url,'bad_count':len(bad),
+                                'bad_examples':bad[:10]},ensure_ascii=False),flush=True)
+          PY
