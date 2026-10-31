@@ -13,14 +13,14 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import xgboost
+from run_information_expansion_v1 import load_full_panel
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 from xgboost import XGBClassifier
-import xgboost
 
 from keiba_place_lab.information_expansion_v1 import raw_observations
 from keiba_place_lab.nonmarket import engineer_features, feature_columns
-from run_information_expansion_v1 import load_full_panel
 
 SEED = 20261031
 SOURCE_RESULTS_SHA = "fb9345273b21a7c23d41260dc77e45134a1bc2fe756899f3416b24ac0dd51de3"
