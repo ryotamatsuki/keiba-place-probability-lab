@@ -27,7 +27,9 @@ jobs:
             scripts/research_trio_v4_rank.py \
             tests/test_trio_pool_v4.py \
             tests/test_trio_covariate_rank_v4.py \
-            scripts/research_trio_v4_tabm.py
+            scripts/research_trio_v4_tabm.py \
+            scripts/research_trio_v4_xgb_depth.py \
+            tests/test_trio_tabm_v4.py
           ruff check .
       - name: Persist purely mechanical lint corrections
         run: |
@@ -40,7 +42,9 @@ jobs:
             scripts/research_trio_v4_rank.py \
             tests/test_trio_pool_v4.py \
             tests/test_trio_covariate_rank_v4.py \
-            scripts/research_trio_v4_tabm.py
+            scripts/research_trio_v4_tabm.py \
+            scripts/research_trio_v4_xgb_depth.py \
+            tests/test_trio_tabm_v4.py
           if git diff --staged --quiet; then echo "No lint changes"; exit 0; fi
           git commit -m "ci: Ruff mechanical formatting of research V4 scripts"
           for i in 1 2 3 4 5; do
