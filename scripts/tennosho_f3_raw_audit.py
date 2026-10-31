@@ -264,6 +264,8 @@ def main():
                                 "captured_at_utc": record.retrieved_at})
             except Exception as exc:  # noqa: BLE001 - record every independent source failure
                 errors[rid] = str(exc)
+                print(json.dumps({"raw_source_race_failed": rid, "reason": str(exc)[:600]},
+                                 ensure_ascii=False), flush=True)
             count = len(parts) + len(errors)
             if count % 200 == 0 or count == len(race_ids):
                 print(json.dumps({"done": count, "total": len(race_ids), "failures": len(errors)}), flush=True)
