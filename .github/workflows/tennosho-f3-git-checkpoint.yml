@@ -28,7 +28,7 @@ jobs:
         run: |
           python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
           ruff check .
-          pytest -q tests/test_tennosho_preoff_20261101.py tests/test_tennosho_f3_prior_builder.py tests/test_tennosho_f3_raw_combine.py
+          pytest -q tests/test_tennosho_preoff_20261101.py tests/test_tennosho_f3_prior_builder.py tests/test_tennosho_f3_raw_combine.py tests/test_tennosho_f3_raw_audit.py
       - name: Reuse SHA-verified 2026-10-30 snapshot already checkpointed by run 41169826236
         run: |
           python - <<'PY'
@@ -79,7 +79,7 @@ jobs:
       fail-fast: false
       max-parallel: 4
       matrix:
-        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+        shard: [4, 5, 6, 10]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -91,6 +91,8 @@ jobs:
           cache: pip
       - run: python -m pip install -e '.[dev,historical]' -c requirements-scope.txt
       - name: Capture independently validated historic raw evidence for one shard
+        env:
+          MATRIX_SHARD: ${{ matrix.shard }}
         run: |
           python - <<'PY' >> "$GITHUB_ENV"
           import json
@@ -110,6 +112,21 @@ jobs:
           )"
           test -s "$PRIOR_2026_PARQUET"
           mkdir -p "analysis/tennosho_preoff_20261101/f3_checkpoint/shard-${{ matrix.shard }}"
+          # Only these four shards failed with a documented three-digit Umanity
+          # elapsed-time parse anomaly; preserve the eight complete shards.
+          # Remove the immutable failure-only manifest before a fresh attempt.
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          idx=os.environ['MATRIX_SHARD']
+          folder=Path('analysis/tennosho_preoff_20261101/f3_checkpoint')/f'shard-{idx}'
+          manifest=folder/'2026_raw.manifest.json'
+          if manifest.exists():
+              meta=json.loads(manifest.read_text())
+              assert meta.get('status')=='INCOMPLETE_RAW_SOURCE_NOT_F3_READY'
+              assert not (folder/'2026_raw.csv').exists()
+              manifest.unlink()
+          PY
           python -u scripts/tennosho_f3_raw_audit.py \
             --history "$PRIOR_2026_PARQUET" \
             --output analysis/tennosho_preoff_20261101/f3_checkpoint/shard-${{ matrix.shard }}/2026_raw.csv \
