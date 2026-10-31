@@ -7,6 +7,7 @@ and original observation timestamps are provided by an authorized source.
 from __future__ import annotations
 
 import numpy as np
+import pandas as pd
 from scipy.optimize import minimize_scalar
 from scipy.special import logsumexp
 
@@ -23,6 +24,26 @@ def toto_market_distribution(odds: np.ndarray, *, temperature: float = 1.0) -> n
     logp = -float(temperature)*np.log(o)
     return np.exp(logp - logsumexp(logp))
 
+
+
+def validate_archived_tote_snapshot(
+    predictions: pd.DataFrame,
+    quotes: pd.DataFrame,
+    *,
+    expected_horse_numbers: set[int],
+    expected_race_id: str,
+) -> tuple[pd.DataFrame, np.ndarray]:
+    """Match every ticket to a verified, single-time real JRA 3-renpuku quote.
+
+    Uses the strict timestamp, completeness and odds assertions already
+    implemented for the production NO_BET gate. No missing price imputation.
+    """
+    full = validate_complete_trio_quotes(
+        predictions, quotes, expected_horse_numbers=expected_horse_numbers,
+        expected_race_id=expected_race_id,
+    )
+    implied = toto_market_distribution(full.odds.to_numpy(float))
+    return full, implied
 
 def geometric_joint_blend(f3: np.ndarray, real_market: np.ndarray,
                           *, market_weight: float) -> np.ndarray:
