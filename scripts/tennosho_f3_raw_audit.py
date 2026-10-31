@@ -190,7 +190,7 @@ def main():
         history = history.loc[history.race_id.isin(ids)].copy()
     race_ids = sorted(set(history.race_id))
     fetcher = CachedFetcher(args.cache, pause_seconds=.5)
-    alt_fetcher = CachedFetcher(args.cache / "umanity", pause_seconds=1.)
+    alt_fetcher = CachedFetcher(args.cache, pause_seconds=1.)
     def one(rid: str):
         cohort = history.loc[history.race_id.eq(rid)].copy()
         expected = cohort[["horse_id", "horse_no"]].copy()
