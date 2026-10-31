@@ -52,6 +52,12 @@ def locked_bundle(bundle_file: Path, manifest_file: Path) -> tuple[dict, dict]:
             or meta.get("no_2025_2026_train_labels") is not True
             or meta.get("no_live_adoption") is not True):
         raise ValueError("Missing/changed F3 pre-frozen bundle audit")
+    # A model trained after the race cannot be treated as a prospective
+    # frozen prediction, even if the training years look historical.
+    frozen_at = pd.Timestamp(meta.get("frozen_at_utc"))
+    if (frozen_at.tzinfo is None
+            or frozen_at >= pd.Timestamp("2026-11-01T00:00:00+09:00")):
+        raise ValueError("Model bundle was not frozen BEFORE Nov 1 target date")
     obj = joblib.load(bundle_file)
     if (obj.get("version") != EXPECTED_MODEL_VERSION
             or obj.get("training_cutoff") != "2024-12-31"
@@ -131,6 +137,30 @@ def _prior_features(prior: pd.DataFrame, manifest: dict, *, required_horses: set
             or not isinstance(manifest.get("history_sha256"), str)
             or len(manifest["history_sha256"]) != 64):
         raise ValueError("Prior-only historical context unverified for all entrants")
+    # A bare "complete" flag cannot certify real current-year coverage.
+    # An independent prior-to-race inventory must enumerate EVERY starter
+    # and report actual=expected past JRA flat starts, at least three each.
+    coverage = manifest.get("horse_coverage")
+    if not isinstance(coverage, list) or len(coverage) != len(required_horses):
+        raise ValueError("Full historical horse inventory attestation is absent")
+    mapped = {}
+    for row in coverage:
+        hid = str(row.get("horse_id"))
+        if hid in mapped:
+            raise ValueError("Duplicate horse historical coverage record")
+        if (not isinstance(row.get("expected"), int)
+                or not isinstance(row.get("actual"), int)
+                or row["expected"] < 3
+                or row["actual"] != row["expected"]):
+            raise ValueError("Horse history is incomplete or not audited")
+        mapped[hid] = row
+    if set(mapped) != required_horses:
+        raise ValueError("Horse inventory does not match the actual 17 entrants")
+    source_provenance = manifest.get("inventory_source_sha256")
+    if (not isinstance(source_provenance, str)
+            or len(source_provenance) != 64
+            or any(ch not in "0123456789abcdef" for ch in source_provenance)):
+        raise ValueError("Missing verified public history inventory SHA256")
     if not set(MARKET_FIELD).isdisjoint(features.columns):
         raise ValueError("Historical context contains same-race market features")
     if not set(MARKET_SPLITS).isdisjoint(features.columns):
