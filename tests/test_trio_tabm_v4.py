@@ -21,6 +21,8 @@ def test_official_tabm_member_probability_contract():
 
 
 def test_fit_preprocessor_train_only_rejects_future_unseen_categories():
+    pytest.importorskip('tabm')
+    pytest.importorskip('torch')
     from pathlib import Path
     import sys
     sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"scripts"))
