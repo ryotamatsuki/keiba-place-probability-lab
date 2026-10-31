@@ -27,7 +27,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
           run-id: 37104212189
-      - name: Compare 2025 race 202506050701 against published alternate and Yahoo results
+      - name: Compare 2025 race 202506050706 against published alternate and Yahoo results
         run: |
           python - <<'PY'
           import json
@@ -40,7 +40,7 @@ jobs:
           )
           from keiba_place_lab import live_umanity
           from tennosho_f3_raw_audit import raw_result, umanity_raw_result
-          rid='202506050701'
+          rid='202506050706'
           base=load_frozen_history(Path(
               '/tmp/stage36/data/historical_processed/stage36_freeze_v1/'
               'standardized_jra_flat_source_v1.parquet'
