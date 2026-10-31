@@ -117,7 +117,7 @@ def umanity_raw_result(html: str, race_id: str, race_date: pd.Timestamp) -> pd.D
         hid, _ = live_umanity.identity(c[3])
         horse_no = int(c[1].get_text(strip=True))
         mass = re.search(
-            r"(?<!\d)([3-7]\d{2})\s*([+-]\d+)(?!\d)",
+            r"(?<!\d)([3-7]\d{2})\s*([+-]?\d+)(?!\d)",
             c[3].get_text(" ", strip=True),
         )
         # Umanity shows passage squares followed by "後3F" in cell 7.
@@ -222,6 +222,9 @@ def main():
                 print(json.dumps({"alternate_source": rid, "reason": str(exc)[:150]}), flush=True)
                 html, record = alt_fetcher.fetch(alt_url)
                 parsed = umanity_raw_result(html, rid, date)
+        parsed["source_provider"] = "umanity" if record.url.startswith(
+            "https://umanity.jp/"
+        ) else "yahoo"
         actual = parsed[["horse_id", "horse_no"]].copy()
         if len(actual) != len(expected) or not actual.sort_values(
             ["horse_id", "horse_no"]).reset_index(drop=True).equals(
