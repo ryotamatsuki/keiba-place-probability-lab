@@ -1,0 +1,24 @@
+name: Trio operational source completeness and NO-BET gate
+on:
+  push:
+    branches: [research/trio-v2-conditional-20261031]
+    paths: [.github/workflows/trio-operational-gate-check.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/trio-v2-conditional-20261031
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+      - run: |
+          ruff check --select E4,E7,E9,F src/keiba_place_lab/trio_operational_gate.py tests/test_trio_operational_gate.py
+          pytest -q tests/test_trio_operational_gate.py
