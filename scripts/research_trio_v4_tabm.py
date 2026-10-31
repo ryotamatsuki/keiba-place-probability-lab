@@ -34,7 +34,7 @@ class PreviousYearFeatures:
     def fit(self,train:pd.DataFrame,numerics:list[str],categories:list[str]):
         self.numeric=list(numerics)
         self.categories=list(categories)
-        n=train[self.numeric].apply(pd.to_numeric,errors="coerce").to_numpy(float)
+        n=train[self.numeric].apply(pd.to_numeric,errors="coerce").to_numpy(float).copy()
         n[~np.isfinite(n)]=np.nan
         self.median=np.nanmedian(n,axis=0)
         self.median=np.nan_to_num(self.median,nan=0.)
@@ -48,7 +48,7 @@ class PreviousYearFeatures:
         return self
 
     def transform(self,d:pd.DataFrame)->tuple[torch.Tensor,torch.Tensor]:
-        x=d[self.numeric].apply(pd.to_numeric,errors="coerce").to_numpy(float)
+        x=d[self.numeric].apply(pd.to_numeric,errors="coerce").to_numpy(float).copy()
         x[~np.isfinite(x)]=np.nan
         x=np.where(np.isfinite(x),x,self.median)
         x=np.clip((x-self.mean)/self.std,-8,8).astype(np.float32)
