@@ -18,6 +18,7 @@ import pandas as pd
 
 from run_information_expansion_v1 import SOURCE_SHA
 from run_input_learning_a_v1 import feature_registry
+from tennosho_f3_raw_audit import raw_result
 
 from keiba_place_lab.historical_panel import REQUIRED_COLUMNS, build_historical_panel
 from keiba_place_lab.information_expansion_v1 import (
@@ -34,16 +35,14 @@ from keiba_place_lab.input_learning_v1 import (
     full_starter_relative,
 )
 from keiba_place_lab.live_history import (
-    CachedFetcher,
     FROZEN_HISTORY_SHA256,
     RESULT_URL,
+    CachedFetcher,
     _read_current_snapshot,
     load_frozen_history,
-    sha256_file,
 )
 from keiba_place_lab.live_public import parse_roster
 from keiba_place_lab.nonmarket import engineer_features
-from tennosho_f3_raw_audit import raw_result
 
 TARGET = "202605041111"
 TARGET_DATE = pd.Timestamp("2026-11-01")
@@ -60,7 +59,7 @@ def _standard_columns(source: pd.DataFrame) -> pd.DataFrame:
     for col in REQUIRED_COLUMNS:
         if col not in out:
             raise ValueError(f"Official standardized historical source absent: {col}")
-    return out[list(sorted(REQUIRED_COLUMNS))].copy()
+    return out[sorted(REQUIRED_COLUMNS)].copy()
 
 
 def _extra_raw_observations(
