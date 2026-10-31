@@ -41,7 +41,6 @@ from keiba_place_lab.live_history import (
     FROZEN_HISTORY_SHA256,
     RESULT_URL,
     CachedFetcher,
-    _read_current_snapshot,
     load_frozen_history,
 )
 from keiba_place_lab.live_public import parse_roster
@@ -54,6 +53,49 @@ ALLOWED_LATEST_SOURCE = pd.Timestamp("2026-10-30")
 
 def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _load_f3_git_checkpoint(root: Path) -> tuple[dict, pd.DataFrame]:
+    """Read only the immutable history material actually persisted in Git.
+
+    The full live-history snapshot has entry-audit and schedule files, but the
+    quota-free branch checkpoints solely its verified history Parquet and
+    current.json. Source-backed all-runner and all-race completeness is checked
+    again by the separately audited 2026 raw manifest in rebuild().
+    Do not silently reconstruct absent source metadata or change the hash.
+    """
+    pointer = root / "current.json"
+    if not pointer.is_file():
+        raise FileNotFoundError("Verified 2026 checkpoint pointer is missing")
+    current = json.loads(pointer.read_text())
+    if current.get("schema_version") != "jra_flat_live_history_v1":
+        raise ValueError("2026 checkpoint has unrecognized schema")
+    snapshot_id = current.get("snapshot_id", "")
+    if not (
+        isinstance(snapshot_id, str)
+        and snapshot_id.startswith("jra_flat_live_history_v1-20261030-")
+        and ".." not in snapshot_id
+        and "/" not in snapshot_id
+    ):
+        raise ValueError("2026 checkpoint identity or cutoff mismatch")
+    if current.get("complete_through") != "2026-10-30":
+        raise ValueError("2026 checkpoint did not freeze at original cutoff")
+    source = root / "snapshots" / snapshot_id / "jra_flat_history.parquet"
+    if not source.is_file() or sha(source) != current.get("history_sha256"):
+        raise ValueError("2026 Git checkpoint Parquet missing or SHA-256 changed")
+    history = pd.read_parquet(source)
+    if history.empty or not {"race_date", "race_id", "horse_id"}.issubset(history.columns):
+        raise ValueError("Verified 2026 race history missing fields or rows")
+    dates = pd.to_datetime(history.race_date, errors="raise")
+    if (
+        dates.isna().any()
+        or not dates.dt.year.eq(2026).all()
+        or dates.max() > ALLOWED_LATEST_SOURCE
+        or history.duplicated(["race_id", "horse_id"]).any()
+        or (history.race_id.astype(str) == TARGET).any()
+    ):
+        raise ValueError("Future, target, duplicated or unverified historic races")
+    return current, history
 
 
 def _standard_columns(source: pd.DataFrame) -> pd.DataFrame:
@@ -296,7 +338,7 @@ def rebuild(a):
     if sha(a.standardized_base) != FROZEN_HISTORY_SHA256:
         raise ValueError("2010-2025 base does not match original standardized SHA")
     base = load_frozen_history(a.standardized_base)
-    current, live, _, _ = _read_current_snapshot(a.live_root)
+    current, live = _load_f3_git_checkpoint(a.live_root)
     if current is None or pd.Timestamp(current["complete_through"]) < pd.Timestamp("2026-10-25"):
         raise ValueError("2026 all-JRA flat source too stale for 17-horse forecast")
     if pd.Timestamp(current["complete_through"]) > ALLOWED_LATEST_SOURCE:
