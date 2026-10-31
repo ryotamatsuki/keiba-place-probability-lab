@@ -173,11 +173,13 @@ def predict_from_frozen(
     work = work.sort_values("horse_no", kind="stable").reset_index(drop=True)
     if len(work) != len(odds):
         raise ValueError("Live market/current prior features not perfectly paired")
-    if "horse_name" in work:
-        if "horse_name_live" in work and not work.horse_name.astype(str).equals(
+    if (
+        "horse_name" in work and "horse_name_live" in work
+        and not work.horse_name.astype(str).equals(
             work.horse_name_live.astype(str),
-        ):
-            raise ValueError("Frozen roster name differed from live odds")
+        )
+    ):
+        raise ValueError("Frozen roster name differed from live odds")
     matrix = work[number + categorical].copy()
     for column in number:
         matrix[column] = pd.to_numeric(
