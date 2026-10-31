@@ -1,0 +1,97 @@
+{
+  "status": "2024_OOT_DEVELOPMENT_TOP10_COVERAGE_AND_CALIBRATION",
+  "races": 1336,
+  "already_observed_2024_not_fresh_test": true,
+  "predicted_mass_is_probability_true_trio_is_among_top10": true,
+  "metrics": {
+    "market_pl": {
+      "observed_top10_coverage": 0.36377245508982037,
+      "predicted_top10_mass": 0.48967241600433975,
+      "top10_mean_calibration_gap": -0.12589996091451938,
+      "top10_ece_10_bins": 0.12589996091451938,
+      "top10_binary_brier": 0.22057986500920154
+    },
+    "market_maxent": {
+      "observed_top10_coverage": 0.3652694610778443,
+      "predicted_top10_mass": 0.3982288749981195,
+      "top10_mean_calibration_gap": -0.03295941392027518,
+      "top10_ece_10_bins": 0.04480790034981221,
+      "top10_binary_brier": 0.20623737115931842
+    },
+    "v1": {
+      "observed_top10_coverage": 0.36826347305389223,
+      "predicted_top10_mass": 0.38401809672382226,
+      "top10_mean_calibration_gap": -0.015754623669930023,
+      "top10_ece_10_bins": 0.041657023563919364,
+      "top10_binary_brier": 0.20617991970263636
+    },
+    "v2_matched": {
+      "observed_top10_coverage": 0.36751497005988026,
+      "predicted_top10_mass": 0.3746401052528711,
+      "top10_mean_calibration_gap": -0.00712513519299085,
+      "top10_ece_10_bins": 0.030356386711344368,
+      "top10_binary_brier": 0.20539441321659507
+    },
+    "v3_context": {
+      "observed_top10_coverage": 0.36826347305389223,
+      "predicted_top10_mass": 0.3753914107032541,
+      "top10_mean_calibration_gap": -0.007127937649361871,
+      "top10_ece_10_bins": 0.03363923022452804,
+      "top10_binary_brier": 0.20567056535431194
+    }
+  },
+  "paired_date_bootstrap": {
+    "market_maxent_minus_v1_top10_hit": {
+      "difference_baseline_minus_candidate": -0.0029940119760479044,
+      "cluster_dates": 106,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        -0.01428061607813674,
+        0.007414062650258139
+      ],
+      "positive_improvement_bootstrap_share": 0.2684
+    },
+    "v2_matched_minus_v1_top10_hit": {
+      "difference_baseline_minus_candidate": -0.0007485029940119761,
+      "cluster_dates": 106,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        -0.003852080123266564,
+        0.0022582287388832984
+      ],
+      "positive_improvement_bootstrap_share": 0.2392
+    },
+    "v3_context_minus_v1_top10_hit": {
+      "difference_baseline_minus_candidate": 0.0,
+      "cluster_dates": 106,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        -0.003687315634218289,
+        0.003687315634218289
+      ],
+      "positive_improvement_bootstrap_share": 0.4056
+    },
+    "v1_minus_v2_matched_top10_hit": {
+      "difference_baseline_minus_candidate": 0.0007485029940119761,
+      "cluster_dates": 106,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        -0.0022650487373881323,
+        0.003864139246969874
+      ],
+      "positive_improvement_bootstrap_share": 0.5988
+    },
+    "v1_minus_v3_context_top10_hit": {
+      "difference_baseline_minus_candidate": 0.0,
+      "cluster_dates": 106,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        -0.0036712086997444265,
+        0.003719066670059602
+      ],
+      "positive_improvement_bootstrap_share": 0.4316
+    }
+  },
+  "source_data": "analysis/trio_v3_matched_oof/2024_comparable_complete_trio_scores.csv",
+  "no_predictions_retrained": true
+}
