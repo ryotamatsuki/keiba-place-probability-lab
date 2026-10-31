@@ -85,6 +85,31 @@ def raw_result(html: str, provider_id: str) -> pd.DataFrame:
     return x
 
 
+def _parse_umanity_passage(
+    passage: str, turn_direction: str,
+) -> tuple[str | None, str | None]:
+    """Return observed corners and plausible 3F without inventing absent timing.
+
+    Umanity occasionally displays a three-digit elapsed time (e.g. 106.9)
+    after four corners for a distant finisher. It is NOT a 600 m final-3F
+    observation. Preserve the four published corners and record 3F as missing.
+    Do not truncate genuine fifth corner values or infer a synthetic 3F.
+    """
+    times = re.findall(r"(?<![\d.])([2-6]\d\.\d)(?!\d)", passage)
+    ahead = passage[:passage.rfind(times[-1])].strip() if times else passage
+    blocks = re.findall(r"\b\d{1,2}\b", ahead)
+    if len(blocks) > 4:
+        anomalous = re.fullmatch(
+            r"\s*((?:\d{1,2}\s+){4})(\d{3}\.\d)\s*", passage
+        )
+        if anomalous is None:
+            raise ValueError("Alternate passage has >4 corners")
+        blocks = anomalous[1].split()
+        times = []
+    passing = "-".join(blocks) if blocks and turn_direction != "straight" else None
+    return passing, times[-1] if times else None
+
+
 def umanity_raw_result(html: str, race_id: str, race_date: pd.Timestamp) -> pd.DataFrame:
     """Verified alternate result source for Yahoo 500s, using the same raw schema.
 
@@ -122,11 +147,7 @@ def umanity_raw_result(html: str, race_id: str, race_date: pd.Timestamp) -> pd.D
         )
         # Umanity shows passage squares followed by "後3F" in cell 7.
         passage = c[7].get_text(" ", strip=True)
-        times = re.findall(r"(?<![\d.])([2-6]\d\.\d)(?!\d)", passage)
-        ahead = passage[:passage.rfind(times[-1])].strip() if times else passage
-        blocks = re.findall(r"\b\d{1,2}\b", ahead)
-        if len(blocks) > 4:
-            raise ValueError("Alternate passage has >4 corners")
+        passing, last_3f = _parse_umanity_passage(passage, meta["turn_direction"])
         jockey = c[5].find("a")
         trainer = c[10].find("a")
         jockey_name = (
@@ -143,8 +164,8 @@ def umanity_raw_result(html: str, race_id: str, race_date: pd.Timestamp) -> pd.D
             "horse_no": horse_no,
             "race_date": pd.Timestamp(race_date).date().isoformat(),
             "rank": rank,
-            "last_3f": times[-1] if times else None,
-            "passing": "-".join(blocks) if blocks and meta["turn_direction"] != "straight" else None,
+            "last_3f": last_3f,
+            "passing": passing,
             "horse_weight": f"{mass[1]}({mass[2].replace('±', '')})" if mass else None,
             "jockey_name": jockey_name or None,
             "trainer": trainer_name or None,
