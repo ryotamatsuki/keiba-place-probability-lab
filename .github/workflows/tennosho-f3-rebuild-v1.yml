@@ -130,6 +130,27 @@ jobs:
             --config config/tennosho_preoff_20261101.json \
             --output analysis/tennosho_preoff_20261101/prior_f3_features.csv \
             --manifest analysis/tennosho_preoff_20261101/prior_f3_features.manifest.json
+      - name: Independently assert exactly 17 ready prior vectors and strong source hashes
+        run: |
+          python - <<'PY'
+          import hashlib, json, pandas as pd
+          from pathlib import Path
+          prefix=Path('analysis/tennosho_preoff_20261101')
+          data=prefix/'prior_f3_features.csv'
+          meta=json.loads((prefix/'prior_f3_features.manifest.json').read_text())
+          frame=pd.read_csv(data,dtype={'race_id':str,'horse_id':str})
+          assert len(frame)==17 and frame.horse_no.nunique()==17
+          assert frame.race_id.eq('202605041111').all()
+          assert meta['feature_csv_sha256']==hashlib.sha256(data.read_bytes()).hexdigest()
+          assert meta['actual_2026_feed_complete_through']=='2026-10-30'
+          assert meta['history_complete_for_all_entrants'] is True
+          assert len(meta['horse_coverage'])==17
+          assert all(x['expected']==x['actual'] and x['actual']>=3 for x in meta['horse_coverage'])
+          assert meta['last3f_mass_early_elo_coverage']['strength_elo_prior']==17
+          assert len(meta['feature_numeric_prior_only'])==47
+          assert len(meta['feature_categorical'])==4
+          print('PASS: 17 independently verified prior F3 vectors, 47 numeric and 4 categorical')
+          PY
       - name: Publish only source-verified F3 prior features for later timestamped T-10 lock
         shell: bash
         run: |
