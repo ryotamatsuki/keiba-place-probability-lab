@@ -1,0 +1,167 @@
+{
+  "status": "HISTORICAL_MATCHED_800_400_2023_FIT_2024_OOT_DEVELOPMENT",
+  "frozen_F3_bundle_sha256": "f8db9efe4245782165a0732945f5ab50c9c845d52fec25f20150d65e6ab096aa",
+  "folds": [
+    {
+      "eval_year": 2023,
+      "training_max_date": "2022-12-28",
+      "training_races": 14503,
+      "training_rows": 161454,
+      "evaluation_rows": 32051,
+      "xgb_estimators": 800,
+      "catboost_iterations": 400,
+      "market_calibration_latest": "2022-12-28",
+      "market_calibrator": {
+        "intercept": -0.13369511301183643,
+        "slope": 0.8302132352726229
+      },
+      "2025_outcomes_not_used": true
+    },
+    {
+      "eval_year": 2024,
+      "training_max_date": "2023-12-28",
+      "training_races": 17390,
+      "training_rows": 193505,
+      "evaluation_rows": 31225,
+      "xgb_estimators": 800,
+      "catboost_iterations": 400,
+      "market_calibration_latest": "2023-12-28",
+      "market_calibrator": {
+        "intercept": -0.13668272532671347,
+        "slope": 0.8268513170467925
+      },
+      "2025_outcomes_not_used": true
+    }
+  ],
+  "cohort": {
+    "input_full_field": 2697,
+    "after_raw_rank_audit": 2691,
+    "2023_races": 1355,
+    "2024_races": 1336,
+    "cohort_is_full_field": true,
+    "2025_not_used_for_any_oof_model_fit": true
+  },
+  "2023_base_models": {
+    "market_pl": {
+      "joint_logloss": 4.6431836516950895,
+      "joint_brier": 0.9814661048355215,
+      "top10_hit": 0.3505535055350554,
+      "top10_probability": 0.4784638795957576
+    },
+    "market_maxent": {
+      "joint_logloss": 4.588681129144611,
+      "joint_brier": 0.9775150463673657,
+      "top10_hit": 0.3505535055350554,
+      "top10_probability": 0.38887696374742853
+    },
+    "v1": {
+      "joint_logloss": 4.564875145200957,
+      "joint_brier": 0.9768542446095027,
+      "top10_hit": 0.36236162361623614,
+      "top10_probability": 0.37738812909535285
+    }
+  },
+  "2024_scores": {
+    "market_pl": {
+      "joint_logloss": 4.561155131642923,
+      "joint_brier": 0.9781518073182283,
+      "top10_hit": 0.36377245508982037,
+      "top10_probability": 0.48967241600433975
+    },
+    "market_maxent": {
+      "joint_logloss": 4.511338507937051,
+      "joint_brier": 0.974192138123815,
+      "top10_hit": 0.3652694610778443,
+      "top10_probability": 0.3982288749981195
+    },
+    "v1": {
+      "joint_logloss": 4.483654926419768,
+      "joint_brier": 0.9730333495254884,
+      "top10_hit": 0.36826347305389223,
+      "top10_probability": 0.38401809672382226
+    },
+    "v2_matched": {
+      "joint_logloss": 4.483063300811052,
+      "joint_brier": 0.9729738884607062,
+      "top10_hit": 0.36751497005988026,
+      "top10_probability": 0.3746401052528711
+    },
+    "v3_context": {
+      "joint_logloss": 4.482789955405274,
+      "joint_brier": 0.9729686009699872,
+      "top10_hit": 0.36826347305389223,
+      "top10_probability": 0.3753914107032541
+    }
+  },
+  "2024_paired_day_ci": {
+    "market_pl_minus_market_maxent": {
+      "difference_baseline_minus_candidate": 0.049816623705872504,
+      "cluster_dates": 106,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        0.03342379715126192,
+        0.0661632395849099
+      ],
+      "positive_improvement_bootstrap_share": 1.0,
+      "joint_brier_baseline_minus_candidate": 0.003959669194413262
+    },
+    "market_maxent_minus_v1": {
+      "difference_baseline_minus_candidate": 0.027683581517282146,
+      "cluster_dates": 106,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        0.017960938229911516,
+        0.037636589381679186
+      ],
+      "positive_improvement_bootstrap_share": 1.0,
+      "joint_brier_baseline_minus_candidate": 0.0011587885983266322
+    },
+    "v1_minus_v2_matched": {
+      "difference_baseline_minus_candidate": 0.0005916256087150168,
+      "cluster_dates": 106,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        -0.0009552233556583602,
+        0.0020820717076026713
+      ],
+      "positive_improvement_bootstrap_share": 0.7712,
+      "joint_brier_baseline_minus_candidate": 5.946106478216251e-05
+    },
+    "v1_minus_v3_context": {
+      "difference_baseline_minus_candidate": 0.0008649710144934995,
+      "cluster_dates": 106,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        -0.0006116701485699509,
+        0.0022801394630810002
+      ],
+      "positive_improvement_bootstrap_share": 0.886,
+      "joint_brier_baseline_minus_candidate": 6.474855550120395e-05
+    },
+    "v2_matched_minus_v3_context": {
+      "difference_baseline_minus_candidate": 0.0002733454057784827,
+      "cluster_dates": 106,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        -0.00013321794857770877,
+        0.0006762840000930782
+      ],
+      "positive_improvement_bootstrap_share": 0.9036,
+      "joint_brier_baseline_minus_candidate": 5.287490719041443e-06
+    }
+  },
+  "source_sha": {
+    "jra_flat_warmup_v1.parquet": "9826b5efdd2825f384f125a41602bb3948506b852b38b6f2186709d25d51532e",
+    "jra_flat_train_v1.parquet": "1fc9702838982a574d09f03d05a0c95aa4ece319f1090f37af6772c1a9f8bbb7",
+    "jra_flat_validation_v1.parquet": "aa7263518713e62af2da6d1b6f712e5b4d3c62200365f47974a903291e7e41ff",
+    "keiba_results.csv": "fb9345273b21a7c23d41260dc77e45134a1bc2fe756899f3416b24ac0dd51de3",
+    "keiba_races.csv": "b9ba4423efbaec641f9285ff01d79895c7b3821c2146522a397127245c81fadb"
+  },
+  "no_frozen_model_change": true,
+  "2025_training_labels_used": false,
+  "2024_had_prior_model_development_and_is_not_new_untouched_confirmation": true,
+  "historical_final_win_odds_not_archived_T10": true,
+  "actual_trio_tote_odds_not_in_dataset": true,
+  "release_decision": "RESEARCH_SHADOW_ONLY",
+  "python": "3.11.17"
+}

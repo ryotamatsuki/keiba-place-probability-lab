@@ -1,0 +1,50 @@
+{
+  "training_year": 2023,
+  "f3_oof": "historical matched 800+400",
+  "v2_matched": {
+    "coefficients": [
+      -0.04255791844545586,
+      0.026180522934451993,
+      0.028587341531046858
+    ],
+    "feature_names": [
+      "pair_strength",
+      "pace_similarity",
+      "draw_similarity"
+    ],
+    "training_races": 1355,
+    "training_joint_loss_regularized": 4.56433899406186,
+    "ridge": 0.1,
+    "converged": true
+  },
+  "v3_context": {
+    "coefficients": [
+      -0.05709578658561647,
+      0.02441661021575512,
+      0.028160517019195298,
+      0.02743940609964761,
+      0.0016114773197823803,
+      0.01481233024114689,
+      -0.021997908900588958,
+      -0.01116772356460033,
+      0.005945785496113471
+    ],
+    "feature_names": [
+      "pair_strength",
+      "pace_similarity",
+      "draw_similarity",
+      "pair_strength_x_front_count",
+      "pace_similarity_x_front_pressure",
+      "pace_similarity_x_turf",
+      "pace_similarity_x_long",
+      "draw_similarity_x_short",
+      "draw_similarity_x_front_pressure"
+    ],
+    "training_races": 1355,
+    "training_joint_loss_regularized": 4.564214645749626,
+    "ridge": 0.1,
+    "converged": true
+  },
+  "fitted_using_2024_or_2025_labels": false,
+  "reference_bundle_sha256": "f8db9efe4245782165a0732945f5ab50c9c845d52fec25f20150d65e6ab096aa"
+}
