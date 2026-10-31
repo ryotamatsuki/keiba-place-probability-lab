@@ -131,6 +131,76 @@ def _agent_key(value: str) -> str:
     ).casefold()
 
 
+# Source-confirmed 2026 Sapporo rides for the one Umanity jockey hyperlink
+# published without a jockey_id. This evidence is NOT inferred from spelling.
+# Identity: JRA foreign-jockey bulletin (2026-08-02).
+# Same-race rider/horse pairs: Keibalab 2026 S. Narredu race history.
+_UNLINKED_JOCKEY_RIDES = {
+    "Ｓナレ": {
+        "full_name": "Ｓ．ナレドゥ",
+        "identity_url": "https://www.jra.go.jp/news/202608/080202.html",
+        "races_url": "https://www.keibalab.jp/db/jockey/05694/history.html?year=2026",
+        "published_rides": {
+            ("2026-08-22", 3, 9, "モンロワイヤル"),
+            ("2026-08-22", 6, 5, "フィエールシャンテ"),
+            ("2026-08-22", 10, 13, "フードマン"),
+            ("2026-08-22", 11, 2, "ヴァイザーバルコ"),
+            ("2026-08-23", 6, 3, "クイーンズワーフ"),
+            ("2026-08-23", 7, 6, "トライゴーニック"),
+            ("2026-08-23", 10, 10, "カスバートテソーロ"),
+            ("2026-08-23", 11, 9, "イツモニコニコ"),
+            ("2026-08-23", 12, 7, "ベネスピラ"),
+        },
+    },
+}
+
+
+def _verify_unlinked_umanity_jockey_rides(
+    alias: str, rows: pd.DataFrame, original: pd.DataFrame,
+) -> dict:
+    """Match every observed ride to independently published dated results.
+
+    This is a narrow, auditable exception for a genuine blank profile link;
+    no general-purpose nickname inference or empty-ID acceptance is allowed.
+    """
+    evidence = _UNLINKED_JOCKEY_RIDES[alias]
+    seen = set()
+    for row in rows.itertuples(index=False):
+        rid, hid = str(row.race_id), str(row.horse_id)
+        prior = original.loc[
+            original.race_id.astype(str).eq(rid)
+            & original.horse_id.astype(str).eq(hid)
+        ]
+        if len(prior) != 1:
+            raise ValueError(f"Unlinked jockey historic runner identity missing: {rid}/{hid}")
+        date = pd.Timestamp(row.race_date).date().isoformat()
+        if pd.Timestamp(date) > ALLOWED_LATEST_SOURCE or rid == TARGET:
+            raise ValueError("Unlinked jockey observation outside prior cutoff")
+        ride = (
+            date, int(rid[-2:]), int(row.horse_no),
+            str(prior.horse_name.iloc[0]),
+        )
+        if ride not in evidence["published_rides"] or ride in seen:
+            raise ValueError(f"Unlinked jockey published ride mismatch: {ride!r}")
+        seen.add(ride)
+    if len(seen) < 2 or {x[0] for x in seen} != {"2026-08-22", "2026-08-23"}:
+        raise ValueError("Insufficient dated independently published jockey ride evidence")
+    if not _agent_key(evidence["full_name"]).startswith(_agent_key(alias)):
+        raise ValueError("Unlinked jockey source full name contradicts race alias")
+    return {
+        "abbreviation": alias,
+        "verified_full_name": evidence["full_name"],
+        "verification_method": "two_published_sources_and_exact_dated_horse_ride_matches",
+        "published_identity_url": evidence["identity_url"],
+        "published_ride_list_url": evidence["races_url"],
+        "published_ride_count": len(evidence["published_rides"]),
+        "matched_historical_ride_count": len(seen),
+        "matched_rides": sorted(seen),
+        "profile_id": None,
+        "profile_link_unusable": True,
+    }
+
+
 def _verify_umanity_jockey_profiles(
     original: pd.DataFrame, extra: pd.DataFrame,
     raw_manifest: dict, cache: Path,
@@ -175,6 +245,16 @@ def _verify_umanity_jockey_profiles(
         ].sort_values(["race_date", "race_id", "horse_no"])
         if rows.empty:
             raise ValueError(f"No prior race evidence for unknown jockey {alias}")
+        if alias in _UNLINKED_JOCKEY_RIDES:
+            audited = _verify_unlinked_umanity_jockey_rides(alias, rows, original)
+            verified[alias] = audited["verified_full_name"]
+            audit.append(audited)
+            print(json.dumps({
+                "verified_unlinked_jockey_alias": alias,
+                "full": verified[alias],
+                "dated_historical_rides": audited["matched_historical_ride_count"],
+            }, ensure_ascii=False), flush=True)
+            continue
         samples = [rows.iloc[0]]
         if len(rows) > 1 and str(rows.iloc[-1].race_id) != str(rows.iloc[0].race_id):
             samples.append(rows.iloc[-1])
