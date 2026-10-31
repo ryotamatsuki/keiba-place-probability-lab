@@ -52,7 +52,8 @@ jobs:
       - name: Fit 2023-only proxy calibration and score untouched 2024 actual trios
         run: |
           RESULT=$(find /tmp/kaggle_for_trio -name 'keiba_results.csv' -print -quit)
-          test -n "$RESULT"
+          RACES=$(find /tmp/kaggle_for_trio -name 'keiba_races.csv' -print -quit)
+          test -n "$RESULT" && test -n "$RACES"
           test -s analysis/input_learning_v1/A_outer_oof_predictions.csv
           python -u scripts/research_trio_f3_v1.py             --oof-csv analysis/input_learning_v1/A_outer_oof_predictions.csv             --historical-dir /tmp/stage36/data/historical_processed/stage36_freeze_v1             --results-csv "$RESULT"             --preview-csv analysis/tennosho_preoff_20261101/previews/f3_preview_20261031T173406.csv             --bundle-manifest models/tennosho_f3_20261101/manifest.json             --output-dir analysis/trio_f3_v1
       - name: Commit only aggregate historical scores and all-680 preview probabilities
