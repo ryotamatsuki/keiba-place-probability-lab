@@ -75,3 +75,41 @@ def test_asof_feature_rejects_duplicate_starters():
     z=synthetic()
     with pytest.raises(ValueError,match="Duplicate starter"):
         engineer_v5_asof(pd.concat([z,z.iloc[[0]]],ignore_index=True))
+
+
+def test_preregistered_full_field_uses_ineligible_horse_in_field_pace():
+    """A 2-start novice must affect pace even if the F3 eligible panel drops it."""
+    full=synthetic()
+    evaluated_day="2023-01-15"
+    # Before filtering, 4 physical horses; one "ineligible" horse is front.
+    full.loc[full.horse_no.eq(4),"history_early_pct3"]=.05
+    subset=full.loc[~full.horse_no.eq(4)].copy()
+    target=set(full.loc[full.race_date.eq(evaluated_day),"race_id"])
+    with pytest.raises(ValueError,match="ALL actual starters"):
+        engineer_v5_asof(subset,validate_races=target)
+    correct=engineer_v5_asof(full,validate_races=target)
+    after=correct.loc[correct.race_id.isin(target)]
+    assert after.v5_front_count.eq(2).all()
+    # Merged eligible runners must retain the complete-field composition.
+    selected=subset.loc[subset.race_id.isin(target),["race_id","horse_id","horse_no"]]
+    joined=selected.merge(correct,on=["race_id","horse_id","horse_no"],validate="one_to_one")
+    assert len(joined)==3
+    assert joined.v5_front_count.eq(2).all()
+
+
+def test_historical_out_of_scope_incomplete_context_is_allowed():
+    """Never discard prior history just because older races have no full-market scope."""
+    full=synthetic()
+    old_race="test-2023-01-01"
+    full=full.loc[~(full.race_id.eq(old_race) & full.horse_no.eq(4))].copy()
+    target={"test-2023-01-15"}
+    checked=engineer_v5_asof(full,validate_races=target)
+    assert len(checked.loc[checked.race_id.isin(target)])==4
+    with pytest.raises(ValueError,match="ALL actual starters"):
+        engineer_v5_asof(full)
+
+
+def test_missing_target_race_fails_closed():
+    x=synthetic()
+    with pytest.raises(ValueError,match="Missing target races"):
+        engineer_v5_asof(x,validate_races={"not-recorded"})
