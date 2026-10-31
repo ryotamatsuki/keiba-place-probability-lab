@@ -1,9 +1,1400 @@
 {
-  "status": "INCOMPLETE_RAW_SOURCE_NOT_F3_READY",
-  "attempted": 231,
-  "failures": {
-    "202607020301": "Alternate passage has >4 corners"
-  },
-  "successful": 230,
-  "finished_at_utc": "2026-10-31T05:42:12.328301+00:00"
+  "status": "COMPLETE_RAW_PRIOR_RESULT_SOURCE",
+  "captured_at_utc": "2026-10-31T05:55:00.524234+00:00",
+  "cutoff": "2026-10-30",
+  "race_count": 231,
+  "rows": 3187,
+  "source_csv_sha256": "5b9fd52c03c0bf8f4bcd25d309759368b1250e1801ae843076b9be7c1311bdfe",
+  "history_input_sha256": "08f423520014830f53195ea3b31440cad478419e3c9e861e5da9c625c29a724f",
+  "shard_index": 6,
+  "shard_count": 12,
+  "source_records": [
+    {
+      "race_id": "202601010107",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026072501010107",
+      "source_sha256": "2eed008723c4a3bc8212a1eb06df93dc0589679f9ced709e38ce2918d2846951",
+      "captured_at_utc": "2026-10-31T05:51:10.721495+00:00"
+    },
+    {
+      "race_id": "202601010207",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026072601010207",
+      "source_sha256": "06ee4e98c3704d35be2e23c0a3c05e1b4c327a2fa12916c2f6e73d32d65a115a",
+      "captured_at_utc": "2026-10-31T05:51:13.624766+00:00"
+    },
+    {
+      "race_id": "202601010307",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026080101010307",
+      "source_sha256": "76ae6d8ef9c9fb478dde808f2a43a2da9908c152702e0cc382304e8ade54f20c",
+      "captured_at_utc": "2026-10-31T05:51:13.001174+00:00"
+    },
+    {
+      "race_id": "202601010407",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026080201010407",
+      "source_sha256": "c35b2a345ff704b8fc64b5b44d33eb4386b270b551bf1b40cd1ca4b8a369ab5d",
+      "captured_at_utc": "2026-10-31T05:51:14.563038+00:00"
+    },
+    {
+      "race_id": "202601010507",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026080801010507",
+      "source_sha256": "78bca9afb92d9427556f4bf20cc7a5941ebbeef18aad65ad65e4f5b8b2de277d",
+      "captured_at_utc": "2026-10-31T05:51:11.620561+00:00"
+    },
+    {
+      "race_id": "202601010607",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026080901010607",
+      "source_sha256": "fc486d238c4d644691669ab63cd93eda313046fbd01bf70125aa6d9b87ca0e4a",
+      "captured_at_utc": "2026-10-31T05:51:15.591040+00:00"
+    },
+    {
+      "race_id": "202601010707",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026081501010707",
+      "source_sha256": "424477d66af3d7f828d67fb4ab233d2ceadf6465a4c11710f1639a637f8c0007",
+      "captured_at_utc": "2026-10-31T05:51:16.191022+00:00"
+    },
+    {
+      "race_id": "202601010807",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026081601010807",
+      "source_sha256": "7019965c0b410f5987c121a620a9c251c37f4bcd9cfafbb038557088d9ac43a5",
+      "captured_at_utc": "2026-10-31T05:51:17.211301+00:00"
+    },
+    {
+      "race_id": "202601020107",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026082201020107",
+      "source_sha256": "38dc926d2bf11e955f6f6e4b764188558e0b1e81f195eeb01b64f9e846cce5ee",
+      "captured_at_utc": "2026-10-31T05:51:18.157043+00:00"
+    },
+    {
+      "race_id": "202601020207",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026082301020207",
+      "source_sha256": "e41b9fafdecf78fd993533cf16aea30477938db9b0c6bc879469716c034832d9",
+      "captured_at_utc": "2026-10-31T05:51:19.210371+00:00"
+    },
+    {
+      "race_id": "202601020307",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026082901020307",
+      "source_sha256": "6dd86cf07c0d525059b8fab14a997bfc78740e659cc48a42764475718960ab6c",
+      "captured_at_utc": "2026-10-31T05:51:20.201347+00:00"
+    },
+    {
+      "race_id": "202601020407",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026083001020407",
+      "source_sha256": "2b28d48fc47271426c157ce640404735485ced83d2ae7316da187a3371e3812f",
+      "captured_at_utc": "2026-10-31T05:51:21.187959+00:00"
+    },
+    {
+      "race_id": "202601020507",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026090501020507",
+      "source_sha256": "dbfadac7d3d8ffba30e35cf7953088566e99af710f647e880c50db0042b25769",
+      "captured_at_utc": "2026-10-31T05:51:22.184333+00:00"
+    },
+    {
+      "race_id": "202601020607",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026090601020607",
+      "source_sha256": "fc93ea97fb88441631ea4b7dbeacd55e6aa978916472d5893bbd116e349060c9",
+      "captured_at_utc": "2026-10-31T05:51:23.207568+00:00"
+    },
+    {
+      "race_id": "202602010107",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026061302010107",
+      "source_sha256": "163421122b959ca11a01ec3d1e237222b94435cb2d60acdfe4a301b5fb1f2b97",
+      "captured_at_utc": "2026-10-31T05:51:24.158858+00:00"
+    },
+    {
+      "race_id": "202602010207",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026061402010207",
+      "source_sha256": "9f32ca70930eeb4ffaa45628f1d7a1f0dd2d8e40028facd840077add32fc61c7",
+      "captured_at_utc": "2026-10-31T05:51:25.184963+00:00"
+    },
+    {
+      "race_id": "202602010307",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026062002010307",
+      "source_sha256": "97630fb1ebdc98287a1c4dd17b25acdd972b82a7e42c7e419808ce1173284e0c",
+      "captured_at_utc": "2026-10-31T05:51:26.212265+00:00"
+    },
+    {
+      "race_id": "202602010407",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026062102010407",
+      "source_sha256": "00f713732e51f4927f1726bd6de8ca12937ef4dadefde299f18420af48f0af66",
+      "captured_at_utc": "2026-10-31T05:51:27.205237+00:00"
+    },
+    {
+      "race_id": "202602010507",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026062702010507",
+      "source_sha256": "783a18df233fdc0c507bb92f0838dcebeca1a7d217a4baa39c0eee128286b36d",
+      "captured_at_utc": "2026-10-31T05:51:28.182389+00:00"
+    },
+    {
+      "race_id": "202602010607",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026062802010607",
+      "source_sha256": "3d1a47e28748b977542652bc42b5cfb93d2c74be31a23b21aa9309dbdee21158",
+      "captured_at_utc": "2026-10-31T05:51:29.179936+00:00"
+    },
+    {
+      "race_id": "202602010707",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026070402010707",
+      "source_sha256": "b73611cb09f4ae1191676e389a2a6c317e8e80d808e4ed199e1a3b7420925f29",
+      "captured_at_utc": "2026-10-31T05:51:30.223274+00:00"
+    },
+    {
+      "race_id": "202602010807",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026070502010807",
+      "source_sha256": "5fa09ed0dad4592ba7ba6b5cd50feb5053eb82adb14e0e2646cb4e70b1e11f82",
+      "captured_at_utc": "2026-10-31T05:51:31.184399+00:00"
+    },
+    {
+      "race_id": "202602010907",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026071102010907",
+      "source_sha256": "15b7fd0136346a28f0a4215b8fcb6a97dc0defa4c1ffcfe01140bd9a80ac985f",
+      "captured_at_utc": "2026-10-31T05:51:32.202409+00:00"
+    },
+    {
+      "race_id": "202602011007",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026071202011007",
+      "source_sha256": "1df12c5502377ec9a2b1b8c98508ca987ee48260726c58b693e491f989d124b7",
+      "captured_at_utc": "2026-10-31T05:51:33.168105+00:00"
+    },
+    {
+      "race_id": "202602011107",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026071802011107",
+      "source_sha256": "29a4993a5d61ff6a131a6ad045bf7014c5a56b88c9835d62cc81b4409b7b61ff",
+      "captured_at_utc": "2026-10-31T05:51:34.195632+00:00"
+    },
+    {
+      "race_id": "202602011207",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026071902011207",
+      "source_sha256": "6ee59c3f3e7a1f651ebdbaed10c0ac2728782b6286ebfd1742f737422f427acf",
+      "captured_at_utc": "2026-10-31T05:51:35.189242+00:00"
+    },
+    {
+      "race_id": "202603010107",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026041103010107",
+      "source_sha256": "c1935fab84d4d929560201f70866f90c09bb5b0315fa790bf90775c1442cc421",
+      "captured_at_utc": "2026-10-31T05:51:36.213701+00:00"
+    },
+    {
+      "race_id": "202603010207",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026041203010207",
+      "source_sha256": "a097348d755f1e0b6bebd6decac1ea5ef971bec785df7d795426a3359f433a54",
+      "captured_at_utc": "2026-10-31T05:51:37.247286+00:00"
+    },
+    {
+      "race_id": "202603010307",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026041803010307",
+      "source_sha256": "8390a88fabf3d79a462b9f551b7397b7a0e7df08658110e9dbe35ec72ee958b5",
+      "captured_at_utc": "2026-10-31T05:51:38.235615+00:00"
+    },
+    {
+      "race_id": "202603010407",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026041903010407",
+      "source_sha256": "016cc715f10f60621587522140b68c3b3e0000dade189ad4af93d9012bc3af5b",
+      "captured_at_utc": "2026-10-31T05:51:39.179257+00:00"
+    },
+    {
+      "race_id": "202603010507",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026042503010507",
+      "source_sha256": "c73eb88c00e898062a0d3ad635903df442fb7934043e3644c3e8bf799ed8f261",
+      "captured_at_utc": "2026-10-31T05:51:40.237162+00:00"
+    },
+    {
+      "race_id": "202603010607",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026042603010607",
+      "source_sha256": "c0683e53dcbfc4fc4d694b7965d47d960699bc67c0b6d0994ee8f9039ed70008",
+      "captured_at_utc": "2026-10-31T05:51:41.217335+00:00"
+    },
+    {
+      "race_id": "202603020109",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026062703020109",
+      "source_sha256": "bc0e5cc414f51fdb30398f471db34674d9eea0577c4c6b518c6fae02cf25d444",
+      "captured_at_utc": "2026-10-31T05:51:42.225444+00:00"
+    },
+    {
+      "race_id": "202603020210",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026062803020210",
+      "source_sha256": "e3925f80c33b8a1906962256c195586d8413e6ea21f264da8180c611c6a6ac7c",
+      "captured_at_utc": "2026-10-31T05:51:43.206750+00:00"
+    },
+    {
+      "race_id": "202603020310",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026070403020310",
+      "source_sha256": "dcdc104ad50e34f54cb32f044c97d5d49eb0fc707d33086fb58a2908d8638655",
+      "captured_at_utc": "2026-10-31T05:51:44.190323+00:00"
+    },
+    {
+      "race_id": "202603020410",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026070503020410",
+      "source_sha256": "076d34e38d2ecc42ece8744f957418cc7cf8203760d90c426b3d543f4abca594",
+      "captured_at_utc": "2026-10-31T05:51:45.210861+00:00"
+    },
+    {
+      "race_id": "202603020511",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026071103020511",
+      "source_sha256": "433d2ae32281751230a1cbfd1e2d3f6d19efe7058c9318343d455b3616d1454f",
+      "captured_at_utc": "2026-10-31T05:51:46.197474+00:00"
+    },
+    {
+      "race_id": "202603020612",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026071203020612",
+      "source_sha256": "0f4a050ef68d52a1d391e26c21cd58cc7ca0866fdd89c8e3406afa775ea2fda9",
+      "captured_at_utc": "2026-10-31T05:51:47.243567+00:00"
+    },
+    {
+      "race_id": "202603020712",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026071803020712",
+      "source_sha256": "95a59d3e179f61b5e250a81a2a6fdab27f957a9379af16c04ab08129777c8c91",
+      "captured_at_utc": "2026-10-31T05:51:48.223010+00:00"
+    },
+    {
+      "race_id": "202603020812",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026071903020812",
+      "source_sha256": "82de8525b13822a3e82e3d3519d564174db94741c82f18c1ba2a66065363e176",
+      "captured_at_utc": "2026-10-31T05:51:49.265151+00:00"
+    },
+    {
+      "race_id": "202604010202",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026050304010202",
+      "source_sha256": "faca927ffb6934bf9e75273634011f62747dc21de0760e320a2890cb98fd3937",
+      "captured_at_utc": "2026-10-31T05:51:50.251212+00:00"
+    },
+    {
+      "race_id": "202604010305",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026050904010305",
+      "source_sha256": "fdefda1f173cb494e7281b14286e50c3c21621bb2afdde55b41f6992470dc66c",
+      "captured_at_utc": "2026-10-31T05:51:51.228378+00:00"
+    },
+    {
+      "race_id": "202604010406",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026051004010406",
+      "source_sha256": "82d2a06d74f475dda4993498c81c0441fe3115fc80cedeac89a792e08825a196",
+      "captured_at_utc": "2026-10-31T05:51:52.302898+00:00"
+    },
+    {
+      "race_id": "202604010506",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026051604010506",
+      "source_sha256": "b4771e52d6c5a7efda7cf9e99705d538ae023bc214bcbc371632f5264f979488",
+      "captured_at_utc": "2026-10-31T05:51:53.242304+00:00"
+    },
+    {
+      "race_id": "202604010608",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026051704010608",
+      "source_sha256": "b04bcf3f7ab59f0a6fda1deedddf2690c5dd1086f6794e9d64348458e7e4523b",
+      "captured_at_utc": "2026-10-31T05:51:54.215150+00:00"
+    },
+    {
+      "race_id": "202604010710",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026052304010710",
+      "source_sha256": "5a070bf35819423c698f3ff1618f1137fd8f7aaef4f33ffad29e9b53176ec154",
+      "captured_at_utc": "2026-10-31T05:51:55.193950+00:00"
+    },
+    {
+      "race_id": "202604010811",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026052404010811",
+      "source_sha256": "99a9b8931e33a7afea5b675b666ec8b895f5f18871c5d55e1862514f767b971c",
+      "captured_at_utc": "2026-10-31T05:51:56.245542+00:00"
+    },
+    {
+      "race_id": "202604020112",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026072504020112",
+      "source_sha256": "57f175084d4cdbb7dd579df262506730a0bd4ab43de63df3d76d4b0bdeb79b23",
+      "captured_at_utc": "2026-10-31T05:51:57.224345+00:00"
+    },
+    {
+      "race_id": "202604020301",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026080104020301",
+      "source_sha256": "dd2371c4a15683fca1aaf4c199f0f69e4c128861d4405889afae7969d1a0e94f",
+      "captured_at_utc": "2026-10-31T05:51:58.232369+00:00"
+    },
+    {
+      "race_id": "202604020401",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026080204020401",
+      "source_sha256": "3cae4d30237cc46aabc1416a7a31ca6839efb2344866852ff86d12088777b5c4",
+      "captured_at_utc": "2026-10-31T05:51:59.187717+00:00"
+    },
+    {
+      "race_id": "202604020501",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026080804020501",
+      "source_sha256": "fa0e86c33bd9b61c7eb276ffe76c97f3b90018a0b3550e3f9343afe14761c8a2",
+      "captured_at_utc": "2026-10-31T05:52:00.244597+00:00"
+    },
+    {
+      "race_id": "202604020601",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026080904020601",
+      "source_sha256": "f73ab2f098dc55b4fb416f0c145f4e35a235d4c3e3976f5c59d73ed7803f8d3d",
+      "captured_at_utc": "2026-10-31T05:52:01.251049+00:00"
+    },
+    {
+      "race_id": "202604020701",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026081504020701",
+      "source_sha256": "42d28fec4d948b2c8742c957b28771cbd9adc8ccd2329571bd309a66d5a5c788",
+      "captured_at_utc": "2026-10-31T05:52:02.192285+00:00"
+    },
+    {
+      "race_id": "202604020802",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026081604020802",
+      "source_sha256": "a4ce0e5b8432a329f46ee5633cde3736be2b43c337770fcfe48664f9b90a694f",
+      "captured_at_utc": "2026-10-31T05:52:03.273946+00:00"
+    },
+    {
+      "race_id": "202604030103",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026082204030103",
+      "source_sha256": "d33d2d118d0bd19af90d568128eedd54149df5d449ee8a0db69035dbbe2316ee",
+      "captured_at_utc": "2026-10-31T05:52:04.205288+00:00"
+    },
+    {
+      "race_id": "202604030203",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026082304030203",
+      "source_sha256": "ed361cf139c6acd74cec21457fb7ce2b30acd42e39cb979851c8ca6ef15644ac",
+      "captured_at_utc": "2026-10-31T05:52:05.203268+00:00"
+    },
+    {
+      "race_id": "202604030304",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026082904030304",
+      "source_sha256": "9ef9b486bba89caf6ed71c728d826ee313d005eca003888325b13f75de087867",
+      "captured_at_utc": "2026-10-31T05:52:06.242812+00:00"
+    },
+    {
+      "race_id": "202604030405",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026083004030405",
+      "source_sha256": "848b41f681cd508aee60a364a41c03993cf80dfc46e9578f616ecebae962d852",
+      "captured_at_utc": "2026-10-31T05:52:07.244289+00:00"
+    },
+    {
+      "race_id": "202604040105",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026101704040105",
+      "source_sha256": "c06612052082082879c77684a7e2922f280996718f679c51988e234289b683ee",
+      "captured_at_utc": "2026-10-31T05:52:08.219854+00:00"
+    },
+    {
+      "race_id": "202604040205",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026101804040205",
+      "source_sha256": "abf13f29a0f34372eee29ccda7033f2a569b21be0d5e78c632be410cb3b0152b",
+      "captured_at_utc": "2026-10-31T05:52:09.200454+00:00"
+    },
+    {
+      "race_id": "202604040305",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026102404040305",
+      "source_sha256": "0adb71101b8da73f09adef1a0db5278ac287b5fc1fc97cb46467485aae925358",
+      "captured_at_utc": "2026-10-31T05:52:10.207707+00:00"
+    },
+    {
+      "race_id": "202604040405",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026102504040405",
+      "source_sha256": "1835a0010d4734c205c47294acaf6cffebc3c17aa1cd36b8731fe90c31adc2c7",
+      "captured_at_utc": "2026-10-31T05:52:11.248968+00:00"
+    },
+    {
+      "race_id": "202605010105",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026013105010105",
+      "source_sha256": "84a7127517e5b123a0130d4ed038020cb4d150c379224cab406b3ffbc10ca8a6",
+      "captured_at_utc": "2026-10-31T05:52:12.248903+00:00"
+    },
+    {
+      "race_id": "202605010205",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026020105010205",
+      "source_sha256": "9eaead5440d92701bf35660af17eba4082575e9f234671465408daa4d32f00fa",
+      "captured_at_utc": "2026-10-31T05:52:13.234826+00:00"
+    },
+    {
+      "race_id": "202605010305",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026020705010305",
+      "source_sha256": "ae1d8ff43ba7989e088cec310d78e4961b13898e31bbd1a308112d7eef01d9db",
+      "captured_at_utc": "2026-10-31T05:52:14.222693+00:00"
+    },
+    {
+      "race_id": "202605010410",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026021005010410",
+      "source_sha256": "ca465ab8e5c6a3b4539107fb9dc676d2abbf99a79833a272c5623d3b0d40806c",
+      "captured_at_utc": "2026-10-31T05:52:15.216237+00:00"
+    },
+    {
+      "race_id": "202605010510",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026021405010510",
+      "source_sha256": "d927ba4512578364bc506f0d1f00e7e0e91155e687e9cfa90b95fbb7c2124d75",
+      "captured_at_utc": "2026-10-31T05:52:16.232685+00:00"
+    },
+    {
+      "race_id": "202605010610",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026021505010610",
+      "source_sha256": "a7386f9d0fc3e554e4e8e3500b9470ea36c6e04cad27446b08d1252511c029f7",
+      "captured_at_utc": "2026-10-31T05:52:17.242370+00:00"
+    },
+    {
+      "race_id": "202605010710",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026022105010710",
+      "source_sha256": "5b7f58bca0225cd457c8724c3e3d8428c232a50c45b9470fd88995f47b2f3018",
+      "captured_at_utc": "2026-10-31T05:52:18.262248+00:00"
+    },
+    {
+      "race_id": "202605010810",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026022205010810",
+      "source_sha256": "2bda0031213bd6feb681a2bee662259b951698c20d5a728e3b96007e6a9e3ac1",
+      "captured_at_utc": "2026-10-31T05:52:19.253250+00:00"
+    },
+    {
+      "race_id": "202605020110",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026042505020110",
+      "source_sha256": "f3c59f4d63f83502afced181f5676fd0f67b8ada6ef82bf99ffbef765f685b29",
+      "captured_at_utc": "2026-10-31T05:52:20.232220+00:00"
+    },
+    {
+      "race_id": "202605020210",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026042605020210",
+      "source_sha256": "ca9c22f508136227c6afebab33bb1c174de5a9506c847a41de4484cb6c43562f",
+      "captured_at_utc": "2026-10-31T05:52:21.279255+00:00"
+    },
+    {
+      "race_id": "202605020310",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026050205020310",
+      "source_sha256": "2606704813e35c76da64541b3835732b36fd6df413e2f16b18c73f7973387625",
+      "captured_at_utc": "2026-10-31T05:52:22.217833+00:00"
+    },
+    {
+      "race_id": "202605020410",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026050305020410",
+      "source_sha256": "d752602cec2340e6ab545452f21659ed7db26bbfce9f0ebfc04abc6aa4ab0789",
+      "captured_at_utc": "2026-10-31T05:52:23.265240+00:00"
+    },
+    {
+      "race_id": "202605020510",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026050905020510",
+      "source_sha256": "e5fa401b19d2f155fb643f59d7d16ac506352d796fc3aa991cee82fa32c04670",
+      "captured_at_utc": "2026-10-31T05:52:24.275808+00:00"
+    },
+    {
+      "race_id": "202605020610",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026051005020610",
+      "source_sha256": "076d66cc609a3e850e7d1e49b4881e1b7cd56e3a5d475b8056a4b7d4cfd0015c",
+      "captured_at_utc": "2026-10-31T05:52:25.205983+00:00"
+    },
+    {
+      "race_id": "202605020710",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026051605020710",
+      "source_sha256": "08c9b4d4a3969bca1a54ebac561d5606b2f0ced79939ba013ede69afddc54143",
+      "captured_at_utc": "2026-10-31T05:52:26.256433+00:00"
+    },
+    {
+      "race_id": "202605020810",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026051705020810",
+      "source_sha256": "c288c920ebcaf08dc083956d6c5824e074f64a20edbcfbe6a2018193923b3ab8",
+      "captured_at_utc": "2026-10-31T05:52:27.322066+00:00"
+    },
+    {
+      "race_id": "202605020910",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026052305020910",
+      "source_sha256": "c37042acde27e95d09871859325c57056eee31702d45f6cf074808af9879b2e3",
+      "captured_at_utc": "2026-10-31T05:52:28.210021+00:00"
+    },
+    {
+      "race_id": "202605021010",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026052405021010",
+      "source_sha256": "6573b086f2a305ee8695d48fc8f0feb02285fef4cc2a99093f31f6b6abd07735",
+      "captured_at_utc": "2026-10-31T05:52:29.208042+00:00"
+    },
+    {
+      "race_id": "202605021111",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026053005021111",
+      "source_sha256": "2e310bac6dc32d5254cd82799e0adb30efecd74d5c3b45078239f5b8e0b1d3ae",
+      "captured_at_utc": "2026-10-31T05:52:30.242596+00:00"
+    },
+    {
+      "race_id": "202605021211",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026053105021211",
+      "source_sha256": "a899c164dcef2f9f650f53ff458a1c887e74abb3343c91f9a4f813d78fde4567",
+      "captured_at_utc": "2026-10-31T05:52:31.243060+00:00"
+    },
+    {
+      "race_id": "202605030112",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026060605030112",
+      "source_sha256": "32c8aeae7b12f3bcfad461645e05b6e071891440505e2a3799321c6a6ccebd10",
+      "captured_at_utc": "2026-10-31T05:52:32.248696+00:00"
+    },
+    {
+      "race_id": "202605030212",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026060705030212",
+      "source_sha256": "fb912dd94c911d2a65730c5170f4a86057fd2e948d01b9b0fad8561867c84020",
+      "captured_at_utc": "2026-10-31T05:52:33.232076+00:00"
+    },
+    {
+      "race_id": "202605030401",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026061405030401",
+      "source_sha256": "2bc638b856f06b4232af8847a0c4240e753b512d169fa3d592c11747f8fdd430",
+      "captured_at_utc": "2026-10-31T05:52:34.234879+00:00"
+    },
+    {
+      "race_id": "202605030501",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026062005030501",
+      "source_sha256": "04e335d34424185a719f364e63ff767862298c6b0fcf1bf4d49c972155c20f45",
+      "captured_at_utc": "2026-10-31T05:52:35.265350+00:00"
+    },
+    {
+      "race_id": "202605030602",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026062105030602",
+      "source_sha256": "a6e59ded5ba2e68d78b8ca4c74cb7b4a6b5327e6b4595c4c5ce0ff340015ec6a",
+      "captured_at_utc": "2026-10-31T05:52:36.269745+00:00"
+    },
+    {
+      "race_id": "202605040102",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026100305040102",
+      "source_sha256": "ae26a2add800acdb3422ca789184254b924f1664d9335e5b088a4a63047caa61",
+      "captured_at_utc": "2026-10-31T05:52:37.234343+00:00"
+    },
+    {
+      "race_id": "202605040203",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026100405040203",
+      "source_sha256": "5d35e248a58ab7cfee0ec22135e3ea99ef00fdd7db748bce0f099afa847b9543",
+      "captured_at_utc": "2026-10-31T05:52:38.237757+00:00"
+    },
+    {
+      "race_id": "202605040304",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026101005040304",
+      "source_sha256": "73e15ad095da5bd86724130740f39a09aec944ae1cdbad60f20c887fe7b9a4dd",
+      "captured_at_utc": "2026-10-31T05:52:39.252413+00:00"
+    },
+    {
+      "race_id": "202605040404",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026101105040404",
+      "source_sha256": "10210a828ad74db521ab28d0f721c660ee02ab6e52710ec09e932d3966370ba9",
+      "captured_at_utc": "2026-10-31T05:52:40.204580+00:00"
+    },
+    {
+      "race_id": "202605040505",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026101205040505",
+      "source_sha256": "1e3f02d4964185c28711eeae23a04076e194a10cfc02d2768bbf1d9a1792120c",
+      "captured_at_utc": "2026-10-31T05:52:41.177265+00:00"
+    },
+    {
+      "race_id": "202605040605",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026101705040605",
+      "source_sha256": "01d94bd6de7c0cb31219d234d09a2fa4b430c2505daf7e645c34089b5e76874c",
+      "captured_at_utc": "2026-10-31T05:52:42.208821+00:00"
+    },
+    {
+      "race_id": "202605040705",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026101805040705",
+      "source_sha256": "4534f81b6ce0569366efcc3b98812f5dd24cb60bf8a2195b96270e644a77d38e",
+      "captured_at_utc": "2026-10-31T05:52:43.194841+00:00"
+    },
+    {
+      "race_id": "202605040806",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026102405040806",
+      "source_sha256": "1240a3a71872f1f89cfcd1ad3199de0eb0764f13de728fc09216e6cf7031e3d5",
+      "captured_at_utc": "2026-10-31T05:52:44.218245+00:00"
+    },
+    {
+      "race_id": "202605040907",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026102505040907",
+      "source_sha256": "21a00225e2ec6bfdaeade6dd59450e65d46d21381b662988006daca0a367d11b",
+      "captured_at_utc": "2026-10-31T05:52:45.274345+00:00"
+    },
+    {
+      "race_id": "202606010107",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026010406010107",
+      "source_sha256": "ab5d28bac547fdc93d9963fcd06f8cb80618ea9725697dce2c322182bd36bd07",
+      "captured_at_utc": "2026-10-31T05:52:46.252408+00:00"
+    },
+    {
+      "race_id": "202606010207",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026010506010207",
+      "source_sha256": "a74b14b77adb55e63344989a135881f19b233ab396cd6c5fc86103bb8bc5eaae",
+      "captured_at_utc": "2026-10-31T05:52:47.225080+00:00"
+    },
+    {
+      "race_id": "202606010308",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026011006010308",
+      "source_sha256": "de4763c3441b28df1286c13edd6f39bc75da8cd44b1443495ce54ddc89908238",
+      "captured_at_utc": "2026-10-31T05:52:48.212850+00:00"
+    },
+    {
+      "race_id": "202606010408",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026011106010408",
+      "source_sha256": "60a6112f717e58f65d65e0b15942ab62844e9b47fe282083b0c5e586b7a6689c",
+      "captured_at_utc": "2026-10-31T05:52:49.237641+00:00"
+    },
+    {
+      "race_id": "202606010509",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026011206010509",
+      "source_sha256": "212f5c18171a10cea598031dd209a07dd2b050d3d4c2ff02fdfcd53a64ddba4a",
+      "captured_at_utc": "2026-10-31T05:52:50.253008+00:00"
+    },
+    {
+      "race_id": "202606010610",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026011706010610",
+      "source_sha256": "b695a2861a9921397a97c470a8006e0697a641711b8aa30a3383d5427d814f2c",
+      "captured_at_utc": "2026-10-31T05:52:51.302375+00:00"
+    },
+    {
+      "race_id": "202606010711",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026011806010711",
+      "source_sha256": "acf9b543a0df257d189ed99b77a42779efe36177214fc96ab8416603802098bc",
+      "captured_at_utc": "2026-10-31T05:52:52.226291+00:00"
+    },
+    {
+      "race_id": "202606010811",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026012406010811",
+      "source_sha256": "1d1c6cb17d81a45d1f29cad0f91539f329fd46a554610f8b30db3c448508fe23",
+      "captured_at_utc": "2026-10-31T05:52:53.268438+00:00"
+    },
+    {
+      "race_id": "202606010911",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026012506010911",
+      "source_sha256": "bde7cc42837cb0f7eefd0ad8aac8f8dcb18a685f956d024684cf6e115aef4fad",
+      "captured_at_utc": "2026-10-31T05:52:54.291035+00:00"
+    },
+    {
+      "race_id": "202606020111",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026022806020111",
+      "source_sha256": "aea2f27be817956f687795a0f1834e626be83ef9f607a9825fc4addc2622dce8",
+      "captured_at_utc": "2026-10-31T05:52:55.275943+00:00"
+    },
+    {
+      "race_id": "202606020211",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026030106020211",
+      "source_sha256": "5709c113da60943afd720ae0f108c68835855cd481bf9f4ebf20f0febb6387b9",
+      "captured_at_utc": "2026-10-31T05:52:56.252622+00:00"
+    },
+    {
+      "race_id": "202606020312",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026030706020312",
+      "source_sha256": "d4567a8557d9d253bab6facd258de209e30d1de84553fc8bb0d1e39c7e405571",
+      "captured_at_utc": "2026-10-31T05:52:57.234388+00:00"
+    },
+    {
+      "race_id": "202606020501",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026031406020501",
+      "source_sha256": "dd3bf66e504aa04ac554b3e0b72850ea727e0375e2cbd6af4024ac23f0723cdb",
+      "captured_at_utc": "2026-10-31T05:52:58.279880+00:00"
+    },
+    {
+      "race_id": "202606020601",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026031506020601",
+      "source_sha256": "419f5437d140adc5db832d842fe9ad69300ac24a8233e6206c950baa2f0795b9",
+      "captured_at_utc": "2026-10-31T05:52:59.264252+00:00"
+    },
+    {
+      "race_id": "202606020701",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026032106020701",
+      "source_sha256": "6d8789fc8fb05a74d286e69f224ac38d79aa57cdf958371860c5d76002578b8e",
+      "captured_at_utc": "2026-10-31T05:53:00.246691+00:00"
+    },
+    {
+      "race_id": "202606020802",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026032206020802",
+      "source_sha256": "3c676ebeee51a60437cae92b0057c2bc767df78ab3011aee8015a11d94344cfe",
+      "captured_at_utc": "2026-10-31T05:53:01.251954+00:00"
+    },
+    {
+      "race_id": "202606030103",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026032806030103",
+      "source_sha256": "b934cc2ae0eef7d83fc6b722a0ad8723199f9840175f66eb06835fafbb3c79ef",
+      "captured_at_utc": "2026-10-31T05:53:02.237636+00:00"
+    },
+    {
+      "race_id": "202606030203",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026032906030203",
+      "source_sha256": "962c328c39f76946b34603b4d8c88d79265fce54e9fda68607cd90c6eb1fcd93",
+      "captured_at_utc": "2026-10-31T05:53:03.243439+00:00"
+    },
+    {
+      "race_id": "202606030303",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026040406030303",
+      "source_sha256": "c22b7c2283760dbbbb1a8f2e8ffed1f3913e644a7405892b35af651d11ee711e",
+      "captured_at_utc": "2026-10-31T05:53:04.268680+00:00"
+    },
+    {
+      "race_id": "202606030405",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026040506030405",
+      "source_sha256": "2c7c28ea150465fb579b3c904743dac8aa4cc1b7e79fef952aae39cd66eb7b61",
+      "captured_at_utc": "2026-10-31T05:53:05.276396+00:00"
+    },
+    {
+      "race_id": "202606030506",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026041106030506",
+      "source_sha256": "75149ef928dbd53f21e4fffde17c739a88d49e33abea699abc9de8cae10c15ed",
+      "captured_at_utc": "2026-10-31T05:53:06.260445+00:00"
+    },
+    {
+      "race_id": "202606030607",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026041206030607",
+      "source_sha256": "01bf84f9997de93d6a2987fe0c91dd3a05adfb535192baf45d13150a6bb56061",
+      "captured_at_utc": "2026-10-31T05:53:07.252650+00:00"
+    },
+    {
+      "race_id": "202606030707",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026041806030707",
+      "source_sha256": "5afec6d94b423475ea2b8bb1fc851e29c18bc1a3a67ef66d9d80d08009d230f4",
+      "captured_at_utc": "2026-10-31T05:53:08.198448+00:00"
+    },
+    {
+      "race_id": "202606030808",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026041906030808",
+      "source_sha256": "695645e1d9a5c7d2a8d861d7dff11efa5a93833ea229e4a5d020c90420f64ce4",
+      "captured_at_utc": "2026-10-31T05:53:09.238646+00:00"
+    },
+    {
+      "race_id": "202606040109",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026090506040109",
+      "source_sha256": "476a3d2970ffef55226a07fe9f9ddc485ace645b9eeba970db0a71bfffb19a50",
+      "captured_at_utc": "2026-10-31T05:53:10.252652+00:00"
+    },
+    {
+      "race_id": "202606040210",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026090606040210",
+      "source_sha256": "764f1c41843fc0c46870d3490308a2214aa277fc06a11bef2d1f8a8593915f3b",
+      "captured_at_utc": "2026-10-31T05:53:11.218715+00:00"
+    },
+    {
+      "race_id": "202606040310",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026091206040310",
+      "source_sha256": "323a5ba01e2e3b7d5214bce58c3ab83d876fb293851a3bd087ab422153cd05f2",
+      "captured_at_utc": "2026-10-31T05:53:12.194039+00:00"
+    },
+    {
+      "race_id": "202606040411",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026091306040411",
+      "source_sha256": "cae8f539271207a88159c277019e1d1c7d1c293e1aa124cad8190425a54be082",
+      "captured_at_utc": "2026-10-31T05:53:13.232671+00:00"
+    },
+    {
+      "race_id": "202606040511",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026091906040511",
+      "source_sha256": "97c8da6dd2c167b6f22dfe38ae17cc50f3e35dc4cf73da664a847a7b3f21b39d",
+      "captured_at_utc": "2026-10-31T05:53:14.222997+00:00"
+    },
+    {
+      "race_id": "202606040611",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026092006040611",
+      "source_sha256": "ad478121376d04c24dbb5c1e7830fe4bf0d60758264fe12992ff7426ffaa97a3",
+      "captured_at_utc": "2026-10-31T05:53:15.201437+00:00"
+    },
+    {
+      "race_id": "202606040712",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026092206040712",
+      "source_sha256": "025a76fef29acc423a0c72ae23cbf05780c2121748e133341f6591cbd83cb351",
+      "captured_at_utc": "2026-10-31T05:53:16.261906+00:00"
+    },
+    {
+      "race_id": "202606040901",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026092706040901",
+      "source_sha256": "c4225d05a4667f163e7d49e2f961655f49d0e6dc7062e4e8b99ceb5575808cf8",
+      "captured_at_utc": "2026-10-31T05:53:17.247036+00:00"
+    },
+    {
+      "race_id": "202607010101",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026031407010101",
+      "source_sha256": "d0b417e17fa924308a4931a13a2e306a1e00010a3fd973f6c3ac92146a1e5e7a",
+      "captured_at_utc": "2026-10-31T05:53:18.191213+00:00"
+    },
+    {
+      "race_id": "202607010201",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026031507010201",
+      "source_sha256": "ae49b36c2903123d2e61df7b5f30c722c36c4cb2d786cf3fe99dd1ee95962985",
+      "captured_at_utc": "2026-10-31T05:53:19.262655+00:00"
+    },
+    {
+      "race_id": "202607010301",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026032107010301",
+      "source_sha256": "1d3677f32103f57a8a42bd86dfe00de6750e4db9cc2ce3d8b282fc7285b40ea1",
+      "captured_at_utc": "2026-10-31T05:53:20.252973+00:00"
+    },
+    {
+      "race_id": "202607010401",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026032207010401",
+      "source_sha256": "63e788eaa51a67471c30a78d02d90ceb39637ac8af0f48228fd932143b4149a4",
+      "captured_at_utc": "2026-10-31T05:53:21.212006+00:00"
+    },
+    {
+      "race_id": "202607010501",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026032807010501",
+      "source_sha256": "3d89c8d441452e0abf5dcd593796e1799ee32b607f66b425d97e6334811a69e7",
+      "captured_at_utc": "2026-10-31T05:53:22.289353+00:00"
+    },
+    {
+      "race_id": "202607010601",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026032907010601",
+      "source_sha256": "d8d434c7748a958c21081a89b7abeac5faef92880b1e32ebabf99cba0f44dc6f",
+      "captured_at_utc": "2026-10-31T05:53:23.288453+00:00"
+    },
+    {
+      "race_id": "202607020101",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026072507020101",
+      "source_sha256": "c8ba376352c019e1af4d7273d83beaf3ced2cd9f59961c34d5c6e2aab209de0a",
+      "captured_at_utc": "2026-10-31T05:53:24.199647+00:00"
+    },
+    {
+      "race_id": "202607020201",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026072607020201",
+      "source_sha256": "f6d136c709fd8b80056127705323118ee4e11242f8c6c6e0c942694922bcbff1",
+      "captured_at_utc": "2026-10-31T05:53:25.195314+00:00"
+    },
+    {
+      "race_id": "202607020301",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026080107020301",
+      "source_sha256": "6f04d71d1df42e62593c0558aa6109b8c1ae9e4c89fbf6e4ef6a3bf4b522e94d",
+      "captured_at_utc": "2026-10-31T05:53:26.215929+00:00"
+    },
+    {
+      "race_id": "202607020402",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026080207020402",
+      "source_sha256": "b1ec64f2cd05980e039010843ad9f9ce200666eaabde13fa2e9355ba982e582d",
+      "captured_at_utc": "2026-10-31T05:53:27.173409+00:00"
+    },
+    {
+      "race_id": "202607020503",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026080807020503",
+      "source_sha256": "c002a6c8d6d964b5ebadece571ede13bfd6a400e35925e16566141504e989761",
+      "captured_at_utc": "2026-10-31T05:53:28.244522+00:00"
+    },
+    {
+      "race_id": "202607020604",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026080907020604",
+      "source_sha256": "77ae820fb6d5e5328c50c527e35fa864abf80430d84cb2eacbaa55e38da73a25",
+      "captured_at_utc": "2026-10-31T05:53:29.246186+00:00"
+    },
+    {
+      "race_id": "202607020705",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026081507020705",
+      "source_sha256": "88a5ff379caddf6b40fd84b86158429937a062468a1ad2aa55975e53d031752b",
+      "captured_at_utc": "2026-10-31T05:53:30.228955+00:00"
+    },
+    {
+      "race_id": "202607020805",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026081607020805",
+      "source_sha256": "133d0d697c8fb22e7d0d890bd961343b8597917e30d9f1172e0011392359fd7e",
+      "captured_at_utc": "2026-10-31T05:53:31.271876+00:00"
+    },
+    {
+      "race_id": "202607030105",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026082207030105",
+      "source_sha256": "b7fc8a4ef4098eab0e86924189637bde62d452d5aa7e3aa26425376ef1f80bd1",
+      "captured_at_utc": "2026-10-31T05:53:32.237941+00:00"
+    },
+    {
+      "race_id": "202607030206",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026082307030206",
+      "source_sha256": "db4650eba0e3edc673d0d170e085ea9148089a879d9ae62e3dfd7efbdf787ac2",
+      "captured_at_utc": "2026-10-31T05:53:33.239058+00:00"
+    },
+    {
+      "race_id": "202607030307",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026082907030307",
+      "source_sha256": "61080f63d76dea1223158dcc554de4dd708b28d25cb3f6e9230d62d0fd2fca23",
+      "captured_at_utc": "2026-10-31T05:53:34.266010+00:00"
+    },
+    {
+      "race_id": "202607030407",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026083007030407",
+      "source_sha256": "cd60197e25e1cf087f57a4ddadd6432acd37eb61febc69f29ef2f23b1843cf2e",
+      "captured_at_utc": "2026-10-31T05:53:35.190857+00:00"
+    },
+    {
+      "race_id": "202608010107",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026010408010107",
+      "source_sha256": "95716476a6d5cefb6835749c4e98bf65979cd5b7a21d8a0a2741ded88301cf98",
+      "captured_at_utc": "2026-10-31T05:53:36.203303+00:00"
+    },
+    {
+      "race_id": "202608010207",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026010508010207",
+      "source_sha256": "baea11765efbf68b3db1032d6c254f3a08215737a298f75888f2c0d0f4e8e196",
+      "captured_at_utc": "2026-10-31T05:53:37.252678+00:00"
+    },
+    {
+      "race_id": "202608010307",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026011008010307",
+      "source_sha256": "ebeca622d2820a5afc7e27dce1bea73b9bb1d32be0a169633a56c76626ede070",
+      "captured_at_utc": "2026-10-31T05:53:38.274553+00:00"
+    },
+    {
+      "race_id": "202608010409",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026011108010409",
+      "source_sha256": "28762c8ff75b40ccfd7dc39566635cee77738116250169e7937ce2535319c0f2",
+      "captured_at_utc": "2026-10-31T05:53:39.215556+00:00"
+    },
+    {
+      "race_id": "202608010509",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026011208010509",
+      "source_sha256": "22aef1d2d902cf20e25f82aa94845f9fb53e25175340e4d356ce5c946d0a53d1",
+      "captured_at_utc": "2026-10-31T05:53:40.207759+00:00"
+    },
+    {
+      "race_id": "202608010609",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026011708010609",
+      "source_sha256": "d13c53983bfe9d0a01737ecd4c9120d98a5f38a3cd595f48859c4ad7e7973521",
+      "captured_at_utc": "2026-10-31T05:53:41.254095+00:00"
+    },
+    {
+      "race_id": "202608010709",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026011808010709",
+      "source_sha256": "1eca5b24083f814cd0e6bc7f9224df1f1bd30ed12a1da690f40335157310ae54",
+      "captured_at_utc": "2026-10-31T05:53:42.210003+00:00"
+    },
+    {
+      "race_id": "202608010809",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026012408010809",
+      "source_sha256": "bc7e131414c8dc6b49fe4f5080bcd3c420ca7484be9e92b8a4402b78bf1a1d67",
+      "captured_at_utc": "2026-10-31T05:53:43.229710+00:00"
+    },
+    {
+      "race_id": "202608010909",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026012508010909",
+      "source_sha256": "d5223213bc26a1340f4734eb87e2d8a64aab8c5e306d911193cc5d475ae2fda9",
+      "captured_at_utc": "2026-10-31T05:53:44.211085+00:00"
+    },
+    {
+      "race_id": "202608020109",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026013108020109",
+      "source_sha256": "851aae1341ff1ba244752f51cd16578ea977d98a6e06350e45b6ad5e5941db8d",
+      "captured_at_utc": "2026-10-31T05:53:45.222251+00:00"
+    },
+    {
+      "race_id": "202608020209",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026020108020209",
+      "source_sha256": "f87868e03d5911fcb7f4d42b30bfc3b34233828ac67d458de3f54c59befa4622",
+      "captured_at_utc": "2026-10-31T05:53:46.235482+00:00"
+    },
+    {
+      "race_id": "202608020309",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026020708020309",
+      "source_sha256": "ac4d8110f967edcefaa0535d85a3c4cecfd8376ad546c0906d7c19bacd59f496",
+      "captured_at_utc": "2026-10-31T05:53:47.245005+00:00"
+    },
+    {
+      "race_id": "202608020409",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026021008020409",
+      "source_sha256": "278ff056824e25cf2bcc28d219fd41b89304b18d65701cf6068421820b53f4ed",
+      "captured_at_utc": "2026-10-31T05:53:48.223961+00:00"
+    },
+    {
+      "race_id": "202608020509",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026021408020509",
+      "source_sha256": "321edcc72c6e1e605fee2700435ca5f02b23612eeec98ac1d97ad91044c29ec9",
+      "captured_at_utc": "2026-10-31T05:53:49.211147+00:00"
+    },
+    {
+      "race_id": "202608020609",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026021508020609",
+      "source_sha256": "bf71dd538d727bc0a286a8edd5d3eacb626558c308b40cb8694d604599683496",
+      "captured_at_utc": "2026-10-31T05:53:50.259002+00:00"
+    },
+    {
+      "race_id": "202608030110",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026042508030110",
+      "source_sha256": "b3feb34fa5d54f01dc9fc298ad47bc253a1cf264cea23bbe99d52b04fe73ae07",
+      "captured_at_utc": "2026-10-31T05:53:51.214445+00:00"
+    },
+    {
+      "race_id": "202608030211",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026042608030211",
+      "source_sha256": "0aaf4397b44a2f976c33f91caafa14bf1f9f8a5a38c9cc4f56db40b3b75d8545",
+      "captured_at_utc": "2026-10-31T05:53:52.274106+00:00"
+    },
+    {
+      "race_id": "202608030311",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026050208030311",
+      "source_sha256": "a11a04f1cbc28d1766b3f5d2a429d1ce158120bf6a6137a077e35dc5a9ee4720",
+      "captured_at_utc": "2026-10-31T05:53:53.230472+00:00"
+    },
+    {
+      "race_id": "202608030411",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026050308030411",
+      "source_sha256": "1ffd93c905d0836a246e69ce155b9d9490f312cf2e4f46d9effd57ba6f562815",
+      "captured_at_utc": "2026-10-31T05:53:54.221258+00:00"
+    },
+    {
+      "race_id": "202608030511",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026050908030511",
+      "source_sha256": "2b3e2ca9c33b3344430e75681dd31d08da7b95048f3c30cc0db1e45bfc776519",
+      "captured_at_utc": "2026-10-31T05:53:55.244453+00:00"
+    },
+    {
+      "race_id": "202608030611",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026051008030611",
+      "source_sha256": "2a7500df232442e556b9b98fd2ad19597673a322b01c1ecd345008b106e3aa8d",
+      "captured_at_utc": "2026-10-31T05:53:56.270899+00:00"
+    },
+    {
+      "race_id": "202608030712",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026051608030712",
+      "source_sha256": "3fccb33dfa15c1fbf1423d54158968b01b339189f014f75d8b6ce57183e53028",
+      "captured_at_utc": "2026-10-31T05:53:57.223704+00:00"
+    },
+    {
+      "race_id": "202608030812",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026051708030812",
+      "source_sha256": "8a821bbeb9deae08a1c52e3070f7e43fe7c488d145ef58d33b9ab3bc7ea10c67",
+      "captured_at_utc": "2026-10-31T05:53:58.225603+00:00"
+    },
+    {
+      "race_id": "202608030912",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026052308030912",
+      "source_sha256": "69b14e54874ee29fc04dd7fdc7ebf7401e9ee6a38f1f2553440b6da93baf9e11",
+      "captured_at_utc": "2026-10-31T05:53:59.236912+00:00"
+    },
+    {
+      "race_id": "202608031012",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026052408031012",
+      "source_sha256": "bc9ce25261ce68b6a029e5f4ca31140d57c33e5a7e31d825af4a5bcb2c53e7cf",
+      "captured_at_utc": "2026-10-31T05:54:00.221222+00:00"
+    },
+    {
+      "race_id": "202608031112",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026053008031112",
+      "source_sha256": "1994bd5ae379738611d5dc264fc8271668748763062a5645fdefc65d76a37872",
+      "captured_at_utc": "2026-10-31T05:54:01.269817+00:00"
+    },
+    {
+      "race_id": "202608040101",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026100308040101",
+      "source_sha256": "96866abfc5019d7ef812259d6987ff7f2beb8aed9cfec77a4711fa042ef6ea15",
+      "captured_at_utc": "2026-10-31T05:54:02.232720+00:00"
+    },
+    {
+      "race_id": "202608040201",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026100408040201",
+      "source_sha256": "0b01026680b405a7ac2d840e10a4761f9b6209eabd2ecac3f2e25010acfa4c4e",
+      "captured_at_utc": "2026-10-31T05:54:03.218906+00:00"
+    },
+    {
+      "race_id": "202608040301",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026101008040301",
+      "source_sha256": "b16b61c877059fccaf77317aad1f2f8abedfa20d65599e42129bae11a36db8cd",
+      "captured_at_utc": "2026-10-31T05:54:04.207495+00:00"
+    },
+    {
+      "race_id": "202608040402",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026101108040402",
+      "source_sha256": "b753757236f5fdc93926f8940a0e77a6e0330c7981439bfea9a48490b7e453f7",
+      "captured_at_utc": "2026-10-31T05:54:05.211503+00:00"
+    },
+    {
+      "race_id": "202608040503",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026101208040503",
+      "source_sha256": "de6c726935b1512f2b8c1ea23154cd6cd230679fde185a31ec82e2ab24ed15b8",
+      "captured_at_utc": "2026-10-31T05:54:06.251589+00:00"
+    },
+    {
+      "race_id": "202608040603",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026101708040603",
+      "source_sha256": "454ba6b4120c67f75224fbb555b2b27868b230958b08bc5823075c2d7e1f36b9",
+      "captured_at_utc": "2026-10-31T05:54:07.212619+00:00"
+    },
+    {
+      "race_id": "202608040704",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026101808040704",
+      "source_sha256": "ab2d0b161638eb77cee9f17564139fb63b96f48b1d9a6bab777ac4ffcb9325ec",
+      "captured_at_utc": "2026-10-31T05:54:08.247896+00:00"
+    },
+    {
+      "race_id": "202608040805",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026102408040805",
+      "source_sha256": "af64301bb147ad786483fc2bbbc6f19121aca9f53e61fc433c18c5d617cc27ef",
+      "captured_at_utc": "2026-10-31T05:54:09.241396+00:00"
+    },
+    {
+      "race_id": "202608040905",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026102508040905",
+      "source_sha256": "08d3f49d3a6ad88f64f78a3a4403a3893715cf3123a478b5d421c30700382a45",
+      "captured_at_utc": "2026-10-31T05:54:10.177979+00:00"
+    },
+    {
+      "race_id": "202609010105",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026022109010105",
+      "source_sha256": "01d10ae5707e4769bade3ed3e1bf07292e825e9e5828d6768dfa6ce1dc7ae2fc",
+      "captured_at_utc": "2026-10-31T05:54:11.254739+00:00"
+    },
+    {
+      "race_id": "202609010205",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026022209010205",
+      "source_sha256": "b9339e4f0e45121e2858777a0121557b4a3c6a606afb43cb143ead9dbbec1c6c",
+      "captured_at_utc": "2026-10-31T05:54:12.241581+00:00"
+    },
+    {
+      "race_id": "202609010305",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026022809010305",
+      "source_sha256": "a748b63d94b43b6bb814bda917e3ec72d73d3b8bb19c967837d10bf4a1bf426a",
+      "captured_at_utc": "2026-10-31T05:54:13.251294+00:00"
+    },
+    {
+      "race_id": "202609010405",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026030109010405",
+      "source_sha256": "ccfaee27b151e4b55d90a9bb246387c2fc2cf6883cf0454a2b6eacedeeeaa119",
+      "captured_at_utc": "2026-10-31T05:54:14.219791+00:00"
+    },
+    {
+      "race_id": "202609010505",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026030709010505",
+      "source_sha256": "7117785c22043db61cb1d0f477f59c80facc9ae2c46de992decf8bceb4269c31",
+      "captured_at_utc": "2026-10-31T05:54:15.256849+00:00"
+    },
+    {
+      "race_id": "202609010605",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026030809010605",
+      "source_sha256": "f544110702f4ab0ba218ff45326181951de3d077bc86e7bdfc27a7acedfea53b",
+      "captured_at_utc": "2026-10-31T05:54:16.209057+00:00"
+    },
+    {
+      "race_id": "202609010705",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026031409010705",
+      "source_sha256": "63eaa8c41471a40f664d2d8bdb2160e3a96c8f567a75f7f2db787c493c9759c3",
+      "captured_at_utc": "2026-10-31T05:54:17.235830+00:00"
+    },
+    {
+      "race_id": "202609010807",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026031509010807",
+      "source_sha256": "06cf5f99bf7671b894684aa7d0205f056afc9122106cacb234f942f9db5b3fa0",
+      "captured_at_utc": "2026-10-31T05:54:18.191881+00:00"
+    },
+    {
+      "race_id": "202609010907",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026032109010907",
+      "source_sha256": "bf151d88dc598f79e072fde5cc0993f1be6e785a31c755356e5cddfe5c304082",
+      "captured_at_utc": "2026-10-31T05:54:19.230923+00:00"
+    },
+    {
+      "race_id": "202609011007",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026032209011007",
+      "source_sha256": "c962480673a1c93667ffc85bc97ecf1a95027844e1f30d38a9758150e2d75dea",
+      "captured_at_utc": "2026-10-31T05:54:20.229891+00:00"
+    },
+    {
+      "race_id": "202609020107",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026032809020107",
+      "source_sha256": "adca47c5d140bd41f6555448c436bc5248d97cf440d3aaf1f616eac536b0a19c",
+      "captured_at_utc": "2026-10-31T05:54:21.228983+00:00"
+    },
+    {
+      "race_id": "202609020209",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026032909020209",
+      "source_sha256": "74788b08cec9e5086e9c95c07e767b34aa829b54c7a78fd2238378bcc2db97f4",
+      "captured_at_utc": "2026-10-31T05:54:22.252551+00:00"
+    },
+    {
+      "race_id": "202609020309",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026040409020309",
+      "source_sha256": "b820f44a9296cbfbec7cf27c1e89b8c4c839e7fd109fd4d1d741e4187e115903",
+      "captured_at_utc": "2026-10-31T05:54:23.202799+00:00"
+    },
+    {
+      "race_id": "202609020409",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026040509020409",
+      "source_sha256": "e26c9248b8df14f38d2a7ce465e72b7dbdd7f8aa67193f78cf85cd681536bd4f",
+      "captured_at_utc": "2026-10-31T05:54:24.213814+00:00"
+    },
+    {
+      "race_id": "202609020509",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026041109020509",
+      "source_sha256": "15c776650304518af7be4804e10574a74be4989498d2e59648d693befe471bf9",
+      "captured_at_utc": "2026-10-31T05:54:25.193191+00:00"
+    },
+    {
+      "race_id": "202609020609",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026041209020609",
+      "source_sha256": "3d85d6059ab6f5afebb06131f66370d73b8df7fca7da3189430d64788a70026d",
+      "captured_at_utc": "2026-10-31T05:54:26.208112+00:00"
+    },
+    {
+      "race_id": "202609020709",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026041809020709",
+      "source_sha256": "f40f0ee7441ab2409e49ae89f5d963f7eafb08b470bb853af45b5719af9cb165",
+      "captured_at_utc": "2026-10-31T05:54:27.265907+00:00"
+    },
+    {
+      "race_id": "202609020810",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026041909020810",
+      "source_sha256": "a99be06163e6fb2030fb597fe4de4f2d4af357ab2b29070f912b8e02e769bc1c",
+      "captured_at_utc": "2026-10-31T05:54:28.250915+00:00"
+    },
+    {
+      "race_id": "202609030110",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026060609030110",
+      "source_sha256": "684353f894be3523b1f0ca6efb2bcb024f291d94c9b1851169af4af1950dddee",
+      "captured_at_utc": "2026-10-31T05:54:29.235283+00:00"
+    },
+    {
+      "race_id": "202609030211",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026060709030211",
+      "source_sha256": "022d53b934d135ee921052e1ca48d746dd1eaa4d64c96dceacae5e2e481b0c33",
+      "captured_at_utc": "2026-10-31T05:54:30.238848+00:00"
+    },
+    {
+      "race_id": "202609030311",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026061309030311",
+      "source_sha256": "07b60af20b69fd0d6d130909fd069d9760e0671d66cb237d3b1b8e7dd22ffa2e",
+      "captured_at_utc": "2026-10-31T05:54:31.231654+00:00"
+    },
+    {
+      "race_id": "202609030411",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026061409030411",
+      "source_sha256": "0c30af2eacef676308dc3b20f3538cd799182d13c3f2e2e0d76ea0589bb46f60",
+      "captured_at_utc": "2026-10-31T05:54:32.261583+00:00"
+    },
+    {
+      "race_id": "202609030512",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026062009030512",
+      "source_sha256": "6d29a07e5aa9bcd8b367a1022083ac1c9a31218dcda72809b7038210be15828e",
+      "captured_at_utc": "2026-10-31T05:54:33.268805+00:00"
+    },
+    {
+      "race_id": "202609030612",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026062109030612",
+      "source_sha256": "3ba8034dfa54034c11c75fbb89993cd18c7d08d9114425e3fb2437bbef2b14cd",
+      "captured_at_utc": "2026-10-31T05:54:34.258326+00:00"
+    },
+    {
+      "race_id": "202609040112",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026090509040112",
+      "source_sha256": "4d0206c9cad547c727a24ccb6310054f8ea98e7e52c14f118ddda6edb2a91662",
+      "captured_at_utc": "2026-10-31T05:54:35.237801+00:00"
+    },
+    {
+      "race_id": "202609040212",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026090609040212",
+      "source_sha256": "143671683f753ab08a9a558182b7b7326b3afc81fb9692dd34ad00a2eef27104",
+      "captured_at_utc": "2026-10-31T05:54:36.281795+00:00"
+    },
+    {
+      "race_id": "202609040401",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026091309040401",
+      "source_sha256": "5dcdbda70c6a748f69c28712e279f5c36824b8dccc43715cda4c6fb4b21d9c46",
+      "captured_at_utc": "2026-10-31T05:54:37.213070+00:00"
+    },
+    {
+      "race_id": "202609040501",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026091909040501",
+      "source_sha256": "dc6a114114f03eed1848eacc1693c4e6478bc368bf16b11b5481ced8ec311f73",
+      "captured_at_utc": "2026-10-31T05:54:38.191085+00:00"
+    },
+    {
+      "race_id": "202609040603",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026092009040603",
+      "source_sha256": "b6645973ec8f09afe8b9158e534ca9696d8d944ff0ec8bb52904e0dfcf5a360f",
+      "captured_at_utc": "2026-10-31T05:54:39.188820+00:00"
+    },
+    {
+      "race_id": "202609040703",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026092109040703",
+      "source_sha256": "42f82340f50f890fdc34c3242635e2f50325aea1e87663397510162ffba19447",
+      "captured_at_utc": "2026-10-31T05:54:40.203263+00:00"
+    },
+    {
+      "race_id": "202609040803",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026092609040803",
+      "source_sha256": "92b06add39a226c9654ae0fc58fd3f4c9ad1003082dd720649385a69df34ae29",
+      "captured_at_utc": "2026-10-31T05:54:41.263371+00:00"
+    },
+    {
+      "race_id": "202609040904",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026092709040904",
+      "source_sha256": "355c573f3babbd2e0f5c7a8c99e94733c26828fce8b12c0f33e690f6a1759fde",
+      "captured_at_utc": "2026-10-31T05:54:42.191604+00:00"
+    },
+    {
+      "race_id": "202610010106",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026012410010106",
+      "source_sha256": "9b009a0ab750644822b0da956c48317105b08a2f9d1c79460f9b95ca595094d7",
+      "captured_at_utc": "2026-10-31T05:54:43.241154+00:00"
+    },
+    {
+      "race_id": "202610010207",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026012510010207",
+      "source_sha256": "f8cda051788186b109029937852606b4288926da188bfe8cdd876b02b7be7345",
+      "captured_at_utc": "2026-10-31T05:54:44.246874+00:00"
+    },
+    {
+      "race_id": "202610010309",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026013110010309",
+      "source_sha256": "57777cc8971c102cfbad5ae17cad4b9f13f060c5449a8aa6e4377db845e603c6",
+      "captured_at_utc": "2026-10-31T05:54:45.251299+00:00"
+    },
+    {
+      "race_id": "202610010410",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026020110010410",
+      "source_sha256": "ddcff7d2e89939ed3804ad57cda1622c9ccf24a42378d9c86d79bf21603fd8fb",
+      "captured_at_utc": "2026-10-31T05:54:46.260381+00:00"
+    },
+    {
+      "race_id": "202610010512",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026020710010512",
+      "source_sha256": "7fdd74115863cbc12e48fb9941010ff6990c264e18f049fd725166f2402f438a",
+      "captured_at_utc": "2026-10-31T05:54:47.251374+00:00"
+    },
+    {
+      "race_id": "202610010701",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026021410010701",
+      "source_sha256": "a3010f51d6a40bf721c931694816fa7f4388b703cfc26c39d4c1ff94fca63857",
+      "captured_at_utc": "2026-10-31T05:54:48.286858+00:00"
+    },
+    {
+      "race_id": "202610010803",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026021510010803",
+      "source_sha256": "614ddd93e4e007b38f604fc464d6021ebaaf655b3c321ac453fbaa4182bf2559",
+      "captured_at_utc": "2026-10-31T05:54:49.307342+00:00"
+    },
+    {
+      "race_id": "202610010906",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026022110010906",
+      "source_sha256": "f068e28fecd271b777e133da01c51da0d3fa361e498917539bfc5dcbde865838",
+      "captured_at_utc": "2026-10-31T05:54:50.237495+00:00"
+    },
+    {
+      "race_id": "202610011007",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026022210011007",
+      "source_sha256": "8180ec3a0e3be1bc520e54a89ba95994c9e13ab949bff24811e3e88654226487",
+      "captured_at_utc": "2026-10-31T05:54:51.241050+00:00"
+    },
+    {
+      "race_id": "202610011109",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026022810011109",
+      "source_sha256": "13245921e2b2e1543def2ce5e4515513339ed2747da03312ab0978dac6be5a0f",
+      "captured_at_utc": "2026-10-31T05:54:52.252537+00:00"
+    },
+    {
+      "race_id": "202610011210",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026030110011210",
+      "source_sha256": "34761158ea50511b7f76c568d70832b28e43399dcf4f8ea28eae87c774bd86d4",
+      "captured_at_utc": "2026-10-31T05:54:53.294226+00:00"
+    },
+    {
+      "race_id": "202610020110",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026062710020110",
+      "source_sha256": "6742a55f299a62fcf3319b0da2247761e26470fdb5ec8e57c0528649e6a8e9df",
+      "captured_at_utc": "2026-10-31T05:54:54.200414+00:00"
+    },
+    {
+      "race_id": "202610020210",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026062810020210",
+      "source_sha256": "5d6658f58e3c604ae1f010fae0ad19311f55b07362c39a2467fa0b88ed11d691",
+      "captured_at_utc": "2026-10-31T05:54:55.300025+00:00"
+    },
+    {
+      "race_id": "202610020311",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026070410020311",
+      "source_sha256": "0dac10a55c1997294ceccd9ddbf53feeaebbb8ff43c9eee1d182b8c8972e4129",
+      "captured_at_utc": "2026-10-31T05:54:56.246863+00:00"
+    },
+    {
+      "race_id": "202610020412",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026070510020412",
+      "source_sha256": "ee979b500cbf5e1a1d7b3282924cdbfc179e29a5d4c6effc7b04e27a56cbdbb6",
+      "captured_at_utc": "2026-10-31T05:54:57.248585+00:00"
+    },
+    {
+      "race_id": "202610020512",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026071110020512",
+      "source_sha256": "5ffb199816246c3e289eb1aaba01aa4d4488524ba62a9667a7662410facc5744",
+      "captured_at_utc": "2026-10-31T05:54:58.266832+00:00"
+    },
+    {
+      "race_id": "202610020612",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026071210020612",
+      "source_sha256": "fb5253bfb693ce9f96315b88291a7e0bea8d93a13eb837257f18be11d84dbd8c",
+      "captured_at_utc": "2026-10-31T05:54:59.262932+00:00"
+    },
+    {
+      "race_id": "202610020803",
+      "source_url": "https://umanity.jp/racing/result.php?race_id=2026071910020803",
+      "source_sha256": "1d1abf54bbf58a1c835a8bc6dd716df7b4764032b348c42d2d550ec27f7fa133",
+      "captured_at_utc": "2026-10-31T05:55:00.300444+00:00"
+    }
+  ],
+  "no_target_race_fetch": true
 }
