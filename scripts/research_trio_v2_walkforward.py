@@ -12,6 +12,12 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from research_trio_f3_v1 import (
+    paired_day_ci,
+    sha256 as original_sha256,
+    sorted_full_races,
+)
+from run_information_expansion_v1 import load_full_panel
 
 from keiba_place_lab.historical_market import reconstruct_historical_market
 from keiba_place_lab.information_expansion_v1 import raw_observations
@@ -23,11 +29,6 @@ from keiba_place_lab.trio_residual_v2 import (
     CANDIDATE_SETS, RIDGE, _prepare, fit_residual,
     residual_distribution, score_probabilities,
 )
-from research_trio_f3_v1 import (
-    paired_day_ci, sorted_full_races, sha256 as original_sha256,
-)
-from run_information_expansion_v1 import load_full_panel
-
 F3_PROXY = "p_F3_market_field"
 MARKET_PROXY = "p_M0"
 MODEL_2024_LOGLOSS_EXPECTED = 4.4964765097602095
