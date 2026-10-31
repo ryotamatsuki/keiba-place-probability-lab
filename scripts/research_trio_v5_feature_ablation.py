@@ -127,6 +127,10 @@ def joint_race_score(g:pd.DataFrame,probabilities:np.ndarray)->tuple[dict,np.nda
 def score_cohort(df:pd.DataFrame,
                  predictions:dict[str,np.ndarray],
                  *,write_tickets:bool=False)->tuple[pd.DataFrame,list[dict]]:
+    # Array predictions are positional, whereas a chronological validation
+    # slice retains the parent's noncontiguous pandas labels. Normalize once
+    # before converting per-race group indices to numpy array positions.
+    df=df.reset_index(drop=True)
     if any(len(v)!=len(df) for v in predictions.values()):
         raise ValueError("At least one model has incomplete runner predictions")
     rows=[]
