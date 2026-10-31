@@ -9,7 +9,7 @@ import pandas as pd
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from tennosho_f3_prior_builder import _extra_raw_observations
+from tennosho_f3_prior_builder import _canonicalize_extra_agents, _extra_raw_observations
 
 
 def _sources() -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -56,3 +56,37 @@ def test_new_2026_rank_must_match_confirmed_official_result():
     extra.loc[1, "rank"] = "3"
     with pytest.raises(ValueError, match="finishing ranks disagree"):
         _extra_raw_observations(raw, extra)
+
+
+def test_umanity_abbreviations_resolve_to_real_2026_yahoo_full_names():
+    history = pd.DataFrame({
+        "jockey_name": ["岩田 康誠", "横山 典弘", "C.ルメール", "幸 英明"],
+        "trainer": ["奥村 武", "橋口 慎介", "昆 貢", "森 一誠"],
+    })
+    published = pd.DataFrame({
+        "source_provider": ["yahoo", "umanity", "umanity", "umanity"],
+        "jockey_name": ["岩田 康誠", "岩田康", "Ｃルメ", "幸英明"],
+        "trainer": ["奥村 武", "奥村武", "橋口慎", "森一誠"],
+    })
+    normalized, audit = _canonicalize_extra_agents(history, published)
+    assert normalized.jockey_name.tolist() == [
+        "岩田 康誠", "岩田 康誠", "C.ルメール", "幸 英明",
+    ]
+    assert normalized.trainer.tolist() == [
+        "奥村 武", "奥村 武", "橋口 慎介", "森 一誠",
+    ]
+    assert audit["jockey_name"]["alternate_distinct_aliases_resolved"] == 3
+
+
+def test_abbreviated_agents_are_rejected_when_homonyms_ambiguous():
+    history = pd.DataFrame({
+        "jockey_name": ["佐々木 大輔", "佐々木 竹見"],
+        "trainer": ["橋口 慎介", "昆 貢"],
+    })
+    shortened = pd.DataFrame({
+        "source_provider": ["umanity"],
+        "jockey_name": ["佐々木"],
+        "trainer": ["橋口慎"],
+    })
+    with pytest.raises(ValueError, match="Ambiguous or unknown abbreviated jockey_name"):
+        _canonicalize_extra_agents(history, shortened)
