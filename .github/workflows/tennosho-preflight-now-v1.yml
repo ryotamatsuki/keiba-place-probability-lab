@@ -1,4 +1,5 @@
 name: Tennosho 2026 live-source access-only preflight
+# Repeat after confirming actual Japan-local Yahoo ISO datetime without explicit offset.
 on:
   push:
     branches:
