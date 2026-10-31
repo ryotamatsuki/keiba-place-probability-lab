@@ -91,7 +91,7 @@ def fit_market_pool(training: list[dict], *, fit_end_year: int) -> dict:
     # Small ex-ante grid avoids excessive flexibility and opaque optimization.
     candidates=[]
     for temp in (.8,1.0,1.2):
-        result=minimize_scalar(lambda alpha: mean_loss(float(alpha),temp),
+        result=minimize_scalar(lambda alpha, current_temp=temp: mean_loss(float(alpha),current_temp),
                                bounds=(0,1),method="bounded")
         if not result.success:
             raise ValueError("Historical real tote combination calibration failed")
