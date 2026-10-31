@@ -19,7 +19,6 @@ from urllib.parse import parse_qs, urljoin, urlparse
 
 import numpy as np
 import pandas as pd
-import requests
 from bs4 import BeautifulSoup
 from run_information_expansion_v1 import SOURCE_SHA
 from run_input_learning_a_v1 import feature_registry
@@ -230,36 +229,21 @@ def _verify_umanity_jockey_profiles(
                 or p.netloc not in ("umanity.jp", "www.umanity.jp")
                 or p.path != "/racing/database/jockey.php"
                 or len(profile_id) != 1
-                or re.fullmatch(r"\d{4,8}", profile_id[0]) is None
+                or re.fullmatch(r"(?:\d{4,8}|N\d{4,8})", profile_id[0]) is None
             ):
                 raise ValueError(
                     f"Published jockey profile identity URL invalid: "
                     f"{alias!r} {profile_url!r}"
                 )
-            profile_record = None
-            profile_status = "full_name_verified"
-            try:
-                profile_html, profile_record = fetcher.fetch(profile_url)
-            except requests.HTTPError as exc:
-                if (
-                    exc.response is None or exc.response.status_code != 404
-                    or (alias, profile_id[0]) != ("小谷哲", "05697")
-                ):
-                    raise
-                # This local jockey's archived Umanity profile is 404.
-                # Preserve the exact race-published alias and its stable
-                # profile ID, never invent an unverified expanded name.
-                full = alias
-                profile_status = "published_alias_and_profile_id_only_404"
-            else:
-                title = BeautifulSoup(profile_html, "html.parser").title
-                match = re.match(
-                    r"^(.+?)騎手(?:\s|[-－―]|$)",
-                    title.get_text(" ", strip=True) if title else "",
-                )
-                if match is None:
-                    raise ValueError("Published jockey full name not found on profile")
-                full = match.group(1).strip()
+            profile_html, profile_record = fetcher.fetch(profile_url)
+            title = BeautifulSoup(profile_html, "html.parser").title
+            match = re.match(
+                r"^(.+?)騎手(?:\s|[-－―]|$)",
+                title.get_text(" ", strip=True) if title else "",
+            )
+            if match is None:
+                raise ValueError("Published jockey full name not found on profile")
+            full = match.group(1).strip()
             if not _agent_key(full).startswith(_agent_key(alias)):
                 raise ValueError(f"Jockey profile contradicts abbreviation {alias}")
             identities.add((profile_id[0], _agent_key(full), full))
@@ -268,9 +252,8 @@ def _verify_umanity_jockey_profiles(
                 "race_source_url": race_record.url,
                 "race_source_sha256": race_record.sha256,
                 "profile_url": profile_url,
-                "profile_sha256": profile_record.sha256 if profile_record else None,
+                "profile_sha256": profile_record.sha256,
                 "profile_id": profile_id[0],
-                "profile_status": profile_status,
             })
         if len(identities) != 1:
             raise ValueError(f"Historical races disagree on jockey alias {alias}")
