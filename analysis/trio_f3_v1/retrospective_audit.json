@@ -1,0 +1,108 @@
+{
+  "status": "HISTORICAL_F3_120_TREE_PROXY_VALIDATION_NOT_FROZEN_FORWARD",
+  "historical_2023_2024_proxy": "p_F3_market_field",
+  "frozen_forward_model_source": "XGB800 + CatBoost400; different from 120-tree OOF",
+  "calibration_only_2023": {
+    "temperature": 0.9582368091310236,
+    "train_races": 1355,
+    "calibration_nll_pre": 4.575541678413302,
+    "calibration_nll_post": 4.573954907240773,
+    "temperature_bounds": [
+      0.25,
+      4.0
+    ]
+  },
+  "validation_only_2024": {
+    "races": 1336,
+    "all_horses": 18258
+  },
+  "complete_race_filter": {
+    "oof_races": 5731,
+    "full_starter_races_with_exactly_three_ranks": 2691,
+    "complete_market_final_eligible_races": 2691,
+    "excluded_races_due_to_missing_starters_ties_or_market": 3040
+  },
+  "market_coverage": {
+    "requested_races": 5731,
+    "complete_market_races": 5731,
+    "incomplete_market_races": 0,
+    "malformed_requested_rows": 0,
+    "incomplete_reason_counts": {}
+  },
+  "scores": {
+    "f3_unadjusted": {
+      "mean_joint_logloss": 4.4964765097602095,
+      "mean_joint_brier": 0.9736505253726002
+    },
+    "f3_2023_temp": {
+      "mean_joint_logloss": 4.496686655884814,
+      "mean_joint_brier": 0.9735521688585084
+    },
+    "market_subset": {
+      "mean_joint_logloss": 4.511338508439308,
+      "mean_joint_brier": 0.9741921381216597
+    },
+    "market_pl": {
+      "mean_joint_logloss": 4.561155131642923,
+      "mean_joint_brier": 0.9781518073182283
+    }
+  },
+  "paired_day_bootstraps": {
+    "market_pl_minus_f3_unadjusted": {
+      "difference_baseline_minus_candidate": 0.064678621882712,
+      "cluster_dates": 106,
+      "bootstrap_resamples": 2000,
+      "ci95": [
+        0.0456052266207092,
+        0.08261012126398457
+      ],
+      "positive_improvement_bootstrap_share": 1.0
+    },
+    "market_pl_minus_f3_2023_temp": {
+      "difference_baseline_minus_candidate": 0.06446847575810798,
+      "cluster_dates": 106,
+      "bootstrap_resamples": 2000,
+      "ci95": [
+        0.04256447679997861,
+        0.08562452525132001
+      ],
+      "positive_improvement_bootstrap_share": 1.0
+    },
+    "f3_unadjusted_minus_f3_2023_temp": {
+      "difference_baseline_minus_candidate": -0.00021014612460404204,
+      "cluster_dates": 106,
+      "bootstrap_resamples": 2000,
+      "ci95": [
+        -0.0035673678591982613,
+        0.0030255649296686764
+      ],
+      "positive_improvement_bootstrap_share": 0.4415
+    },
+    "market_subset_minus_f3_2023_temp": {
+      "difference_baseline_minus_candidate": 0.014651852554493576,
+      "cluster_dates": 106,
+      "bootstrap_resamples": 2000,
+      "ci95": [
+        0.007507999726323508,
+        0.021692845265739034
+      ],
+      "positive_improvement_bootstrap_share": 1.0
+    }
+  },
+  "historical_sources": {
+    "jra_flat_warmup_v1.parquet": "9826b5efdd2825f384f125a41602bb3948506b852b38b6f2186709d25d51532e",
+    "jra_flat_train_v1.parquet": "1fc9702838982a574d09f03d05a0c95aa4ece319f1090f37af6772c1a9f8bbb7",
+    "jra_flat_validation_v1.parquet": "aa7263518713e62af2da6d1b6f712e5b4d3c62200365f47974a903291e7e41ff",
+    "oof_sha256": "db49a4423277190ac80cf71a6276955bc48a25dd14006ff6e50e1c956e1d6f98",
+    "kaggle_results_sha256": "fb9345273b21a7c23d41260dc77e45134a1bc2fe756899f3416b24ac0dd51de3"
+  },
+  "no_promotion": true,
+  "limitations": [
+    "The historical OOF F3 120-tree proxy is not frozen Nov-1 XGB800+CatBoost400.",
+    "Only historical races with every starter's historical F3 OOF and exactly ranks 1,2,3 are scored.",
+    "Historical market odds are final odds; forward predictions use provisional pre-off odds.",
+    "Market final odds and historical model predictions may have different calibration domains.",
+    "Selection of complete races changes the population vs the full 2024 JRA card.",
+    "Trio payouts and JRA actual trio odds were not observed: no expected betting returns claimed."
+  ]
+}
