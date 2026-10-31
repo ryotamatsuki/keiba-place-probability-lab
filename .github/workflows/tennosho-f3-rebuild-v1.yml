@@ -71,7 +71,7 @@ jobs:
             --history "$PRIOR_2026_PARQUET" \
             --output /tmp/tennosho_2026_raw.csv \
             --manifest /tmp/tennosho_2026_raw.manifest.json \
-            --cache /tmp/tennosho-f3-raw-cache \
+            --cache /tmp/tennosho-live-cache \
             --max-workers 8
       - name: Preserve checksum-verifiable complete 2026 F3 sources for reuse
         uses: actions/upload-artifact@v4
