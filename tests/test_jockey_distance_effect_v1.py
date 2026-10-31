@@ -1,7 +1,11 @@
 """Safeguards for the exploratory historical rider-distance experiment."""
+import sys
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from research_jockey_distance_effect_v1 import (
     BANDS, add_rider_features, asof_rates, date_bootstrap, distance_band,
 )
