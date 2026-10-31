@@ -17,11 +17,10 @@ import numpy as np
 import pandas as pd
 import tabm
 import torch
-from scipy.special import logit
-from sklearn.metrics import log_loss
-
 from research_trio_f3_v1 import paired_day_ci
 from run_input_learning_a_v1 import feature_registry, prepare_dataset
+from scipy.special import logit
+from sklearn.metrics import log_loss
 
 from keiba_place_lab.trio_pool_v4 import v1_joint
 from keiba_place_lab.trio_residual_v2 import score_probabilities
@@ -89,7 +88,7 @@ def learn_tabm(train:pd.DataFrame,eval_frame:pd.DataFrame,
         d_out=1,k=4,n_blocks=2,d_block=64,dropout=.10,
     )
     optim=torch.optim.AdamW(model.parameters(),lr=.001,weight_decay=.001)
-    xt,ct,yt,ot,_wt=data_tensors(eval_frame,prior)
+    xt,ct,_yt,ot,_wt=data_tensors(eval_frame,prior)
     rng=np.random.default_rng(SEED)
     best_epoch, best_loss=1,float("inf")
     history=[]

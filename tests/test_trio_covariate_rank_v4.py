@@ -5,7 +5,9 @@ import numpy as np
 import pytest
 
 from keiba_place_lab.trio_covariate_rank_v4 import (
-    fit_rank_model, ordered_top3_probability, preknown_covariates,
+    fit_rank_model,
+    ordered_top3_probability,
+    preknown_covariates,
     unordered_top3_distribution,
 )
 

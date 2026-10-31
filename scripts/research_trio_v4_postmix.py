@@ -13,7 +13,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
 from research_trio_f3_v1 import paired_day_ci
 
 from keiba_place_lab.trio_pool_v4 import checked_pool, v1_joint, weight_grid_two

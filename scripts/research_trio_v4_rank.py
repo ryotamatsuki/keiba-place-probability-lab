@@ -15,12 +15,10 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
 from research_trio_f3_v1 import paired_day_ci
 
 from keiba_place_lab.trio_covariate_rank_v4 import (
     fit_rank_model,
-    ordered_top3_probability,
     preknown_covariates,
     unordered_top3_distribution,
 )
@@ -119,8 +117,8 @@ def main():
     mapping=audit_rank_source(args.ranks,set(r23.race_id)|set(r24.race_id))
     tr=prepare(oof,r23,mapping)
     te=prepare(oof,r24,mapping)
-    cutoff=pd.Timestamp(sorted(set(r["race_date"] for r in tr))[
-        int(.75*len(set(r["race_date"] for r in tr)))
+    cutoff=pd.Timestamp(sorted({r["race_date"] for r in tr})[
+        int(.75*len({r["race_date"] for r in tr}))
     ])
     early=[r for r in tr if pd.Timestamp(r["race_date"])<cutoff]
     late=[r for r in tr if pd.Timestamp(r["race_date"])>=cutoff]
