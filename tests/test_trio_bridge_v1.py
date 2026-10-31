@@ -2,10 +2,8 @@
 from __future__ import annotations
 
 import math
-from itertools import combinations
 
 import numpy as np
-import pandas as pd
 import pytest
 
 from keiba_place_lab.three_subset_v1 import top3_subset_marginals
