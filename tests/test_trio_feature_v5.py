@@ -113,3 +113,27 @@ def test_missing_target_race_fails_closed():
     x=synthetic()
     with pytest.raises(ValueError,match="Missing target races"):
         engineer_v5_asof(x,validate_races={"not-recorded"})
+
+
+def test_chronological_slice_prediction_positions_ignore_pandas_index():
+    """A late-2023 slice's original 15,000+ row IDs must never index numpy predictions."""
+    from pathlib import Path
+    import sys
+
+    scripts=str(Path(__file__).resolve().parents[1]/"scripts")
+    if scripts not in sys.path:
+        sys.path.insert(0,scripts)
+    from research_trio_v5_feature_ablation import score_cohort
+
+    sample=pd.DataFrame([
+        {"race_id":race,"race_date":date,"horse_no":horse,
+         "top3_label":int(horse<4)}
+        for race,date in (("race-a","2023-07-01"),("race-b","2023-07-08"))
+        for horse in range(1,5)
+    ])
+    sample.index=pd.Index([15305,15306,15307,15308,16002,16003,16004,16005])
+    predicted=np.array([.81,.76,.72,.71,.75,.78,.74,.73],dtype=float)
+    measured,_=score_cohort(sample,{"candidate":predicted})
+    expected,_=score_cohort(sample.reset_index(drop=True),{"candidate":predicted})
+    assert measured.equals(expected)
+    assert len(measured)==2
