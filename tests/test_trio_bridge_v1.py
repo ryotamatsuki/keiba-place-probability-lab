@@ -49,11 +49,12 @@ def test_permutation_invariance_of_trio_assignments():
     d = trio_distribution(w, horses)
     permutation = [3, 4, 1, 0, 2, 7, 6, 5]
     perm = trio_distribution(w[permutation], horses[permutation])
-    ordered = lambda t: {
-        frozenset((int(row.horse_1), int(row.horse_2), int(row.horse_3))):
-        float(row.probability)
-        for row in t.itertuples()
-    }
+    def ordered(t):
+        return {
+            frozenset((int(row.horse_1), int(row.horse_2), int(row.horse_3))):
+            float(row.probability)
+            for row in t.itertuples()
+        }
     a, b = ordered(d), ordered(perm)
     assert a.keys() == b.keys()
     assert max(abs(a[k] - b[k]) for k in a) < 1e-10
