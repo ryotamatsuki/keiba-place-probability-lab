@@ -142,8 +142,14 @@ def _json_write_exclusive(path: Path, payload: dict) -> None:
         f.write("\n")
 
 
-def verified_provider_time(html: str, timestamp: datetime) -> None:
-    """No RFC-free guessed dates for genuine pre-off capture."""
+def verified_provider_time(html: str, timestamp: datetime) -> dict:
+    """Preserve publisher's full datetime literal and its JST interpretation.
+
+    2026-10-31 09:19 JST actual Yahoo source preflight proved the provider
+    emits a calendar-date ISO timestamp WITHOUT offset. The adapter's
+    parse_win_snapshot already interprets that literal as Japan local time.
+    Record this inference explicitly; never present it as source-supplied TZ.
+    """
     soup = BeautifulSoup(html, "html.parser")
     tag = soup.select_one("time.hr-horseResult__update")
     if tag is None:
@@ -151,15 +157,21 @@ def verified_provider_time(html: str, timestamp: datetime) -> None:
     value = tag.get("datetime")
     if not value:
         raise ValueError("Provider has no independently encoded update time")
-    if "T" not in value:
-        raise ValueError("Odds updated-at has no ISO calendar date/time")
+    if "T" not in value or len(value) < 16:
+        raise ValueError("Odds updated-at has no full ISO calendar date/time")
     stated = datetime.fromisoformat(value)
-    # Source is a Japan-only public racing site; naive source timestamp is
-    # still ambiguous and is rejected rather than forged into a current time.
     if stated.tzinfo is None:
-        raise ValueError("Provider update time lacks an explicit timezone")
+        stated = stated.replace(tzinfo=JST)
+        origin = "provider_local_calendar_datetime_interpreted_as_Asia_Tokyo"
+    else:
+        origin = "provider_explicit_timezone"
     if stated.astimezone(UTC) != timestamp.astimezone(UTC):
         raise ValueError("Parsed update time disagrees with provider source")
+    return {
+        "provider_datetime_literal": value,
+        "timezone_interpretation": origin,
+        "interpreted_provider_updated_at": stated.isoformat(),
+    }
 
 
 def record_preflight(config: dict, directory: Path) -> dict:
@@ -171,7 +183,7 @@ def record_preflight(config: dict, directory: Path) -> dict:
     roster, _ = parse_roster(roster_html, config)
     strict_roster(roster, config, config["race_id"])
     odds, asof = parse_win_snapshot(odds_html, config)
-    verified_provider_time(odds_html, asof)
+    provider_clock = verified_provider_time(odds_html, asof)
     complete = strict_same_market(roster, odds)
     p, overround = normalized_win_probabilities(
         complete.win_odds.to_numpy(float),
@@ -183,6 +195,7 @@ def record_preflight(config: dict, directory: Path) -> dict:
         "status": "PREFLIGHT_ONLY_NOT_AN_ACTUAL_T_MINUS_10_LOCK",
         "race_id": config["race_id"],
         "asof_provider": asof.isoformat(),
+        "provider_clock_provenance": provider_clock,
         "roster": roster_meta,
         "odds": odds_meta,
         "starters": len(roster),
@@ -217,7 +230,7 @@ def capture(
     roster, _ = parse_roster(roster_html, config)
     strict_roster(roster, config, config["race_id"])
     odds, provider = parse_win_snapshot(odds_html, config)
-    verified_provider_time(odds_html, provider)
+    provider_clock = verified_provider_time(odds_html, provider)
     matched = strict_same_market(roster, odds)
     locked_at = datetime.now(UTC)
     ensure_lock_clock(off, locked_at)
@@ -243,6 +256,7 @@ def capture(
         "capture_started_at": started.isoformat(),
         "captured_at": acquired.isoformat(),
         "provider_updated_at": provider.isoformat(),
+        "provider_clock_provenance": provider_clock,
         "locked_at": locked_at.isoformat(),
         "full_active_field": len(matched),
         "active_field_horse_numbers": observed.horse_no.to_list(),
