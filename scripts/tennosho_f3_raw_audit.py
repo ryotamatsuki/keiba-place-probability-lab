@@ -172,6 +172,8 @@ def main():
     p.add_argument("--cache", type=Path, default=Path("/tmp/tennosho-f3-raw-cache"))
     p.add_argument("--race-ids", nargs="*", help="Optional limited two-race parsing smoke test")
     p.add_argument("--max-workers", type=int, default=6)
+    p.add_argument("--shard-index", type=int, default=0)
+    p.add_argument("--shard-count", type=int, default=1)
     args = p.parse_args()
     if args.output.exists() or args.manifest.exists():
         raise FileExistsError("Immutable raw capture paths already exist")
@@ -189,6 +191,13 @@ def main():
             raise ValueError("Requested smoke race absent in audited official history")
         history = history.loc[history.race_id.isin(ids)].copy()
     race_ids = sorted(set(history.race_id))
+    if not 1 <= args.shard_count <= 64 or not 0 <= args.shard_index < args.shard_count:
+        raise ValueError("Invalid raw source shard count/index")
+    if args.shard_count > 1:
+        race_ids = race_ids[args.shard_index::args.shard_count]
+        history = history.loc[history.race_id.isin(race_ids)].copy()
+    if not race_ids:
+        raise ValueError("Selected raw source shard is empty")
     fetcher = CachedFetcher(args.cache, pause_seconds=.5)
     alt_fetcher = CachedFetcher(args.cache, pause_seconds=1.)
     def one(rid: str):
@@ -268,6 +277,8 @@ def main():
         "race_count": len(race_ids), "rows": len(df),
         "source_csv_sha256": hashlib.sha256(args.output.read_bytes()).hexdigest(),
         "history_input_sha256": hashlib.sha256(args.history.read_bytes()).hexdigest(),
+        "shard_index": args.shard_index,
+        "shard_count": args.shard_count,
         "source_records": records,
         "no_target_race_fetch": True,
     }
