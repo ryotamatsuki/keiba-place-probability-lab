@@ -431,7 +431,7 @@ def main():
         "cohort":audit["full_after_market_check"],
         "scores":experiment["methods"],
         "paired":experiment["paired_day_ci"],
-    }),ensure_ascii=False,flush=True)
+    },ensure_ascii=False),flush=True)
 
 
 if __name__=="__main__":
