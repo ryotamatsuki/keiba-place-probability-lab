@@ -98,16 +98,23 @@ def test_market_source_time_distinct_and_fresh():
         )
 
 
-def test_explicit_provider_timezone_mandatory():
+def test_provider_timezone_is_explicit_or_logged_Japan_local_inference():
     aware = datetime.fromisoformat("2026-11-01T15:25:00+09:00")
     value = '<time class="hr-horseResult__update" datetime="2026-11-01T15:25:00+09:00"></time>'
-    verified_provider_time(value, aware)
-    with pytest.raises(ValueError, match="timezone"):
-        verified_provider_time(
-            value.replace("+09:00", ""), aware,
-        )
+    verified = verified_provider_time(value, aware)
+    assert verified["timezone_interpretation"] == "provider_explicit_timezone"
+    # Public Japanese source actually emits a full ISO date and clock
+    # without a timezone: source literal is kept, and Japan-local provenance
+    # must be explicit in the lock manifest, not falsely source-attributed.
+    inferred = verified_provider_time(value.replace("+09:00", ""), aware)
+    assert inferred["provider_datetime_literal"] == "2026-11-01T15:25:00"
+    assert inferred["timezone_interpretation"].endswith("Asia_Tokyo")
     with pytest.raises(ValueError, match="missing"):
         verified_provider_time("<div>15:25 update</div>", aware)
+    with pytest.raises(ValueError, match="full ISO"):
+        verified_provider_time(
+            value.replace("2026-11-01T15:25:00+09:00", "15:25"), aware,
+        )
     with pytest.raises(ValueError, match="disagrees"):
         verified_provider_time(
             value.replace("15:25:00", "15:26:00"), aware,
