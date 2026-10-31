@@ -7,7 +7,6 @@ No model promotion or alteration of November pre-off T-10 lock is permitted.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 from pathlib import Path
 
@@ -21,7 +20,7 @@ from keiba_place_lab.trio_bridge_v1 import (
     invert_subset_marginals, plackett_luce_trio, project_exactly_three,
 )
 from keiba_place_lab.trio_residual_v2 import (
-    CANDIDATE_SETS, FEATURE_NAMES, RIDGE, _prepare, fit_residual,
+    CANDIDATE_SETS, RIDGE, _prepare, fit_residual,
     residual_distribution, score_probabilities,
 )
 from research_trio_f3_v1 import (
