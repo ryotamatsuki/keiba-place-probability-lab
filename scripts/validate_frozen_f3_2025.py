@@ -15,7 +15,6 @@ import json
 import re
 from pathlib import Path
 
-import joblib
 import numpy as np
 import pandas as pd
 from catboost import Pool
@@ -308,7 +307,8 @@ def race_joint_summary(frame:pd.DataFrame, fitted:dict,
         )
         winner=tuple(sorted(horses[g.top3_label.to_numpy(int).astype(bool)].tolist()))
         idx=np.flatnonzero(np.all(item["trios"]==winner,axis=1))
-        if len(idx)!=1: raise ValueError("Actual trio not included in 2025 race")
+        if len(idx)!=1:
+            raise ValueError("Actual trio not included in 2025 race")
         row={
             "race_date":g.race_date.iloc[0].date().isoformat(),
             "race_id":race_id, "field_size":len(g),
@@ -401,7 +401,8 @@ def main():
     scored=frame[["race_id","race_date","horse_id","horse_no",
                    "top3_label","historical_win_odds"]].copy()
     probabilities=frozen_model_probabilities(frozen,frame)
-    for name,prob in probabilities.items():scored[name]=prob
+    for name,prob in probabilities.items():
+        scored[name]=prob
     scored.to_csv(a.out/"2025_frozen_F3_runner_predictions.csv",index=False)
     audit.update({
         "status":"STRICT_2025_OUT_OF_TIME_SAME_FROZEN_ENSEMBLE_FINAL_ODDS_ONLY",
