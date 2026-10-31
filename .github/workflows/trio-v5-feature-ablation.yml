@@ -1,0 +1,81 @@
+name: Trio V5 as-of feature ablation 2023 OOF -> PR40 2024 exact joint
+on:
+  push:
+    branches: [research/trio-feature-ablation-v5-20261031]
+    paths: [.github/workflows/trio-v5-feature-ablation.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: trio-v5-asof-2024
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/trio-feature-ablation-v5-20261031
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original fixed JRA historical feature requirements
+        run: |
+          python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+          python -m pip install 'catboost==1.2.10' 'lightgbm==4.7.0'
+          python -m pip freeze > /tmp/v5_all_dependencies.txt
+      - name: Counterfactual target leak and as-of historical invariant tests
+        run: |
+          ruff check --select E4,E7,E9,F src/keiba_place_lab/trio_feature_v5.py scripts/research_trio_v5_feature_ablation.py tests/test_trio_feature_v5.py
+          pytest -q tests/test_trio_feature_v5.py tests/test_trio_bridge_v1.py tests/test_trio_pool_v4.py
+      - name: Obtain exact immutable historical training panel originally used in PR40
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Retrieve authentic JRA results V1 source for historical features
+        run: |
+          python - <<'PY'
+          import kagglehub
+          print(kagglehub.dataset_download(
+              'noriyukifurufuru/japan-horse-racing-2010-2025/versions/1',
+              output_dir='/tmp/kaggle_trio_v5'
+          ))
+          PY
+      - name: Run prereg 2023 inner-OOF feature selection and strict 2024 full race test
+        env:
+          OMP_NUM_THREADS: '2'
+          OPENBLAS_NUM_THREADS: '2'
+          MKL_NUM_THREADS: '2'
+        run: |
+          set -euo pipefail
+          RESULT=$(find /tmp/kaggle_trio_v5 -name keiba_results.csv -print -quit)
+          RACES=$(find /tmp/kaggle_trio_v5 -name keiba_races.csv -print -quit)
+          test -s "$RESULT" && test -s "$RACES"
+          python -u scripts/research_trio_v5_feature_ablation.py \
+            --historical-dir /tmp/stage36/data/historical_processed/stage36_freeze_v1 \
+            --results "$RESULT" --races "$RACES" \
+            --matched-oof analysis/trio_v3_matched_oof/2023_2024_matched_800_400_oof.csv \
+            --pr40-2023 analysis/trio_v3_matched_oof/2023_training_year_diagnostics.csv \
+            --pr40-2024 analysis/trio_v3_matched_oof/2024_comparable_complete_trio_scores.csv \
+            --out analysis/trio_v5_feature_ablation
+      - name: Persist source audit, all-combination probabilities and no-promotion report
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          cp /tmp/v5_all_dependencies.txt analysis/trio_v5_feature_ablation/dependencies.txt
+          git add analysis/trio_v5_feature_ablation/
+          git commit -m 'research: record as-of feature block ablation on genuine 2023 OOF and PR40 2024 all tickets'
+          for i in 1 2 3 4 5; do
+            git fetch origin research/trio-feature-ablation-v5-20261031
+            git rebase origin/research/trio-feature-ablation-v5-20261031
+            if git push origin HEAD:research/trio-feature-ablation-v5-20261031; then exit 0; fi
+          done
+          exit 1
