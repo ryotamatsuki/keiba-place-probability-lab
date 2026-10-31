@@ -28,7 +28,7 @@ jobs:
       - name: Reject unsafe F3 source/regression before expensive data
         run: |
           ruff check .
-          pytest -q tests/test_tennosho_preoff_20261101.py
+          pytest -q tests/test_tennosho_preoff_20261101.py tests/test_tennosho_f3_prior_builder.py
       - name: Refresh all 2026 JRA flat results to last fully completed Oct 30
         shell: bash
         run: |
@@ -73,6 +73,17 @@ jobs:
             --manifest /tmp/tennosho_2026_raw.manifest.json \
             --cache /tmp/tennosho-f3-raw-cache \
             --max-workers 8
+      - name: Preserve checksum-verifiable complete 2026 F3 sources for reuse
+        uses: actions/upload-artifact@v4
+        with:
+          name: tennosho-f3-2026-complete-raw-and-history
+          path: |
+            /tmp/tennosho_2026_raw.csv
+            /tmp/tennosho_2026_raw.manifest.json
+            data/live_history/2026/current.json
+            ${{ env.PRIOR_2026_PARQUET }}
+          if-no-files-found: error
+          retention-days: 7
       - name: Restore exact frozen standardized 2010-2025 historical base
         uses: actions/download-artifact@v4
         with:
