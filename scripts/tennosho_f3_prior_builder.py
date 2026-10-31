@@ -221,14 +221,21 @@ def _verify_umanity_jockey_profiles(
                 raise ValueError("Published jockey abbreviation mismatch")
             profile_url = urljoin(race_url, jockey["href"])
             p = urlparse(profile_url)
+            if p.scheme == "http" and p.netloc in ("umanity.jp", "www.umanity.jp"):
+                profile_url = p._replace(scheme="https").geturl()
+                p = urlparse(profile_url)
             profile_id = parse_qs(p.query).get("jockey_id", [])
             if (
-                p.scheme != "https" or p.netloc != "umanity.jp"
+                p.scheme != "https"
+                or p.netloc not in ("umanity.jp", "www.umanity.jp")
                 or p.path != "/racing/database/jockey.php"
                 or len(profile_id) != 1
                 or re.fullmatch(r"\d{4,8}", profile_id[0]) is None
             ):
-                raise ValueError("Published jockey profile identity URL invalid")
+                raise ValueError(
+                    f"Published jockey profile identity URL invalid: "
+                    f"{alias!r} {profile_url!r}"
+                )
             profile_record = None
             profile_status = "full_name_verified"
             try:
