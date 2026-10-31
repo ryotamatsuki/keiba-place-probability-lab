@@ -1,0 +1,33 @@
+name: Audit Actions artifact storage (read-only)
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/tennosho-akiten-preoff-20261101]
+    paths: [.github/workflows/audit-actions-artifact-storage.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  list-artifacts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const items = await github.paginate(github.rest.actions.listArtifactsForRepo, {
+              owner, repo, per_page: 100,
+            });
+            const sizes = items.map(x => Number(x.size_in_bytes) || 0);
+            const total = sizes.reduce((a,b) => a+b,0);
+            const sorted = items.map(x=>({
+              id:x.id,name:x.name,bytes:x.size_in_bytes,
+              created_at:x.created_at,expires_at:x.expires_at,
+              expired:x.expired,run_id:x.workflow_run?.id,
+            })).sort((a,b)=>b.bytes-a.bytes);
+            core.info(JSON.stringify({kind:'artifact_inventory',count:items.length,
+              total_bytes:total,total_MiB:Math.round(total/1048576*100)/100,
+              top:sorted.slice(0,100)},null,2));
+            core.info('This is a READ-ONLY inventory. No artifacts were deleted.');
