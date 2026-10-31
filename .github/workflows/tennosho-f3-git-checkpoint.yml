@@ -1,0 +1,286 @@
+name: Tennosho F3 quota-free Git checkpoint rebuild
+on:
+  push:
+    branches: [research/tennosho-akiten-preoff-20261101]
+    paths: [.github/workflows/tennosho-f3-git-checkpoint.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: tennosho-f3-git-checkpoint
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/tennosho-akiten-preoff-20261101
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Set up dependencies and validate deterministic checks
+        run: |
+          python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+          ruff check .
+          pytest -q tests/test_tennosho_preoff_20261101.py tests/test_tennosho_f3_prior_builder.py tests/test_tennosho_f3_raw_combine.py
+      - name: Refresh exact JRA flat results through 2026-10-30
+        shell: bash
+        run: |
+          set -uo pipefail
+          if ! python -u scripts/update_live_history.py \
+               --through 2026-10-30 --recheck-days 0 --max-workers 8 \
+               --root data/live_history/2026 --cache /tmp/tennosho-live-cache \
+               --source yahoo; then
+            python - <<'PY'
+          from pathlib import Path
+          import json
+          import hashlib
+          from keiba_place_lab.live_history import RESULT_URL, DENMA_URL
+          root = Path("data/live_history/2026")
+          failed = json.loads((root/"last_failure.json").read_text())["failed_races"]
+          cache = Path("/tmp/tennosho-live-cache")
+          for rid in failed:
+              for url in (RESULT_URL.format(provider_id=rid[2:]),
+                          DENMA_URL.format(provider_id=rid[2:])):
+                  key = hashlib.sha256(url.encode()).hexdigest()
+                  for suffix in (".html", ".json"):
+                      (cache / (key+suffix)).unlink(missing_ok=True)
+          print("Yahoo-only failures for independently verified alternate source:",len(failed))
+          PY
+            python -u scripts/update_live_history.py \
+                 --through 2026-10-30 --recheck-days 0 --max-workers 8 \
+                 --root data/live_history/2026 --cache /tmp/tennosho-live-cache \
+                 --source umanity
+          fi
+      - name: Verify and checkpoint complete 2026 history directly to Git (artifact quota independent)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, hashlib
+          from pathlib import Path
+          p=Path('data/live_history/2026')
+          m=json.loads((p/'current.json').read_text())
+          assert m['complete_through']=='2026-10-30'
+          source=p/'snapshots'/m['snapshot_id']/'jra_flat_history.parquet'
+          assert hashlib.sha256(source.read_bytes()).hexdigest()==m['history_sha256']
+          assert source.stat().st_size<100_000_000
+          print('PREPARED_FULL_YEAR',m['snapshot_id'],source.stat().st_size)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f data/live_history/2026/current.json
+          git add -f data/live_history/2026/snapshots/*/jra_flat_history.parquet
+          git diff --cached --quiet && exit 0
+          git commit -m 'research: checkpoint verified Oct30 2026 full JRA history in Git'
+          for retry in 1 2 3 4 5 6 7 8 9 10; do
+            git fetch origin research/tennosho-akiten-preoff-20261101
+            git rebase origin/research/tennosho-akiten-preoff-20261101
+            if git push origin HEAD:research/tennosho-akiten-preoff-20261101; then exit 0; fi
+            sleep 2
+          done
+          exit 1
+
+  capture:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/tennosho-akiten-preoff-20261101
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -e '.[dev,historical]' -c requirements-scope.txt
+      - name: Capture independently validated historic raw evidence for one shard
+        run: |
+          python - <<'PY' >> "$GITHUB_ENV"
+          import json
+          from pathlib import Path
+          root=Path('data/live_history/2026')
+          m=json.loads((root/'current.json').read_text())
+          assert m['complete_through']=='2026-10-30'
+          print('PRIOR_2026_PARQUET='+str(root/'snapshots'/m['snapshot_id']/'jra_flat_history.parquet'))
+          PY
+          mkdir -p "analysis/tennosho_preoff_20261101/f3_checkpoint/shard-${{ matrix.shard }}"
+          python -u scripts/tennosho_f3_raw_audit.py \
+            --history "$PRIOR_2026_PARQUET" \
+            --output analysis/tennosho_preoff_20261101/f3_checkpoint/shard-${{ matrix.shard }}/2026_raw.csv \
+            --manifest analysis/tennosho_preoff_20261101/f3_checkpoint/shard-${{ matrix.shard }}/2026_raw.manifest.json \
+            --cache /tmp/tennosho-f3-raw-cache \
+            --shard-index ${{ matrix.shard }} --shard-count 12 --max-workers 6
+      - name: Checkpoint each completed shard independently in Git
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f analysis/tennosho_preoff_20261101/f3_checkpoint/shard-${{ matrix.shard }}/2026_raw.csv
+          git add -f analysis/tennosho_preoff_20261101/f3_checkpoint/shard-${{ matrix.shard }}/2026_raw.manifest.json
+          git commit -m "research: checkpoint verified Oct30 F3 source shard ${{ matrix.shard }}/12"
+          for retry in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
+            git fetch origin research/tennosho-akiten-preoff-20261101
+            if git rebase origin/research/tennosho-akiten-preoff-20261101 && \
+               git push origin HEAD:research/tennosho-akiten-preoff-20261101; then exit 0; fi
+            sleep 3
+          done
+          exit 1
+      - name: Preserve failure manifest to diagnose an incomplete shard without artifact storage
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          f="analysis/tennosho_preoff_20261101/f3_checkpoint/shard-${{ matrix.shard }}/2026_raw.manifest.json"
+          test -f "$f" || exit 0
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f "$f"
+          git diff --cached --quiet && exit 0
+          git commit -m "research: record incomplete raw F3 source shard ${{ matrix.shard }}"
+          for retry in 1 2 3 4 5 6 7 8 9 10; do
+            git fetch origin research/tennosho-akiten-preoff-20261101
+            if git rebase origin/research/tennosho-akiten-preoff-20261101 && \
+               git push origin HEAD:research/tennosho-akiten-preoff-20261101; then exit 0; fi
+            sleep 2
+          done
+          exit 1
+
+  reconstruct:
+    needs: [prepare, capture]
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/tennosho-akiten-preoff-20261101
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: |
+          python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+          python -m pip install 'catboost==1.2.10' 'lightgbm==4.7.0'
+      - name: Assemble 12 Git-checkpointed full-field shards without Actions artifact storage
+        run: |
+          python - <<'PY' >> "$GITHUB_ENV"
+          import json
+          from pathlib import Path
+          root=Path('data/live_history/2026')
+          m=json.loads((root/'current.json').read_text())
+          assert m['complete_through']=='2026-10-30'
+          print('PRIOR_2026_PARQUET='+str(root/'snapshots'/m['snapshot_id']/'jra_flat_history.parquet'))
+          PY
+          python -u scripts/tennosho_f3_raw_combine.py \
+            --history "$PRIOR_2026_PARQUET" \
+            --shards analysis/tennosho_preoff_20261101/f3_checkpoint \
+            --shard-count 12 \
+            --output /tmp/tennosho_2026_raw.csv \
+            --manifest /tmp/tennosho_2026_raw.manifest.json
+      - name: Restore exact frozen standardized 2010-2025 historical base
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Get immutable original Kaggle V1 raw results and race metadata
+        run: |
+          python - <<'PY'
+          import kagglehub
+          print(kagglehub.dataset_download(
+             'noriyukifurufuru/japan-horse-racing-2010-2025/versions/1',
+             output_dir='/tmp/kaggle_v1'
+          ))
+          PY
+          RESULT=$(find /tmp/kaggle_v1 -name keiba_results.csv -print -quit)
+          RACES=$(find /tmp/kaggle_v1 -name keiba_races.csv -print -quit)
+          test -n "$RESULT" && test -n "$RACES"
+          echo "RESULTS_CSV=$RESULT" >> "$GITHUB_ENV"
+          echo "RACES_CSV=$RACES" >> "$GITHUB_ENV"
+      - name: Save exact 17-horse roster before tomorrow's odds lock
+        run: |
+          python - <<'PY'
+          import json, requests
+          from pathlib import Path
+          cfg=json.loads(Path('config/tennosho_preoff_20261101.json').read_text())
+          r=requests.get(cfg['roster_url'],timeout=(10,25),
+              headers={'User-Agent':'keiba-place-lab/0.1 research'})
+          r.raise_for_status()
+          Path('/tmp/tennosho_roster.html').write_text(r.text)
+          PY
+      - name: Compute original F3 feature registry on verified all-JRA 2026 history
+        run: |
+          python -u scripts/tennosho_f3_prior_builder.py \
+            --standardized-base /tmp/stage36/data/historical_processed/stage36_freeze_v1/standardized_jra_flat_source_v1.parquet \
+            --live-root data/live_history/2026 \
+            --results-csv "$RESULTS_CSV" --races-csv "$RACES_CSV" \
+            --inventory analysis/tennosho_preoff_20261101/history_inventory_asof_20261030.json \
+            --roster-html /tmp/tennosho_roster.html \
+            --extra-csv /tmp/tennosho_2026_raw.csv \
+            --extra-manifest /tmp/tennosho_2026_raw.manifest.json \
+            --config config/tennosho_preoff_20261101.json \
+            --cache /tmp/tennosho-f3-raw-cache \
+            --output analysis/tennosho_preoff_20261101/prior_f3_features.csv \
+            --manifest analysis/tennosho_preoff_20261101/prior_f3_features.manifest.json
+      - name: Independent 17-horse 47 numeric and 4 categorical source assertions
+        run: |
+          python - <<'PY'
+          import hashlib, json, pandas as pd
+          from pathlib import Path
+          folder=Path('analysis/tennosho_preoff_20261101')
+          csv=folder/'prior_f3_features.csv'
+          meta=json.loads((folder/'prior_f3_features.manifest.json').read_text())
+          df=pd.read_csv(csv,dtype={'race_id':str,'horse_id':str})
+          assert len(df)==17 and df.horse_no.nunique()==17
+          assert df.race_id.eq('202605041111').all()
+          assert meta['feature_csv_sha256']==hashlib.sha256(csv.read_bytes()).hexdigest()
+          assert meta['actual_2026_feed_complete_through']=='2026-10-30'
+          assert meta['history_complete_for_all_entrants'] is True
+          assert len(meta['horse_coverage'])==17
+          assert all(r['expected']==r['actual'] and r['actual']>=3 for r in meta['horse_coverage'])
+          assert meta['last3f_mass_early_elo_coverage']['strength_elo_prior']==17
+          assert len(meta['feature_numeric_prior_only'])==47
+          assert len(meta['feature_categorical'])==4
+          print('PASS: 17 independently verified prior F3 vectors; no odds or target results')
+          PY
+      - name: Publish immutable F3 source vectors to the research branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/tennosho_preoff_20261101/prior_f3_features.csv \
+                  analysis/tennosho_preoff_20261101/prior_f3_features.manifest.json
+          git commit -m 'research: freeze verified prior-only F3 inputs for all 17 Tennosho horses'
+          for try in 1 2 3 4 5; do
+            git fetch origin research/tennosho-akiten-preoff-20261101
+            git rebase origin/research/tennosho-akiten-preoff-20261101
+            if git push origin HEAD:research/tennosho-akiten-preoff-20261101; then exit 0; fi
+          done
+          exit 1
+      - name: Keep raw-source provenance for diagnosis if final modeling fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tennosho-f3-postcapture-diagnostics
+          path: |
+            /tmp/tennosho_2026_raw.manifest.json
+            data/live_history/2026/current.json
+          if-no-files-found: ignore
+          retention-days: 7
