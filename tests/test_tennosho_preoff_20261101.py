@@ -1,9 +1,8 @@
 """No invented T-10 times, partial fields, stale odds or feature history."""
 from __future__ import annotations
 
-import json
 import sys
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
 from runpy import run_path
 
@@ -147,15 +146,7 @@ def test_f3_historical_source_requires_proven_complete_before_race(entrant_odds)
         "history_cutoff": "2026-10-31",
         "history_sha256": "a" * 64,
     }
-    got = _prior_features(
-        frame, meta,
-        required_horses=set(frame.horse_id),
-        expected_numeric=["career_top3_shrunk", "market_win_probability",
-                          "market_calibrated_top3_p"],
-        expected_categorical=["sex"],
-    )
-    # Missing sex fails; market variables are computed AFTER merging real odds.
-    assert got.shape[0] == len(frame) if "sex" in frame else True
+    # Missing sex fails; market variables are supplied after live odds merge.
     with pytest.raises(ValueError, match="incomplete prior features"):
         _prior_features(
             frame, meta,
