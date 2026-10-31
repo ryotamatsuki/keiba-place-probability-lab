@@ -1,35 +1,31 @@
-name: Tennosho F3 end-to-end all prior races and 17 starters
+name: Tennosho F3 resumable source shards and 17-horse rebuild
 on:
   push:
-    branches:
-      - research/tennosho-akiten-preoff-20261101
-    paths:
-      - .github/workflows/tennosho-f3-rebuild-v1.yml
+    branches: [research/tennosho-akiten-preoff-20261101]
+    paths: [.github/workflows/tennosho-f3-rebuild-v1.yml]
   workflow_dispatch:
 permissions:
   contents: write
   actions: read
+
 jobs:
-  rebuild:
+  prepare:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
         with:
           ref: research/tennosho-akiten-preoff-20261101
-          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: pip
-      - run: |
-          python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
-          python -m pip install 'catboost==1.2.10' 'lightgbm==4.7.0'
-      - name: Reject unsafe F3 source/regression before expensive data
+      - name: Install source tools and enforce source regression gates
         run: |
+          python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
           ruff check .
-          pytest -q tests/test_tennosho_preoff_20261101.py tests/test_tennosho_f3_prior_builder.py
-      - name: Refresh all 2026 JRA flat results to last fully completed Oct 30
+          pytest -q tests/test_tennosho_preoff_20261101.py tests/test_tennosho_f3_prior_builder.py tests/test_tennosho_f3_raw_combine.py
+      - name: Refresh exact JRA flat results through 2026-10-30
         shell: bash
         run: |
           set -uo pipefail
@@ -51,37 +47,152 @@ jobs:
                   key = hashlib.sha256(url.encode()).hexdigest()
                   for suffix in (".html", ".json"):
                       (cache / (key+suffix)).unlink(missing_ok=True)
-          print("Yahoo-only failures for selective Umanity alternate source:",len(failed))
+          print("Yahoo-only failures for independently verified alternate source:",len(failed))
           PY
             python -u scripts/update_live_history.py \
                  --through 2026-10-30 --recheck-days 0 --max-workers 8 \
                  --root data/live_history/2026 --cache /tmp/tennosho-live-cache \
                  --source umanity
           fi
+      - name: Save immutable full history plus HTTP source cache for all shards
+        run: |
+          python - <<'PY'
+          import json
+          import hashlib
+          import shutil
+          from pathlib import Path
+          source=Path("data/live_history/2026")
+          saved=Path("/tmp/tennosho-f3-prepared")
+          manifest=json.loads((source/"current.json").read_text())
+          assert manifest["complete_through"]=="2026-10-30"
+          original=source/"snapshots"/manifest["snapshot_id"]/"jra_flat_history.parquet"
+          assert hashlib.sha256(original.read_bytes()).hexdigest()==manifest["history_sha256"]
+          dst=saved/"snapshots"/manifest["snapshot_id"]
+          dst.mkdir(parents=True,exist_ok=True)
+          shutil.copyfile(original,dst/"jra_flat_history.parquet")
+          shutil.copyfile(source/"current.json",saved/"current.json")
+          print("Confirmed JRA 2026 snapshot",manifest["snapshot_id"])
+          PY
+          tar -czf /tmp/tennosho-f3-prepared/verified-html-cache.tgz -C /tmp tennosho-live-cache
+          sha256sum /tmp/tennosho-f3-prepared/verified-html-cache.tgz | sed 's|/tmp/tennosho-f3-prepared/||' > /tmp/tennosho-f3-prepared/verified-html-cache.tgz.sha256
+      - name: Preserve 2026 source snapshot and exact captured pages across jobs and retries
+        uses: actions/upload-artifact@v4
+        with:
+          name: tennosho-f3-2026-prepared-sources
+          path: /tmp/tennosho-f3-prepared/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 3
+
+  capture:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/tennosho-akiten-preoff-20261101
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -e '.[dev,historical]' -c requirements-scope.txt
+      - name: Download prepared source snapshots (no repeat history collection)
+        uses: actions/download-artifact@v4
+        with:
+          name: tennosho-f3-2026-prepared-sources
+          path: /tmp/tennosho-f3-prepared
+      - name: Restore and verify exact source HTML cache
+        run: |
+          cd /tmp/tennosho-f3-prepared
+          sha256sum -c verified-html-cache.tgz.sha256
+          tar -xzf verified-html-cache.tgz -C /tmp
           python - <<'PY' >> "$GITHUB_ENV"
           import json
           from pathlib import Path
-          current = json.loads(Path("data/live_history/2026/current.json").read_text())
-          assert current["complete_through"]=="2026-10-30"
-          print("PRIOR_2026_PARQUET=data/live_history/2026/snapshots/" + current["snapshot_id"] + "/jra_flat_history.parquet")
+          root=Path('/tmp/tennosho-f3-prepared')
+          sid=json.loads((root/'current.json').read_text())['snapshot_id']
+          print('PRIOR_2026_PARQUET='+str(root/'snapshots'/sid/'jra_flat_history.parquet'))
           PY
-      - name: Capture all published raw prior JRA flat last3f/jockey/trainer/going
+      - name: Capture and verify isolated full-field historical starter shard
         run: |
+          mkdir -p /tmp/tennosho-f3-shards/shard-${{ matrix.shard }}
           python -u scripts/tennosho_f3_raw_audit.py \
             --history "$PRIOR_2026_PARQUET" \
-            --output /tmp/tennosho_2026_raw.csv \
-            --manifest /tmp/tennosho_2026_raw.manifest.json \
+            --output /tmp/tennosho-f3-shards/shard-${{ matrix.shard }}/2026_raw.csv \
+            --manifest /tmp/tennosho-f3-shards/shard-${{ matrix.shard }}/2026_raw.manifest.json \
             --cache /tmp/tennosho-live-cache \
-            --max-workers 8
-      - name: Preserve checksum-verifiable complete 2026 F3 sources for reuse
+            --shard-index ${{ matrix.shard }} --shard-count 12 --max-workers 6
+      - name: Persist shard source hashes and runner evidence even if other shards fail
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tennosho-f3-raw-shard-${{ matrix.shard }}
+          path: /tmp/tennosho-f3-shards/
+          if-no-files-found: warn
+          retention-days: 7
+          compression-level: 3
+
+  reconstruct:
+    needs: [prepare, capture]
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/tennosho-akiten-preoff-20261101
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: |
+          python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+          python -m pip install 'catboost==1.2.10' 'lightgbm==4.7.0'
+      - uses: actions/download-artifact@v4
+        with:
+          name: tennosho-f3-2026-prepared-sources
+          path: /tmp/tennosho-f3-prepared
+      - name: Download independently completed shards (skip completed work on retry)
+        uses: actions/download-artifact@v4
+        with:
+          pattern: tennosho-f3-raw-shard-*
+          merge-multiple: true
+          path: /tmp/tennosho-f3-shards
+      - name: Restore immutable 2026 snapshot and HTTP evidence
+        run: |
+          cd /tmp/tennosho-f3-prepared
+          sha256sum -c verified-html-cache.tgz.sha256
+          tar -xzf verified-html-cache.tgz -C /tmp
+          mkdir -p "$GITHUB_WORKSPACE/data/live_history/2026"
+          cp current.json "$GITHUB_WORKSPACE/data/live_history/2026/current.json"
+          cp -a snapshots "$GITHUB_WORKSPACE/data/live_history/2026/"
+          python - <<'PY' >> "$GITHUB_ENV"
+          import json
+          from pathlib import Path
+          root=Path('data/live_history/2026')
+          sid=json.loads((root/'current.json').read_text())['snapshot_id']
+          print('PRIOR_2026_PARQUET='+str(root/'snapshots'/sid/'jra_flat_history.parquet'))
+          PY
+      - name: Verify all 12 persisted shards with exact all-starter identity and source SHA
+        run: |
+          python -u scripts/tennosho_f3_raw_combine.py \
+            --history "$GITHUB_WORKSPACE/$PRIOR_2026_PARQUET" \
+            --shards /tmp/tennosho-f3-shards --shard-count 12 \
+            --output /tmp/tennosho_2026_raw.csv \
+            --manifest /tmp/tennosho_2026_raw.manifest.json
+      - name: Save complete and verified 2026 raw source as reusable artifact
         uses: actions/upload-artifact@v4
         with:
           name: tennosho-f3-2026-complete-raw-and-history
           path: |
             /tmp/tennosho_2026_raw.csv
             /tmp/tennosho_2026_raw.manifest.json
-            data/live_history/2026/current.json
-            ${{ env.PRIOR_2026_PARQUET }}
+            /tmp/tennosho-f3-prepared/current.json
           if-no-files-found: error
           retention-days: 7
       - name: Restore exact frozen standardized 2010-2025 historical base
@@ -106,7 +217,7 @@ jobs:
           test -n "$RESULT" && test -n "$RACES"
           echo "RESULTS_CSV=$RESULT" >> "$GITHUB_ENV"
           echo "RACES_CSV=$RACES" >> "$GITHUB_ENV"
-      - name: Save exact T-minus-10 scheduled 17-horse roster without odds
+      - name: Save exact 17-horse roster before tomorrow's odds lock
         run: |
           python - <<'PY'
           import json, requests
@@ -117,7 +228,7 @@ jobs:
           r.raise_for_status()
           Path('/tmp/tennosho_roster.html').write_text(r.text)
           PY
-      - name: Compute original F3 numerical/categorical feature registry and 17 verified past histories
+      - name: Compute original F3 feature registry on verified all-JRA 2026 history
         run: |
           python -u scripts/tennosho_f3_prior_builder.py \
             --standardized-base /tmp/stage36/data/historical_processed/stage36_freeze_v1/standardized_jra_flat_source_v1.parquet \
@@ -128,30 +239,31 @@ jobs:
             --extra-csv /tmp/tennosho_2026_raw.csv \
             --extra-manifest /tmp/tennosho_2026_raw.manifest.json \
             --config config/tennosho_preoff_20261101.json \
+            --cache /tmp/tennosho-live-cache \
             --output analysis/tennosho_preoff_20261101/prior_f3_features.csv \
             --manifest analysis/tennosho_preoff_20261101/prior_f3_features.manifest.json
-      - name: Independently assert exactly 17 ready prior vectors and strong source hashes
+      - name: Independent 17-horse 47 numeric and 4 categorical source assertions
         run: |
           python - <<'PY'
           import hashlib, json, pandas as pd
           from pathlib import Path
-          prefix=Path('analysis/tennosho_preoff_20261101')
-          data=prefix/'prior_f3_features.csv'
-          meta=json.loads((prefix/'prior_f3_features.manifest.json').read_text())
-          frame=pd.read_csv(data,dtype={'race_id':str,'horse_id':str})
-          assert len(frame)==17 and frame.horse_no.nunique()==17
-          assert frame.race_id.eq('202605041111').all()
-          assert meta['feature_csv_sha256']==hashlib.sha256(data.read_bytes()).hexdigest()
+          folder=Path('analysis/tennosho_preoff_20261101')
+          csv=folder/'prior_f3_features.csv'
+          meta=json.loads((folder/'prior_f3_features.manifest.json').read_text())
+          df=pd.read_csv(csv,dtype={'race_id':str,'horse_id':str})
+          assert len(df)==17 and df.horse_no.nunique()==17
+          assert df.race_id.eq('202605041111').all()
+          assert meta['feature_csv_sha256']==hashlib.sha256(csv.read_bytes()).hexdigest()
           assert meta['actual_2026_feed_complete_through']=='2026-10-30'
           assert meta['history_complete_for_all_entrants'] is True
           assert len(meta['horse_coverage'])==17
-          assert all(x['expected']==x['actual'] and x['actual']>=3 for x in meta['horse_coverage'])
+          assert all(r['expected']==r['actual'] and r['actual']>=3 for r in meta['horse_coverage'])
           assert meta['last3f_mass_early_elo_coverage']['strength_elo_prior']==17
           assert len(meta['feature_numeric_prior_only'])==47
           assert len(meta['feature_categorical'])==4
-          print('PASS: 17 independently verified prior F3 vectors, 47 numeric and 4 categorical')
+          print('PASS: 17 independently verified prior F3 vectors; no odds or target results')
           PY
-      - name: Publish only source-verified F3 prior features for later timestamped T-10 lock
+      - name: Publish immutable F3 source vectors to the research branch
         shell: bash
         run: |
           set -euo pipefail
@@ -166,13 +278,13 @@ jobs:
             if git push origin HEAD:research/tennosho-akiten-preoff-20261101; then exit 0; fi
           done
           exit 1
-      - name: Capture only raw-data errors if F3 could not be rebuilt
+      - name: Keep raw-source provenance for diagnosis if final modeling fails
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: tennosho-f3-source-failure-diagnostics
+          name: tennosho-f3-postcapture-diagnostics
           path: |
             /tmp/tennosho_2026_raw.manifest.json
-            data/live_history/2026/last_failure.json
+            data/live_history/2026/current.json
           if-no-files-found: ignore
           retention-days: 7
