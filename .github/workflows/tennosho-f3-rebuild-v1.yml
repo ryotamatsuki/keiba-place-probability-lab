@@ -117,16 +117,16 @@ jobs:
             --extra-csv /tmp/tennosho_2026_raw.csv \
             --extra-manifest /tmp/tennosho_2026_raw.manifest.json \
             --config config/tennosho_preoff_20261101.json \
-            --output analysis/tennosho_preoff_20261101/prior_f3_features_asof_20261030.csv \
-            --manifest analysis/tennosho_preoff_20261101/prior_f3_features_asof_20261030.manifest.json
+            --output analysis/tennosho_preoff_20261101/prior_f3_features.csv \
+            --manifest analysis/tennosho_preoff_20261101/prior_f3_features.manifest.json
       - name: Publish only source-verified F3 prior features for later timestamped T-10 lock
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add analysis/tennosho_preoff_20261101/prior_f3_features_asof_20261030.csv \
-                  analysis/tennosho_preoff_20261101/prior_f3_features_asof_20261030.manifest.json
+          git add analysis/tennosho_preoff_20261101/prior_f3_features.csv \
+                  analysis/tennosho_preoff_20261101/prior_f3_features.manifest.json
           git commit -m 'research: freeze verified prior-only F3 inputs for all 17 Tennosho horses'
           for try in 1 2 3 4 5; do
             git fetch origin research/tennosho-akiten-preoff-20261101
