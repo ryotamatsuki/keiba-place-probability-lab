@@ -193,10 +193,6 @@ def evaluate(races: list[dict], trained: dict[str, dict] | None,
     for race in races:
         lineup = race["trios"]
         truth = race["actual_trio_idx"]
-        market_z = race["projected_market_weights"][[
-            np.searchsorted(np.sort(np.unique(lineup)), 0)
-        ]] if False else None
-        del market_z
         # Market maximum entropy has identical exactly-three distribution family
         # and comparable historical market recalibration as F3 V1.
         from scipy.special import logsumexp
