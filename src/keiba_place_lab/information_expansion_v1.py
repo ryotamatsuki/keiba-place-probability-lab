@@ -72,8 +72,14 @@ def _parse_mass(value: object) -> tuple[float, float]:
 
 
 def raw_observations(full: pd.DataFrame, results_path: Path,
-                     races_path: Path) -> tuple[pd.DataFrame, dict]:
-    """Match immutable official-date JRA starter keys, never source pseudo-dates."""
+                     races_path: Path, *, horse_id_normalizer=None
+                     ) -> tuple[pd.DataFrame, dict]:
+    """Match immutable official-date starter keys using optional audited ID namespace.
+
+    The default path preserves the frozen historical experiment. The
+    preoff-only runner may supply a strict JRA-ID canonicalizer so original
+    Kaggle IDs and normalized 2010-2026 history agree on the same horse.
+    """
     keys = ["race_id", "horse_id"]
     x = full.copy()
     for key in keys:
@@ -84,6 +90,8 @@ def raw_observations(full: pd.DataFrame, results_path: Path,
     results = _read_csv_select(results_path, RAW_RESULT_COLS, ids)
     results = results.rename(columns={"number": "source_horse_no"})
     results["horse_id"] = results.horse_id.astype(str)
+    if horse_id_normalizer is not None:
+        results["horse_id"] = results.horse_id.map(horse_id_normalizer)
     results = results.loc[results.horse_id.isin(set(x.horse_id))]
     if results.duplicated(keys).any():
         raise ValueError("Duplicate raw JRA horse/race keys")
