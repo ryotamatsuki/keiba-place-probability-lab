@@ -22,7 +22,7 @@ def make_race(n=7, label=(0, 1, 2), *, shift=0):
     q = project_exactly_three(p)
     w = invert_subset_marginals(q)
     triplets = np.array(list(combinations(range(n), 3)))
-    pl = np.exp((w[triplets].sum(axis=1) - np.max(w[triplets].sum(axis=1))))
+    pl = np.exp(w[triplets].sum(axis=1) - np.max(w[triplets].sum(axis=1)))
     pl /= pl.sum()
     market_sets = horses[triplets]
     pace = np.linspace(.1, .9, n)
