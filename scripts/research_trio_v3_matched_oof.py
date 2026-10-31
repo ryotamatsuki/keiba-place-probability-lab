@@ -14,13 +14,12 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from catboost import CatBoostClassifier, Pool
-from scipy.special import logit
-
 from freeze_tennosho_f3_20261101 import numeric_categorical
 from research_trio_f3_v1 import paired_day_ci
 from run_information_expansion_v1 import _build_pipeline
 from run_input_learning_a_v1 import feature_registry, prepare_dataset
 from run_model_families_c1 import CATBOOST_PARAMS, _categorical_input, _race_weight
+from scipy.special import logit
 from validate_frozen_f3_2025 import frozen_model_probabilities
 
 from keiba_place_lab.ensemble import apply_logit_calibrator, fit_logit_calibrator
@@ -176,7 +175,7 @@ def compile_complete_races(oo: pd.DataFrame, historical: pd.DataFrame,
         )
         out[year].append(prepared)
     summary = {
-        "input_full_field": int(len(complete)),
+        "input_full_field": len(complete),
         "after_raw_rank_audit": int(matched.race_id.nunique()),
         "2023_races": len(out[2023]), "2024_races": len(out[2024]),
         "cohort_is_full_field": True,
