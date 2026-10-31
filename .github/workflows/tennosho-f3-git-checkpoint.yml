@@ -29,35 +29,19 @@ jobs:
           python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
           ruff check .
           pytest -q tests/test_tennosho_preoff_20261101.py tests/test_tennosho_f3_prior_builder.py tests/test_tennosho_f3_raw_combine.py
-      - name: Refresh exact JRA flat results through 2026-10-30
-        shell: bash
+      - name: Reuse SHA-verified 2026-10-30 snapshot already checkpointed by run 41169826236
         run: |
-          set -uo pipefail
-          if ! python -u scripts/update_live_history.py \
-               --through 2026-10-30 --recheck-days 0 --max-workers 8 \
-               --root data/live_history/2026 --cache /tmp/tennosho-live-cache \
-               --source yahoo; then
-            python - <<'PY'
+          python - <<'PY'
+          import json, hashlib
           from pathlib import Path
-          import json
-          import hashlib
-          from keiba_place_lab.live_history import RESULT_URL, DENMA_URL
-          root = Path("data/live_history/2026")
-          failed = json.loads((root/"last_failure.json").read_text())["failed_races"]
-          cache = Path("/tmp/tennosho-live-cache")
-          for rid in failed:
-              for url in (RESULT_URL.format(provider_id=rid[2:]),
-                          DENMA_URL.format(provider_id=rid[2:])):
-                  key = hashlib.sha256(url.encode()).hexdigest()
-                  for suffix in (".html", ".json"):
-                      (cache / (key+suffix)).unlink(missing_ok=True)
-          print("Yahoo-only failures for independently verified alternate source:",len(failed))
+          p=Path('data/live_history/2026')
+          m=json.loads((p/'current.json').read_text())
+          assert m['complete_through']=='2026-10-30'
+          f=p/'snapshots'/m['snapshot_id']/'jra_flat_history.parquet'
+          assert f.is_file() and f.stat().st_size>100_000
+          assert hashlib.sha256(f.read_bytes()).hexdigest()==m['history_sha256']
+          print('REUSED_SHA256_VERIFIED_2026_SNAPSHOT',m['snapshot_id'],m['history_sha256'])
           PY
-            python -u scripts/update_live_history.py \
-                 --through 2026-10-30 --recheck-days 0 --max-workers 8 \
-                 --root data/live_history/2026 --cache /tmp/tennosho-live-cache \
-                 --source umanity
-          fi
       - name: Verify and checkpoint complete 2026 history directly to Git (artifact quota independent)
         shell: bash
         run: |
@@ -116,6 +100,15 @@ jobs:
           assert m['complete_through']=='2026-10-30'
           print('PRIOR_2026_PARQUET='+str(root/'snapshots'/m['snapshot_id']/'jra_flat_history.parquet'))
           PY
+          export PRIOR_2026_PARQUET="$(python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('data/live_history/2026')
+          m=json.loads((root/'current.json').read_text())
+          print(root/'snapshots'/m['snapshot_id']/'jra_flat_history.parquet')
+          PY
+          )"
+          test -s "$PRIOR_2026_PARQUET"
           mkdir -p "analysis/tennosho_preoff_20261101/f3_checkpoint/shard-${{ matrix.shard }}"
           python -u scripts/tennosho_f3_raw_audit.py \
             --history "$PRIOR_2026_PARQUET" \
@@ -185,6 +178,15 @@ jobs:
           assert m['complete_through']=='2026-10-30'
           print('PRIOR_2026_PARQUET='+str(root/'snapshots'/m['snapshot_id']/'jra_flat_history.parquet'))
           PY
+          export PRIOR_2026_PARQUET="$(python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('data/live_history/2026')
+          m=json.loads((root/'current.json').read_text())
+          print(root/'snapshots'/m['snapshot_id']/'jra_flat_history.parquet')
+          PY
+          )"
+          test -s "$PRIOR_2026_PARQUET"
           python -u scripts/tennosho_f3_raw_combine.py \
             --history "$PRIOR_2026_PARQUET" \
             --shards analysis/tennosho_preoff_20261101/f3_checkpoint \
@@ -274,13 +276,8 @@ jobs:
             if git push origin HEAD:research/tennosho-akiten-preoff-20261101; then exit 0; fi
           done
           exit 1
-      - name: Keep raw-source provenance for diagnosis if final modeling fails
+      - name: Preserve diagnostics without artifact storage
         if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: tennosho-f3-postcapture-diagnostics
-          path: |
-            /tmp/tennosho_2026_raw.manifest.json
-            data/live_history/2026/current.json
-          if-no-files-found: ignore
-          retention-days: 7
+        run: |
+          echo 'Final F3 reconstruction failed. Check logs and Git source manifests; no quota-limited artifact upload.'
+          test ! -f /tmp/tennosho_2026_raw.manifest.json || cat /tmp/tennosho_2026_raw.manifest.json | head -c 5000
