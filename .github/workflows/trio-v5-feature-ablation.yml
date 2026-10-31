@@ -3,7 +3,12 @@ name: Trio V5 as-of feature ablation 2023 OOF -> PR40 2024 exact joint
 on:
   push:
     branches: [research/trio-feature-ablation-v5-20261031]
-    paths: [.github/workflows/trio-v5-feature-ablation.yml]
+    paths:
+      - .github/workflows/trio-v5-feature-ablation.yml
+      - scripts/run_input_learning_a_v1.py
+      - scripts/research_trio_v5_feature_ablation.py
+      - src/keiba_place_lab/trio_feature_v5.py
+      - tests/test_trio_feature_v5.py
   workflow_dispatch:
 permissions:
   contents: write
