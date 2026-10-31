@@ -18,6 +18,11 @@ import pandas as pd
 
 from keiba_place_lab.live_history import RESULT_URL, CachedFetcher, _status_from_rank
 from keiba_place_lab.live_public import _identity, metadata
+from keiba_place_lab.live_umanity import (
+    identity as umanity_identity,
+    metadata as umanity_metadata,
+    source_id as umanity_source_id,
+)
 
 TARGET = "202605041111"
 SOURCE_CUTOFF = pd.Timestamp("2026-10-30")
@@ -84,6 +89,85 @@ def raw_result(html: str, provider_id: str) -> pd.DataFrame:
     return x
 
 
+def umanity_raw_result(html: str, race_id: str, race_date: pd.Timestamp) -> pd.DataFrame:
+    """Verified alternate result source for Yahoo 500s, using the same raw schema.
+
+    Never impute unobserved 3F, mass, running order, agent or going. The
+    independent full-field identity check in main() still applies.
+    """
+    soup, meta = umanity_metadata(html, race_id, race_date)
+    if meta["race_id"] == TARGET or meta["race_date"] > SOURCE_CUTOFF:
+        raise ValueError("Target or future race in alternate result source")
+    tables = [t for t in soup.select("table") if t.select_one("td.td_order")]
+    if len(tables) != 1:
+        raise ValueError("Alternate published full result table absent")
+    header = soup.get_text(" ", strip=True).split("結果払戻", maxsplit=1)[0]
+    condition_match = re.search(r"馬場\s*(稍重|不良|良|重)", header)
+    if not condition_match:
+        raise ValueError("Alternate published race going missing")
+    going = condition_match[1]
+    rows = []
+    for tr in tables[0].select("tr"):
+        c = tr.find_all("td", recursive=False)
+        if not c:
+            continue
+        if len(c) < 11:
+            raise ValueError("Incomplete alternate historical raw result")
+        rank = c[0].get_text(" ", strip=True).replace(" ", "").removesuffix("着")
+        rank = {"消": "取消", "除": "除外", "止": "中止", "失": "失格"}.get(rank, rank)
+        status, starter, _ = _status_from_rank(rank)
+        if not starter:
+            continue
+        hid, _ = umanity_identity(c[3])
+        horse_no = int(c[1].get_text(strip=True))
+        mass = re.search(
+            r"(?<!\d)([3-7]\d{2})\s*([+-]\d+)(?!\d)",
+            c[3].get_text(" ", strip=True),
+        )
+        # Umanity shows passage squares followed by "後3F" in cell 7.
+        passage = c[7].get_text(" ", strip=True)
+        times = re.findall(r"(?<![\d.])([2-6]\d\.\d)(?!\d)", passage)
+        ahead = passage[:passage.rfind(times[-1])].strip() if times else passage
+        blocks = re.findall(r"\b\d{1,2}\b", ahead)
+        if len(blocks) > 4:
+            raise ValueError("Alternate passage has >4 corners")
+        jockey = c[5].find("a")
+        trainer = c[10].find("a")
+        jockey_name = (
+            jockey.get_text(strip=True) if jockey else
+            re.sub(r"\s*[\d.]+$", "", c[5].get_text(" ", strip=True)).strip()
+        )
+        trainer_name = (
+            trainer.get_text(strip=True) if trainer else
+            c[10].get_text(" ", strip=True).split(" ")[0]
+        )
+        rows.append({
+            "race_id": race_id,
+            "horse_id": hid,
+            "horse_no": horse_no,
+            "race_date": pd.Timestamp(race_date).date().isoformat(),
+            "rank": rank,
+            "last_3f": times[-1] if times else None,
+            "passing": "-".join(blocks) if blocks and meta["turn_direction"] != "straight" else None,
+            "horse_weight": f"{mass[1]}({mass[2]})" if mass else None,
+            "jockey_name": jockey_name or None,
+            "trainer": trainer_name or None,
+            "track_condition": going,
+            "finish_status": status,
+        })
+    if not rows:
+        raise ValueError("No independently identified alternate prior runners")
+    x = pd.DataFrame(rows)
+    if x.duplicated(["race_id", "horse_id"]).any() or x.horse_no.duplicated().any():
+        raise ValueError("Duplicate alternate runner identity")
+    if x.jockey_name.notna().mean() < .95 or x.trainer.notna().mean() < .95:
+        raise ValueError("Alternate jockey/trainer incomplete")
+    finished = x.finish_status.eq("finished")
+    if finished.any() and x.loc[finished, "last_3f"].notna().mean() < .9:
+        raise ValueError("Alternate published 3F incomplete")
+    return x
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--history", type=Path, required=True)
@@ -110,11 +194,38 @@ def main():
         history = history.loc[history.race_id.isin(ids)].copy()
     race_ids = sorted(set(history.race_id))
     fetcher = CachedFetcher(args.cache, pause_seconds=.5)
+    alt_fetcher = CachedFetcher(args.cache / "umanity", pause_seconds=1.)
     def one(rid: str):
-        url = RESULT_URL.format(provider_id=rid[2:])
-        html, record = fetcher.fetch(url)
-        parsed = raw_result(html, rid[2:])
-        expected = history.loc[history.race_id.eq(rid), ["horse_id", "horse_no"]].copy()
+        cohort = history.loc[history.race_id.eq(rid)].copy()
+        expected = cohort[["horse_id", "horse_no"]].copy()
+        date = pd.Timestamp(cohort.race_date.iloc[0])
+        published_source = str(cohort.result_source_url.iloc[0]) if "result_source_url" in cohort else ""
+        selected_alt = published_source.startswith("https://umanity.jp/")
+        if selected_alt:
+            source_rid = umanity_source_id(rid, date)
+            alt_url = f"https://umanity.jp/racing/result.php?race_id={source_rid}"
+            html, record = alt_fetcher.fetch(alt_url)
+            parsed = umanity_raw_result(html, rid, date)
+        else:
+            url = RESULT_URL.format(provider_id=rid[2:])
+            try:
+                html, record = fetcher.fetch(url)
+                parsed = raw_result(html, rid[2:])
+            except (ValueError, RuntimeError, OSError) as exc:
+                # Parsing failures must not quietly accept partial raw rows;
+                # the replacement is separately validated by exact race and
+                # complete official starter identities below.
+                source_rid = umanity_source_id(rid, date)
+                alt_url = f"https://umanity.jp/racing/result.php?race_id={source_rid}"
+                print(json.dumps({"alternate_source": rid, "reason": str(exc)[:150]}), flush=True)
+                html, record = alt_fetcher.fetch(alt_url)
+                parsed = umanity_raw_result(html, rid, date)
+            except Exception as exc:  # noqa: BLE001 - HTTP status and timeout only
+                source_rid = umanity_source_id(rid, date)
+                alt_url = f"https://umanity.jp/racing/result.php?race_id={source_rid}"
+                print(json.dumps({"alternate_source": rid, "reason": str(exc)[:150]}), flush=True)
+                html, record = alt_fetcher.fetch(alt_url)
+                parsed = umanity_raw_result(html, rid, date)
         actual = parsed[["horse_id", "horse_no"]].copy()
         if len(actual) != len(expected) or not actual.sort_values(
             ["horse_id", "horse_no"]).reset_index(drop=True).equals(
