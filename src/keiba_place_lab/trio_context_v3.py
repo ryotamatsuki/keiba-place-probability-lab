@@ -9,7 +9,7 @@ import numpy as np
 from scipy.optimize import minimize
 from scipy.special import logsumexp
 
-from .trio_residual_v2 import _prepare, score_probabilities
+from .trio_residual_v2 import _prepare
 
 V2_IDS = (0, 1, 2)
 # Main contextual specification is determined before examining new fold scores.
