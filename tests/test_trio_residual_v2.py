@@ -59,7 +59,6 @@ def test_v2_valid_probabilities_and_proper_score():
 
 
 def test_preknown_field_order_is_invariant():
-    r = make_race(n=9)
     idx = np.array([3, 1, 5, 2, 7, 0, 8, 6, 4])
     hs = np.arange(1, 10)
     q = project_exactly_three(np.linspace(.62, .07, 9))
