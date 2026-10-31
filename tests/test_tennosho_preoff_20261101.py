@@ -48,7 +48,7 @@ def test_market_field_all_starters_and_one_calibration(entrant_odds):
         required_horses=set(entrant_odds.horse_id.astype(str)),
     )
     assert len(result) == 17
-    assert set((*MARKET_FIELD, *MARKET_SPLITS)).issubset(result.columns)
+    assert {*MARKET_FIELD, *MARKET_SPLITS}.issubset(result.columns)
     assert np.isclose(result.market_p_win.sum(), 1, atol=1e-10)
     assert np.isclose(result.market_p_top3.sum(), 3, atol=1e-10)
     assert np.isfinite(result[list(MARKET_FIELD)].to_numpy(float)).all()
