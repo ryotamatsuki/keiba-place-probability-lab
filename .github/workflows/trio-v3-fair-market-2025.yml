@@ -1,4 +1,5 @@
 name: Fair 2025 trio market maximum entropy comparison
+# Use strictly same 2025 immutable source and updated static benchmark checks.
 on:
   push:
     branches: [research/trio-v3-matched-oof-20261031]
