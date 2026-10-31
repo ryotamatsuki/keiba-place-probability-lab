@@ -41,7 +41,7 @@ def race(n=9, front_count=3, actual=(1, 2, 3), *, surface="turf", distance=2000)
 def test_all_combinations_and_probability_conservation():
     e=race(17)
     assert e["context_matrix"].shape==(680,9)
-    for name, included in CANDIDATES.items():
+    for included in CANDIDATES.values():
         probability=joint_probability(e,np.zeros(len(included)),included)
         assert len(probability)==680
         assert probability.sum()==pytest.approx(1)
