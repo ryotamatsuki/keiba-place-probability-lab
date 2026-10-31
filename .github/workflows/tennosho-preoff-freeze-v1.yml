@@ -1,4 +1,5 @@
 name: Tennosho 2026 pre-off frozen research model and source preflight
+# Re-run after strict prospective timestamp and no-leak unit tests passed lint.
 on:
   push:
     branches:
