@@ -135,12 +135,12 @@ def _canonicalize_extra_agents(
             )
         yahoo = x.source_provider.eq("yahoo")
         x.loc[yahoo, col] = x.loc[yahoo, col].map(
-            lambda name: exact.get(_agent_key(name), name)
+            lambda name, reference=exact: reference.get(_agent_key(name), name)
             if pd.notna(name) else name
         )
         alt = x.source_provider.eq("umanity")
         x.loc[alt, col] = x.loc[alt, col].map(
-            lambda name: abbreviations.get(str(name))
+            lambda name, aliases=abbreviations: aliases.get(str(name))
             if pd.notna(name) else name
         )
         audit[col] = {
