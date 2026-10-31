@@ -1,4 +1,5 @@
 name: Trio V5 as-of feature ablation 2023 OOF -> PR40 2024 exact joint
+# Fresh workflow run to diagnose pre-step failure of attempts 1-3 (2026-10-31).
 on:
   push:
     branches: [research/trio-feature-ablation-v5-20261031]
