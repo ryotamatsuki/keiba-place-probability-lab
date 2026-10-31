@@ -43,7 +43,7 @@ HTTP障害、YahooのDOM、`time.hr-horseResult__update[datetime]` の明示 tim
 ## 明日11/1のT−10（発走15:40）
 
 1. JST **15:29** 頃に実行ホスト・ネットワーク・出走取消・コード・履歴とF3 SHAを再確認する。GitHub Actionsのスケジュール/queueは実行分を保証しないので、`date` 等の実際の時計で確認。15:30:00前の朝データをT−10と記録しない。
-2. **15:30:00〜15:31:00の間だけ** `capture`。実オッズはページが表示する更新日時を用い、`provider_updated_at <= captured_at <= locked_at < off_at`、`locked_at - provider_updated_at <= 5min`、取得からlockまで60秒以内、全17頭が完全一致。相違・欠測・更新時刻のzone不明・接続失敗の場合は即座に失敗記録。
+2. **15:30:00〜15:31:00の間だけ** `capture`。実オッズはページが表示する更新日時を用い、`provider_updated_at <= captured_at <= locked_at < off_at`、`locked_at - provider_updated_at <= 5min`、取得からlockまで60秒以内、全17頭が完全一致。相違・欠測・日付が欠損し時間帯の解釈も未監査・接続失敗の場合は即座に失敗記録。
 3. 17頭全員の過去履歴を監査しF3計算済みでない限り、**市場だけの観測にする**（下記最小コマンド）。歴史が事前に監査されていてモデルSHA一致の場合に限り、フルモデルコマンドを使い、候補を実行後に変更しない。
 
 市場観測だけの最小手順（前向きB_raw検証の得点には入らない）：
@@ -73,7 +73,7 @@ python scripts/tennosho_preoff_capture.py capture \
 ## FAIL_CLOSED（本日の後知恵防止）
 
 - 15:31:00 JSTを超えて計算／オッズ取得完了したら、T−10正式ロックを作らない。
-- providerが「15:24」等の単なる時計だけで日時や時区が確定しない、更新時刻が5分より古い、発走の時計変更が起きた場合、データをT−10として使わない。
+- providerが「15:24」等の単なる時計だけで完全な年月日を明示しない、更新時刻が5分より古い、発走の時計変更が起きた場合、データをT−10として使わない。
 - 出走取消などにより17頭の事前固定rosterと一致しない場合、**別の出走馬集合としての新規固定と完全監査まで**正式候補ロックしない。
 - 市場P(top3)は全出走馬でHarvilleの合計が3となるが、XGBの個別3着内補正確率を恣意的に合計3へ再正規化しない。
 - 限定的な朝のpreflightが成功しても明日の実際の15:30にアクセス可能とは限らない。逆も同様。
@@ -88,3 +88,8 @@ python scripts/tennosho_preoff_capture.py capture \
 - `scripts/tennosho_preoff_capture.py` preflight/capture
 - `tests/test_tennosho_preoff_20261101.py` 未来ラベル/時刻/行キー対策
 - `.github/workflows/tennosho-preoff-freeze-v1.yml` 再現可能なCPUモデル凍結とアクセス確認
+
+
+### 2026-10-31 午前の公開データpreflight所見
+
+GitHub Actions 実行 `41149387677` では公開Yahoo出馬表とオッズの取得、全17頭への参加馬の照合、provider ISO日付時刻までは到達したが、`datetime` 属性に `+09:00` がないため最初のソース形式検査で停止した。運用上、日本国内のJRA情報サイトの**完全なISO年月日時刻**についてだけ、元の属性リテラルを記録し `Asia/Tokyo` と解釈する。sourceがUTCオフセットを明記しているかどうかはmanifestに別フィールドで残す。年／月／日が欠ける表示は引き続き不合格。5分の鮮度・取得時刻・実時計・ロックの条件は緩めない。preflightを再実行してこのソース表記に適合するか確認する。
