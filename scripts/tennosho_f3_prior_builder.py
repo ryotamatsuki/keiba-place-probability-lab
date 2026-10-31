@@ -98,6 +98,20 @@ def _load_f3_git_checkpoint(root: Path) -> tuple[dict, pd.DataFrame]:
     return current, history
 
 
+def _jra_internal_id(value: object) -> str:
+    """Map verified numeric JRA IDs to the frozen training source namespace."""
+    horse_id = str(value)
+    numeric_id = horse_id[4:] if horse_id.startswith("jra:") else horse_id
+    if not re.fullmatch(r"\d{10}", numeric_id):
+        raise ValueError(f"Invalid verified JRA horse identity: {horse_id}")
+    return f"jra:{numeric_id}"
+
+
+def _jra_external_id(value: object) -> str:
+    """Expose the 10-digit ID expected by the target protocol."""
+    return _jra_internal_id(value)[4:]
+
+
 def _standard_columns(source: pd.DataFrame) -> pd.DataFrame:
     """Keep ONLY the fields understood by the pre-existing historical formula."""
     out = source.copy()
@@ -321,6 +335,7 @@ def _supplement_2025(raw: pd.DataFrame, original: pd.DataFrame,
             html, record = fetcher.fetch(url)
             part = umanity_raw_result(html, rid, date)
         part["source_provider"] = provider
+        part["horse_id"] = part.horse_id.map(_jra_internal_id)
         observed = historical[["horse_id", "horse_no"]].copy()
         observed.horse_id = observed.horse_id.astype(str)
         if len(part) != len(observed) or set(zip(part.horse_id, part.horse_no)) != set(
@@ -345,6 +360,10 @@ def rebuild(a):
         raise ValueError("Source beyond preregistered 2026-10-30 cutoff")
     if live.empty or not pd.to_datetime(live.race_date).dt.year.eq(2026).all():
         raise ValueError("2026 complete-flat source missing")
+    # Frozen JRA IDs are jra:NNNNNNNNNN, whereas 2026 official IDs are
+    # bare ten-digit numbers. Normalize only after verifying snapshot SHA.
+    live = live.copy()
+    live["horse_id"] = live.horse_id.map(_jra_internal_id)
     roster_html = a.roster_html.read_text()
     config = json.loads(a.config.read_text())
     roster, _ = parse_roster(roster_html, config)
@@ -354,6 +373,7 @@ def rebuild(a):
         != config["horse_no_to_name"]
     ):
         raise ValueError("As-of-date 17-horse roster mismatch")
+    roster["horse_id"] = roster.horse_id.map(_jra_internal_id)
     roster["is_open_plus"] = 1
     roster["is_graded"] = 1
     for col in ("finish_position", "early_position", "race_time_seconds"):
@@ -375,6 +395,7 @@ def rebuild(a):
     aux = pd.read_csv(
         a.extra_csv, dtype={"race_id": str, "horse_id": str}
     )
+    aux["horse_id"] = aux.horse_id.map(_jra_internal_id)
     extra_manifest = json.loads(a.extra_manifest.read_text())
     if (
         extra_manifest.get("status") != "COMPLETE_RAW_PRIOR_RESULT_SOURCE"
@@ -414,6 +435,7 @@ def rebuild(a):
     inputs = context[
         ["race_id", "race_date", "horse_id", "horse_name", "horse_no"] + wanted
     ].copy()
+    inputs["horse_id"] = inputs.horse_id.map(_jra_external_id)
     inputs["race_date"] = inputs.race_date.dt.strftime("%Y-%m-%d")
     inputs["horse_no"] = inputs.horse_no.astype(int)
     inputs = inputs.sort_values("horse_no").reset_index(drop=True)
@@ -426,7 +448,9 @@ def rebuild(a):
     for horse in inventory["horses"]:
         hid = str(horse["horse_id"])
         expected = {str(x["race_id"]) for x in horse["historical_races"]}
-        actual = set(older.loc[older.horse_id.astype(str).eq(hid), "race_id"].astype(str))
+        actual = set(older.loc[
+            older.horse_id.astype(str).eq(_jra_internal_id(hid)), "race_id"
+        ].astype(str))
         if expected != actual or len(expected) < 3:
             raise ValueError(f"Incomplete JRA past starts for {hid}: missing={expected-actual}, extra={actual-expected}")
         coverage.append({"horse_id":hid,"expected":len(expected),"actual":len(actual),
