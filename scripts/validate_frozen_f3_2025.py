@@ -143,6 +143,7 @@ def verify_2026_existing_preview_parity(
     market["market_field_size"]=len(x)
     f=full_starter_market_context(market)
     x=x.merge(f,on=["race_id","horse_no"],how="left",validate="one_to_one")
+    x["market_p_top3"]=harville
     calibrated=apply_logit_calibrator(harville,model["market_calibrator"])
     x["market_calibrated_top3_p"]=calibrated
     x["market_calibrated_top3_logit"]=logit(calibrated)
