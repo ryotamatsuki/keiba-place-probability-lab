@@ -145,6 +145,11 @@ def test_f3_historical_source_requires_proven_complete_before_race(entrant_odds)
         "no_future_rows": True,
         "history_cutoff": "2026-10-31",
         "history_sha256": "a" * 64,
+        "inventory_source_sha256": "b" * 64,
+        "horse_coverage": [
+            {"horse_id": str(h), "expected": 6, "actual": 6}
+            for h in frame.horse_id
+        ],
     }
     # Missing sex fails; market variables are supplied after live odds merge.
     with pytest.raises(ValueError, match="incomplete prior features"):
@@ -161,6 +166,22 @@ def test_f3_historical_source_requires_proven_complete_before_race(entrant_odds)
         expected_categorical=["sex"],
     )
     assert len(good) == 17
+    tampered = dict(meta, horse_coverage=meta["horse_coverage"][:-1])
+    with pytest.raises(ValueError, match="attestation"):
+        _prior_features(
+            frame, tampered, required_horses=set(frame.horse_id),
+            expected_numeric=["career_top3_shrunk", "market_win_probability"],
+            expected_categorical=["sex"],
+        )
+    short = [dict(z) for z in meta["horse_coverage"]]
+    short[0]["actual"] = short[0]["expected"] - 1
+    with pytest.raises(ValueError, match="incomplete"):
+        _prior_features(
+            frame, dict(meta, horse_coverage=short),
+            required_horses=set(frame.horse_id),
+            expected_numeric=["career_top3_shrunk", "market_win_probability"],
+            expected_categorical=["sex"],
+        )
     frame["top3_label"] = 1
     with pytest.raises(ValueError, match="Postrace"):
         _prior_features(
