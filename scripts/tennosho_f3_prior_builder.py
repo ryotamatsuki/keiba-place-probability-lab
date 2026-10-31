@@ -11,6 +11,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
+import unicodedata
+from collections import Counter
 from pathlib import Path
 
 import numpy as np
@@ -59,6 +62,95 @@ def _standard_columns(source: pd.DataFrame) -> pd.DataFrame:
         if col not in out:
             raise ValueError(f"Official standardized historical source absent: {col}")
     return out[sorted(REQUIRED_COLUMNS)].copy()
+
+
+def _agent_key(value: str) -> str:
+    """Canonical comparison key; never collapse different named people."""
+    return re.sub(
+        r"[\s.・]", "", unicodedata.normalize("NFKC", str(value))
+    ).casefold()
+
+
+def _canonicalize_extra_agents(
+    original: pd.DataFrame, extra: pd.DataFrame,
+) -> tuple[pd.DataFrame, dict]:
+    """Unify independently verified abbreviations with full source names.
+
+    Umanity publishes abbreviated Japanese agent names (e.g. 岩田康).
+    Only unique canonical full-name matches are allowed. Collisions do not
+    silently collapse two people or fabricate an unknown agent.
+    """
+    x = extra.copy()
+    if "source_provider" not in x:
+        x["source_provider"] = "yahoo"
+    x["source_provider"] = x["source_provider"].fillna("yahoo")
+    if not x.source_provider.isin(("yahoo", "umanity")).all():
+        raise ValueError("Unknown raw agent identity source")
+    audit: dict[str, object] = {}
+    for col in ("jockey_name", "trainer"):
+        base_names = original[col].dropna().astype(str)
+        historical = Counter(
+            z for z in base_names if z.strip()
+        )
+        exact = {}
+        for name, _ in historical.most_common():
+            key = _agent_key(name)
+            exact.setdefault(key, name)
+        current = Counter(
+            x.loc[x.source_provider.eq("yahoo"), col].dropna().astype(str)
+        )
+        active_keys: dict[str, str] = {}
+        for name, _ in current.most_common():
+            if name.strip():
+                active_keys.setdefault(
+                    _agent_key(name), exact.get(_agent_key(name), name)
+                )
+        historical_keys = dict(exact)
+        # Prefer a unique full-name occurrence in this year's verified Yahoo
+        # results; older names may include homonymous, retired agents.
+        abbreviations: dict[str, str] = {}
+        ambiguous: list[str] = []
+        for name in x.loc[x.source_provider.eq("umanity"), col].dropna().astype(str).unique():
+            key = _agent_key(name)
+            if key in exact:
+                abbreviations[name] = exact[key]
+                continue
+            if key in active_keys:
+                abbreviations[name] = active_keys[key]
+                continue
+            active_hits = {k for k in active_keys if k.startswith(key)}
+            known_hits = {k for k in historical_keys if k.startswith(key)}
+            hits = active_hits if len(active_hits) == 1 else known_hits
+            if len(hits) != 1:
+                ambiguous.append(name)
+                continue
+            canonical_key = next(iter(hits))
+            abbreviations[name] = active_keys.get(
+                canonical_key, historical_keys.get(canonical_key)
+            )
+        if ambiguous:
+            raise ValueError(
+                f"Ambiguous or unknown abbreviated {col} identities: "
+                f"{sorted(set(ambiguous))[:25]}"
+            )
+        yahoo = x.source_provider.eq("yahoo")
+        x.loc[yahoo, col] = x.loc[yahoo, col].map(
+            lambda name: exact.get(_agent_key(name), name)
+            if pd.notna(name) else name
+        )
+        alt = x.source_provider.eq("umanity")
+        x.loc[alt, col] = x.loc[alt, col].map(
+            lambda name: abbreviations.get(str(name))
+            if pd.notna(name) else name
+        )
+        audit[col] = {
+            "alternate_distinct_aliases_resolved": len(abbreviations),
+            "2026_yahoo_full_name_identities": len(active_keys),
+            "historical_full_name_identities": len(historical_keys),
+        }
+    if x.loc[x.source_provider.eq("umanity"), ["jockey_name", "trainer"]].isna().any().any():
+        raise ValueError("Unresolved raw alternate agent alias")
+    return x, audit
 
 
 def _extra_raw_observations(
@@ -247,6 +339,7 @@ def rebuild(a):
         raise ValueError("2026 raw results do not cover EVERY JRA flat starter")
     if not historical_2025.empty:
         aux = pd.concat([historical_2025, aux], ignore_index=True)
+    aux, agent_audit = _canonicalize_extra_agents(raw, aux)
     raw, injection_audit = _extra_raw_observations(raw, aux)
     enriched = add_opponent_elo(add_historical_result_features(raw))
     prior_mean = float(enriched.loc[
@@ -331,6 +424,7 @@ def rebuild(a):
         "last3f_mass_early_elo_coverage": raw_target_coverage,
         "raw_original_audit": raw_audit,
         "source_injection_audit": injection_audit,
+        "agent_identity_audit": agent_audit,
         "2025_supplement_races": supplement_sources,
         "relative_feature_coverage": relative_audit.to_dict(orient="records"),
         "input_source_sha256": original_sources,
