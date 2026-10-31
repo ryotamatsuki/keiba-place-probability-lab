@@ -8,7 +8,8 @@ import pandas as pd
 import pytest
 
 from keiba_place_lab.trio_operational_gate import (
-    evaluate_readiness, validate_complete_trio_quotes,
+    evaluate_readiness,
+    validate_complete_trio_quotes,
 )
 
 
