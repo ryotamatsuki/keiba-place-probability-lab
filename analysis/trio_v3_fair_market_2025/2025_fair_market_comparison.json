@@ -1,0 +1,122 @@
+{
+  "status": "DESCRIPTIVE_2025_ALREADY_EXAMINED_NOT_FRESH_CONFIRMATION",
+  "races": 1253,
+  "individual_market_input": "frozen_pre2025_calibrated Harville top3",
+  "same_exact_3_subset_maxentropy_used_for_market_and_f3": true,
+  "market_prices": "historic final WIN odds, not actual trio odds and not T10",
+  "summary": {
+    "market_pl": {
+      "joint_logloss": 4.649925046209695,
+      "joint_brier": 0.9821569615645088,
+      "top10_hit": 0.33599361532322425,
+      "top10_mass": 0.4746002726270591
+    },
+    "market_maxent": {
+      "joint_logloss": 4.597883798728163,
+      "joint_brier": 0.9775486858822496,
+      "top10_hit": 0.3375897845171588,
+      "top10_mass": 0.38289091150636473
+    },
+    "v1_raw": {
+      "joint_logloss": 4.573825504218159,
+      "joint_brier": 0.9765530547715225,
+      "top10_hit": 0.3423782920989625,
+      "top10_mass": 0.3679353981919904
+    }
+  },
+  "date_cluster_bootstrap": {
+    "market_pl_minus_market_maxent_joint_logloss": {
+      "difference_baseline_minus_candidate": 0.052041247481531966,
+      "cluster_dates": 107,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        0.03692446768219559,
+        0.06639181161674583
+      ],
+      "positive_improvement_bootstrap_share": 1.0
+    },
+    "market_pl_minus_market_maxent_joint_brier": {
+      "difference_baseline_minus_candidate": 0.0046082756822593465,
+      "cluster_dates": 107,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        0.0032352882265047037,
+        0.005950079787089388
+      ],
+      "positive_improvement_bootstrap_share": 1.0
+    },
+    "market_pl_minus_market_maxent_top10_hit": {
+      "difference_baseline_minus_candidate": -0.0015961691939345571,
+      "cluster_dates": 107,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        -0.004809915348008744,
+        0.0015736269994552571
+      ],
+      "positive_improvement_bootstrap_share": 0.0932
+    },
+    "market_maxent_minus_v1_raw_joint_logloss": {
+      "difference_baseline_minus_candidate": 0.02405829451000362,
+      "cluster_dates": 107,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        0.015194435199194592,
+        0.0330025228263132
+      ],
+      "positive_improvement_bootstrap_share": 1.0
+    },
+    "market_maxent_minus_v1_raw_joint_brier": {
+      "difference_baseline_minus_candidate": 0.0009956311107268555,
+      "cluster_dates": 107,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        0.0005219534201860649,
+        0.0014483607937070978
+      ],
+      "positive_improvement_bootstrap_share": 1.0
+    },
+    "market_maxent_minus_v1_raw_top10_hit": {
+      "difference_baseline_minus_candidate": -0.004788507581803671,
+      "cluster_dates": 107,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        -0.01770659655423026,
+        0.00794313220783809
+      ],
+      "positive_improvement_bootstrap_share": 0.2192
+    },
+    "market_pl_minus_v1_raw_joint_logloss": {
+      "difference_baseline_minus_candidate": 0.07609954199153558,
+      "cluster_dates": 107,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        0.057520827470817194,
+        0.09482947483851616
+      ],
+      "positive_improvement_bootstrap_share": 1.0
+    },
+    "market_pl_minus_v1_raw_joint_brier": {
+      "difference_baseline_minus_candidate": 0.005603906792986202,
+      "cluster_dates": 107,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        0.004026784175543289,
+        0.007174900412739861
+      ],
+      "positive_improvement_bootstrap_share": 1.0
+    },
+    "market_pl_minus_v1_raw_top10_hit": {
+      "difference_baseline_minus_candidate": -0.006384676775738229,
+      "cluster_dates": 107,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        -0.018912529550827423,
+        0.005703004604600354
+      ],
+      "positive_improvement_bootstrap_share": 0.1404
+    }
+  },
+  "primary_check": "market_maxent_minus_v1_raw_joint_logloss",
+  "no_fitted_parameters_on_2025": true,
+  "trio_market_prices_observed": false
+}
