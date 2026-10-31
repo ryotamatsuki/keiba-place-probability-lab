@@ -1,0 +1,1107 @@
+{
+  "status": "F3_PRIOR_SOURCE_RECONSTRUCTED_20261030",
+  "race_id": "202605041111",
+  "history_cutoff": "2026-10-30",
+  "actual_2026_feed_complete_through": "2026-10-30",
+  "history_complete_for_all_entrants": true,
+  "no_future_rows": true,
+  "no_current_race_results_or_odds": true,
+  "source_rebuild_contract": "2010-2025 standardized + all 2026 flat starter raw + old original F3 formulas",
+  "feature_csv_sha256": "6d184c48008a4dd5664823baac00de779635270a660ed0415f6469d61f26daa5",
+  "history_sha256": "e75dcfb0c56ba2cc0d01edd6f7b17621ff6390cf2614407cf64675088e31d766",
+  "inventory_source_sha256": "41bcb23bcb068fc97ceed4f78870d0893165e0711a26b4ff58ea3b7471302a94",
+  "horse_coverage": [
+    {
+      "horse_id": "2022105102",
+      "expected": 9,
+      "actual": 9,
+      "latest_jra_flat_date": "2026-06-14"
+    },
+    {
+      "horse_id": "2020100680",
+      "expected": 23,
+      "actual": 23,
+      "latest_jra_flat_date": "2026-10-04"
+    },
+    {
+      "horse_id": "2021105898",
+      "expected": 14,
+      "actual": 14,
+      "latest_jra_flat_date": "2026-09-20"
+    },
+    {
+      "horse_id": "2022104416",
+      "expected": 10,
+      "actual": 10,
+      "latest_jra_flat_date": "2026-10-04"
+    },
+    {
+      "horse_id": "2020103075",
+      "expected": 19,
+      "actual": 19,
+      "latest_jra_flat_date": "2026-10-04"
+    },
+    {
+      "horse_id": "2019102632",
+      "expected": 20,
+      "actual": 20,
+      "latest_jra_flat_date": "2026-10-04"
+    },
+    {
+      "horse_id": "2022105519",
+      "expected": 8,
+      "actual": 8,
+      "latest_jra_flat_date": "2025-11-30"
+    },
+    {
+      "horse_id": "2019105118",
+      "expected": 30,
+      "actual": 30,
+      "latest_jra_flat_date": "2026-10-12"
+    },
+    {
+      "horse_id": "2020103941",
+      "expected": 22,
+      "actual": 22,
+      "latest_jra_flat_date": "2026-10-04"
+    },
+    {
+      "horse_id": "2022105140",
+      "expected": 9,
+      "actual": 9,
+      "latest_jra_flat_date": "2026-07-04"
+    },
+    {
+      "horse_id": "2020103101",
+      "expected": 31,
+      "actual": 31,
+      "latest_jra_flat_date": "2026-08-16"
+    },
+    {
+      "horse_id": "2021106787",
+      "expected": 22,
+      "actual": 22,
+      "latest_jra_flat_date": "2026-09-20"
+    },
+    {
+      "horse_id": "2023103604",
+      "expected": 7,
+      "actual": 7,
+      "latest_jra_flat_date": "2026-10-04"
+    },
+    {
+      "horse_id": "2021106548",
+      "expected": 30,
+      "actual": 30,
+      "latest_jra_flat_date": "2026-09-12"
+    },
+    {
+      "horse_id": "2022104094",
+      "expected": 9,
+      "actual": 9,
+      "latest_jra_flat_date": "2026-08-16"
+    },
+    {
+      "horse_id": "2022103995",
+      "expected": 13,
+      "actual": 13,
+      "latest_jra_flat_date": "2026-09-12"
+    },
+    {
+      "horse_id": "2021105143",
+      "expected": 12,
+      "actual": 12,
+      "latest_jra_flat_date": "2026-06-14"
+    }
+  ],
+  "feature_numeric_prior_only": [
+    "draw_pct",
+    "age",
+    "assigned_weight_kg",
+    "assigned_weight_delta_from_prev_kg",
+    "log_days_since_prev",
+    "distance_change_from_prev_m",
+    "surface_changed_from_prev",
+    "career_top3_shrunk",
+    "log_career_starts",
+    "turf_top3_shrunk",
+    "log_turf_starts",
+    "same_distance_top3_shrunk",
+    "log_same_distance_starts",
+    "same_course_top3_shrunk",
+    "log_same_course_starts",
+    "recent3_finish_pct_mean",
+    "recent3_top3_count",
+    "recent3_open_plus_count",
+    "recent3_graded_count",
+    "recent3_relative_time_mean",
+    "recent4_early_pos_pct_mean",
+    "front_forward_share",
+    "field_size",
+    "distance_m",
+    "history_last3f_rel3",
+    "history_last3f_rel_last",
+    "history_passing_gain3",
+    "history_early_pct3",
+    "history_early_stability3",
+    "history_mass_last",
+    "history_mass_change_last",
+    "history_wet_starts",
+    "history_wet_top3_rate",
+    "history_last_jockey_prior_rate",
+    "history_last_trainer_prior_rate",
+    "history_jockey_stability",
+    "strength_elo_prior",
+    "strength_elo_vs_field",
+    "strength_opp_mean_prior",
+    "strength_previous_opponent",
+    "strength_previous_placing",
+    "strength_prior_races",
+    "rel_career_top3_vs_others",
+    "rel_same_distance_top3_vs_others",
+    "rel_same_course_top3_vs_others",
+    "rel_recent3_finish_vs_others",
+    "rel_recent3_time_vs_others"
+  ],
+  "feature_categorical": [
+    "sex",
+    "racecourse",
+    "race_class",
+    "surface"
+  ],
+  "last3f_mass_early_elo_coverage": {
+    "history_last3f_rel_last": 17,
+    "history_mass_last": 17,
+    "history_early_pct3": 17,
+    "strength_elo_prior": 17
+  },
+  "raw_original_audit": {
+    "total_official_rows": 791655,
+    "matched_raw_runner_rows": 752706,
+    "unmatched_raw_runner_rows": 38949,
+    "raw_rank_label_conflicts_excluded": 0,
+    "raw_result_duplicate_keys": 0,
+    "raw_race_duplicate_ids": 0,
+    "usable": {
+      "raw_last3f": 750190,
+      "raw_corner_first": 752000,
+      "raw_passing_gain": 751987,
+      "raw_mass": 752705,
+      "raw_mass_change": 752705,
+      "raw_wet": 752706,
+      "jockey_name": 752706,
+      "trainer": 752706
+    }
+  },
+  "source_injection_audit": {
+    "extra_source_rows": 38932,
+    "extra_source_races": 2822
+  },
+  "independently_verified_2025_identity_repairs": [
+    {
+      "race_id": "202506050706",
+      "race_date": "2025-12-27",
+      "yahoo_source": "https://sports.yahoo.co.jp/keiba/race/result/2506050706",
+      "yahoo_sha256": "3ff7b300284a03b8d8ae7f5e24b5875ae7d984c3ff113f8ca261ead1fc5962f2",
+      "umanity_source": "https://umanity.jp/racing/result.php?race_id=2025122706050706",
+      "umanity_sha256": "b90fa33072743e26b001f9bb6d00711d50739edc5cfe42e820e01c036e53753c",
+      "frozen_source_untouched": true,
+      "historical_identity_diagnostic_run": 41175978988,
+      "verified_corrections": [
+        {
+          "race_id": "202506050706",
+          "horse_no": 7,
+          "old_frozen_id": "jra:2011103929",
+          "old_frozen_name": "スペシャルギフト",
+          "published_id": "jra:2023105213",
+          "published_name": "スペシャルギフト",
+          "verified_rank": 10
+        },
+        {
+          "race_id": "202506050706",
+          "horse_no": 14,
+          "old_frozen_id": "jra:2016100062",
+          "old_frozen_name": "キタノローズ",
+          "published_id": "jra:2023100693",
+          "published_name": "キタノローズ",
+          "verified_rank": 13
+        }
+      ]
+    },
+    {
+      "race_id": "202506050806",
+      "race_date": "2025-12-28",
+      "yahoo_source": "https://sports.yahoo.co.jp/keiba/race/result/2506050806",
+      "yahoo_sha256": "f224509dab8f5b05de87923c894b2b0f0e48d7ffbf00cec0f778130c8ef509a6",
+      "umanity_source": "https://umanity.jp/racing/result.php?race_id=2025122806050806",
+      "umanity_sha256": "2b53e276545570a19ff29871c0b80b6450c7c992d8e641de7cdcafb2a54cfad1",
+      "frozen_source_untouched": true,
+      "historical_identity_diagnostic_run": 41175978988,
+      "verified_corrections": [
+        {
+          "race_id": "202506050806",
+          "horse_no": 9,
+          "old_frozen_id": "jra:2008103901",
+          "old_frozen_name": "ブザービーター",
+          "published_id": "jra:2023105382",
+          "published_name": "ブザービーター",
+          "verified_rank": 12
+        },
+        {
+          "race_id": "202506050806",
+          "horse_no": 17,
+          "old_frozen_id": "jra:2016102619",
+          "old_frozen_name": "ソフィア",
+          "published_id": "jra:2023107088",
+          "published_name": "ソフィア",
+          "verified_rank": 11
+        }
+      ]
+    },
+    {
+      "race_id": "202509050706",
+      "race_date": "2025-12-27",
+      "yahoo_source": "https://sports.yahoo.co.jp/keiba/race/result/2509050706",
+      "yahoo_sha256": "fcb5b3a73ff2f9074d43a10353470870ee0ba3381e7607c1ed5b4c3f792cb8d1",
+      "umanity_source": "https://umanity.jp/racing/result.php?race_id=2025122709050706",
+      "umanity_sha256": "5461fe0a4e997585ed6fc1f6cb738e0020c0c561e9950c39e03b7675e43cca1b",
+      "frozen_source_untouched": true,
+      "historical_identity_diagnostic_run": 41175978988,
+      "verified_corrections": [
+        {
+          "race_id": "202509050706",
+          "horse_no": 6,
+          "old_frozen_id": "jra:2015101363",
+          "old_frozen_name": "サヴォアフェール",
+          "published_id": "jra:2023105645",
+          "published_name": "サヴォアフェール",
+          "verified_rank": 2
+        },
+        {
+          "race_id": "202509050706",
+          "horse_no": 9,
+          "old_frozen_id": "jra:2014105649",
+          "old_frozen_name": "ブラストビート",
+          "published_id": "jra:2023106017",
+          "published_name": "ブラストビート",
+          "verified_rank": 8
+        }
+      ]
+    },
+    {
+      "race_id": "202509050806",
+      "race_date": "2025-12-28",
+      "yahoo_source": "https://sports.yahoo.co.jp/keiba/race/result/2509050806",
+      "yahoo_sha256": "b17304a5e66cda437610ccbb5bb87839c47f132195f92eaabc7539a424ac4f9d",
+      "umanity_source": "https://umanity.jp/racing/result.php?race_id=2025122809050806",
+      "umanity_sha256": "0b6dd7de9c4c5b4145a6ecb613c5adad3667167cceb70d563130f0780c2067ad",
+      "frozen_source_untouched": true,
+      "historical_identity_diagnostic_run": 41175978988,
+      "verified_corrections": [
+        {
+          "race_id": "202509050806",
+          "horse_no": 6,
+          "old_frozen_id": "jra:2014105899",
+          "old_frozen_name": "ヴェネラブル",
+          "published_id": "jra:2023102421",
+          "published_name": "ヴェネラブル",
+          "verified_rank": 12
+        }
+      ]
+    }
+  ],
+  "agent_identity_audit": {
+    "jockey_name": {
+      "alternate_distinct_aliases_resolved": 161,
+      "same_starter_source_verified": 0,
+      "2026_yahoo_full_name_identities": 107,
+      "historical_full_name_identities": 570,
+      "independently_published_trainer_identities": []
+    },
+    "trainer": {
+      "alternate_distinct_aliases_resolved": 223,
+      "same_starter_source_verified": 0,
+      "2026_yahoo_full_name_identities": 184,
+      "historical_full_name_identities": 622,
+      "independently_published_trainer_identities": [
+        {
+          "published_alias": "三樹祐",
+          "full_name": "三樹祐輔",
+          "publication": "https://www.jra.go.jp/news/202609/091102.html",
+          "active_from": "2026-10-21"
+        },
+        {
+          "published_alias": "八木正",
+          "full_name": "八木正喜",
+          "publication": "https://www.oddspark.com/keiba/TrainerDetail.do?trainerNb=011081",
+          "active_from": "2026-01-01"
+        },
+        {
+          "published_alias": "古賀大",
+          "full_name": "古賀大生",
+          "publication": "https://www.jra.go.jp/news/202606/061202.html",
+          "active_from": "2026-07-21"
+        },
+        {
+          "published_alias": "室井潔",
+          "full_name": "室井潔",
+          "publication": "https://www.jra.go.jp/news/202512/122401.html",
+          "active_from": "2026-03-04"
+        },
+        {
+          "published_alias": "平岩大",
+          "full_name": "平岩大典",
+          "publication": "https://www.jra.go.jp/news/202512/122401.html",
+          "active_from": "2026-03-04"
+        },
+        {
+          "published_alias": "松尾卓",
+          "full_name": "松尾卓哉",
+          "publication": "https://www.jra.go.jp/news/202512/122401.html",
+          "active_from": "2026-03-04"
+        },
+        {
+          "published_alias": "柴田卓",
+          "full_name": "柴田卓",
+          "publication": "https://www.jra.go.jp/news/202512/122401.html",
+          "active_from": "2026-03-04"
+        },
+        {
+          "published_alias": "榎屋充",
+          "full_name": "榎屋充",
+          "publication": "https://www.keiba.go.jp/KeibaWeb/DataRoom/TrainerMark?k_trainerLicenseNo=11475",
+          "active_from": "2026-01-01"
+        },
+        {
+          "published_alias": "橋田宜",
+          "full_name": "橋田宜長",
+          "publication": "https://www.jra.go.jp/news/202512/122401.html",
+          "active_from": "2026-03-04"
+        },
+        {
+          "published_alias": "秋本大",
+          "full_name": "秋本大介",
+          "publication": "https://www.jra.go.jp/news/202512/122401.html",
+          "active_from": "2026-03-04"
+        },
+        {
+          "published_alias": "酒井一",
+          "full_name": "酒井一則",
+          "publication": "https://www.oddspark.com/keiba/TrainerDetail.do?trainerNb=011228",
+          "active_from": "2026-01-01"
+        },
+        {
+          "published_alias": "Ｃ．イ",
+          "full_name": "Ｃ．イプ",
+          "publication": "https://umanity.jp/racing/database/trainer_result.php?trainer_id=05792",
+          "active_from": "2026-01-01"
+        }
+      ]
+    }
+  },
+  "independently_verified_umanity_jockey_profiles": [
+    {
+      "abbreviation": "井上瑛",
+      "verified_full_name": "井上瑛太",
+      "independent_race_profile_observations": [
+        {
+          "race_id": "202604010709",
+          "horse_id": "2023105169",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026052304010709",
+          "race_source_sha256": "618d2bd67e171e1b802fdf435a2a889b61f08f0598d04ec39a45c0ee521385e1",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05615",
+          "profile_sha256": "85d55362bdd5f1d97df1071b2b104e1bc3477dd75d5bc8ec0d9042fdcda5494e",
+          "profile_id": "05615"
+        }
+      ]
+    },
+    {
+      "abbreviation": "安藤洋",
+      "verified_full_name": "安藤洋一",
+      "independent_race_profile_observations": [
+        {
+          "race_id": "202605010202",
+          "horse_id": "2023102266",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026020105010202",
+          "race_source_sha256": "f336fe2af46f6b022d3f885f3eecb0a6e1a1090260a40b9d0b893d339562a887",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05690",
+          "profile_sha256": "1b9d3bd004bb601a0c393a026ece2f7cabbf486339eec400987f36dc828915e3",
+          "profile_id": "05690"
+        },
+        {
+          "race_id": "202608040511",
+          "horse_id": "2020101301",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026101208040511",
+          "race_source_sha256": "ea3fc8872677e516975c96d001a2392700c9a55d27dbcfefa9d664603cf65d82",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05690",
+          "profile_sha256": "1b9d3bd004bb601a0c393a026ece2f7cabbf486339eec400987f36dc828915e3",
+          "profile_id": "05690"
+        }
+      ]
+    },
+    {
+      "abbreviation": "宮内勇",
+      "verified_full_name": "宮内勇樹",
+      "independent_race_profile_observations": [
+        {
+          "race_id": "202601020109",
+          "horse_id": "2024105590",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026082201020109",
+          "race_source_sha256": "afe36dd985fefa27889cda1c8521b23db6d5c87f16004326f66dc55cb93a8940",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05685",
+          "profile_sha256": "ee9a128322f46182c8c0fd86484cdb784e99a6f8e1d0aeeb2a933012fcafe890",
+          "profile_id": "05685"
+        },
+        {
+          "race_id": "202601020310",
+          "horse_id": "2024105617",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026082901020310",
+          "race_source_sha256": "a91d2811fa638b96bda3b65f5c7a7303186aa67df7583667134477a180546600",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05685",
+          "profile_sha256": "ee9a128322f46182c8c0fd86484cdb784e99a6f8e1d0aeeb2a933012fcafe890",
+          "profile_id": "05685"
+        }
+      ]
+    },
+    {
+      "abbreviation": "小谷哲",
+      "verified_full_name": "小谷哲平",
+      "independent_race_profile_observations": [
+        {
+          "race_id": "202609040510",
+          "horse_id": "2023106698",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026091909040510",
+          "race_source_sha256": "a9e38ab503515d3572da1c5b12a5f9d4579026727f1a0a4795d9daa162f46e95",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=N1310",
+          "profile_sha256": "31d8868a538aa718d7e3b4c05eaef443f6088214ddf4fbc764e7471cde0c0256",
+          "profile_id": "N1310"
+        }
+      ]
+    },
+    {
+      "abbreviation": "角田大",
+      "verified_full_name": "角田大和",
+      "independent_race_profile_observations": [
+        {
+          "race_id": "202608010307",
+          "horse_id": "2021102550",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026011008010307",
+          "race_source_sha256": "46992cf48aae3f2468511de330d0af5ccb60dae0df777a62657f9b88bb7e8d0a",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=01186",
+          "profile_sha256": "4b3b670eb54ee5dffc0cc73ccc0f19767e3b63c4656e2b40da252b90635318df",
+          "profile_id": "01186"
+        },
+        {
+          "race_id": "202608040912",
+          "horse_id": "2022101903",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026102508040912",
+          "race_source_sha256": "4e357d0daf09ff5c1fa3401106f885f3e95652bb466bc5a2d93cd7137ae33d4f",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=01186",
+          "profile_sha256": "4b3b670eb54ee5dffc0cc73ccc0f19767e3b63c4656e2b40da252b90635318df",
+          "profile_id": "01186"
+        }
+      ]
+    },
+    {
+      "abbreviation": "Ｄレー",
+      "verified_full_name": "Ｄ．レーン",
+      "independent_race_profile_observations": [
+        {
+          "race_id": "202609020701",
+          "horse_id": "2023107267",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026041809020701",
+          "race_source_sha256": "53c2fc94d51b5ab97adba9e196b2f0adf13172109c83342146a7eb9346efbb44",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05585",
+          "profile_sha256": "0bad45d49960db58cda7ad2116cfbe618636f26d8e31feba3e7c90b1ef832326",
+          "profile_id": "05585"
+        },
+        {
+          "race_id": "202609040212",
+          "horse_id": "2021102754",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026090609040212",
+          "race_source_sha256": "98d9cdf59af25b01909a38de07c41b220bab67796781ab4b9221762f2ddfcbae",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05585",
+          "profile_sha256": "0bad45d49960db58cda7ad2116cfbe618636f26d8e31feba3e7c90b1ef832326",
+          "profile_id": "05585"
+        }
+      ]
+    },
+    {
+      "abbreviation": "Ｆゴン",
+      "verified_full_name": "Ｆ．ゴンサルベス",
+      "independent_race_profile_observations": [
+        {
+          "race_id": "202604010102",
+          "horse_id": "2023107408",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026050204010102",
+          "race_source_sha256": "02dfba7ab06fb3784fc0192ce4227f990587c49c0bc8dc0fb7c1cbe36141eed3",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05675",
+          "profile_sha256": "0ff84a0f47b5f77f627dba8ff2fd470f6221fa0d9f7e1c2fc1c7c7715bbc934c",
+          "profile_id": "05675"
+        },
+        {
+          "race_id": "202603020211",
+          "horse_id": "2023105684",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026062803020211",
+          "race_source_sha256": "3121031012acaeb34386379d54eafe1fa348a5a1c946d187af14794c01b5beb5",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05675",
+          "profile_sha256": "0ff84a0f47b5f77f627dba8ff2fd470f6221fa0d9f7e1c2fc1c7c7715bbc934c",
+          "profile_id": "05675"
+        }
+      ]
+    },
+    {
+      "abbreviation": "Ｊコレ",
+      "verified_full_name": "Ｊ．コレット",
+      "independent_race_profile_observations": [
+        {
+          "race_id": "202610020305",
+          "horse_id": "2024106299",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026070410020305",
+          "race_source_sha256": "f5932f5547a5e7881dfcef79f08370e8a0808745218627e7a46b3f2434007fa8",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05691",
+          "profile_sha256": "68a6079c751a9db44e14789a67d60bd103440b6be5a33645761abd414f1f7d30",
+          "profile_id": "05691"
+        },
+        {
+          "race_id": "202604030210",
+          "horse_id": "2022104684",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026082304030210",
+          "race_source_sha256": "a5b97c84fc0e34946be05472bbeafd07ce42c9c2f910ad2472efb376ab48105e",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05691",
+          "profile_sha256": "68a6079c751a9db44e14789a67d60bd103440b6be5a33645761abd414f1f7d30",
+          "profile_id": "05691"
+        }
+      ]
+    },
+    {
+      "abbreviation": "Ｍディ",
+      "verified_full_name": "Ｍ．ディー",
+      "independent_race_profile_observations": [
+        {
+          "race_id": "202607010101",
+          "horse_id": "2023101461",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026031407010101",
+          "race_source_sha256": "15aa14a57f542c0ae903f24dc214fb45c5f9b0729d354025743d193fa0d0245f",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05674",
+          "profile_sha256": "36884c11009536a3d0d137bdc6281bdfc41488565ed0f304a3ffd8daa04f1a00",
+          "profile_id": "05674"
+        },
+        {
+          "race_id": "202605030412",
+          "horse_id": "2021105688",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026061405030412",
+          "race_source_sha256": "a2678d57ab97ca45b4d6dcc94fae09f1a7c76c7debb05cedcdbd77c4e3d4c0ae",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05674",
+          "profile_sha256": "36884c11009536a3d0d137bdc6281bdfc41488565ed0f304a3ffd8daa04f1a00",
+          "profile_id": "05674"
+        }
+      ]
+    },
+    {
+      "abbreviation": "Ｍミシ",
+      "verified_full_name": "Ｍ．ミシェル",
+      "independent_race_profile_observations": [
+        {
+          "race_id": "202604030304",
+          "horse_id": "2024105422",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026082904030304",
+          "race_source_sha256": "08897bf75e3fe11451d9d845fe86dcdf9e7a8e7175172cb47916b54042f531b6",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05586",
+          "profile_sha256": "cefa2f9a0da22e257abfb7ae3200b64b7d6c4625c20988426429ebefe9c3733c",
+          "profile_id": "05586"
+        },
+        {
+          "race_id": "202605040509",
+          "horse_id": "2023103413",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026101205040509",
+          "race_source_sha256": "dde0209dd7e0d41e0384a4365ee4dd59f3a00518e620ddae6cb4a684ea6a8e3b",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05586",
+          "profile_sha256": "cefa2f9a0da22e257abfb7ae3200b64b7d6c4625c20988426429ebefe9c3733c",
+          "profile_id": "05586"
+        }
+      ]
+    },
+    {
+      "abbreviation": "Ｍヴェ",
+      "verified_full_name": "Ｍ．ヴェロン",
+      "independent_race_profile_observations": [
+        {
+          "race_id": "202601020110",
+          "horse_id": "2021110023",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026082201020110",
+          "race_source_sha256": "e178fa6ed0161748df528d1bab727abaa5497acaed5173c090a08a62b4e54036",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05642",
+          "profile_sha256": "249522d2cc636069b30ada454c224fa031af22a38ade23fa2da51ddf5fc23c27",
+          "profile_id": "05642"
+        },
+        {
+          "race_id": "202601020212",
+          "horse_id": "2023100627",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026082301020212",
+          "race_source_sha256": "78b27b2b1d90c2a9b1a192fb408038152cd122e93771deb6a29b1f2e57405932",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05642",
+          "profile_sha256": "249522d2cc636069b30ada454c224fa031af22a38ade23fa2da51ddf5fc23c27",
+          "profile_id": "05642"
+        }
+      ]
+    },
+    {
+      "abbreviation": "Ｒキン",
+      "verified_full_name": "Ｒ．キング",
+      "independent_race_profile_observations": [
+        {
+          "race_id": "202606010801",
+          "horse_id": "2023103090",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026012406010801",
+          "race_source_sha256": "360c55363343613cf864b13d93977647abd393e5984e0213e391531f6d3f2ac6",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05643",
+          "profile_sha256": "f9548080edfa8e918a770719436509523ac8aae4f7b2c0fb2d344ee4d498e240",
+          "profile_id": "05643"
+        },
+        {
+          "race_id": "202605010811",
+          "horse_id": "2017103751",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026022205010811",
+          "race_source_sha256": "9d0cea4a84b65596e5b85558d0646e53326602881e915b1dfeff7302ef68c480",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05643",
+          "profile_sha256": "f9548080edfa8e918a770719436509523ac8aae4f7b2c0fb2d344ee4d498e240",
+          "profile_id": "05643"
+        }
+      ]
+    },
+    {
+      "abbreviation": "Ｒフー",
+      "verified_full_name": "Ｒ．フーリー",
+      "independent_race_profile_observations": [
+        {
+          "race_id": "202601020104",
+          "horse_id": "2023106800",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026082201020104",
+          "race_source_sha256": "c879de13d00d0e158e8fda4c033ec388391f6add0e943642d5dd0585fd31d573",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05696",
+          "profile_sha256": "133163d1c0745fc042159b09d9db8f93142629f5d391e693f1ef6824c59dcc7e",
+          "profile_id": "05696"
+        },
+        {
+          "race_id": "202601020212",
+          "horse_id": "2020101261",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026082301020212",
+          "race_source_sha256": "78b27b2b1d90c2a9b1a192fb408038152cd122e93771deb6a29b1f2e57405932",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05696",
+          "profile_sha256": "133163d1c0745fc042159b09d9db8f93142629f5d391e693f1ef6824c59dcc7e",
+          "profile_id": "05696"
+        }
+      ]
+    },
+    {
+      "abbreviation": "Ｒヘル",
+      "verified_full_name": "Ｒ．ヘルナンデス",
+      "independent_race_profile_observations": [
+        {
+          "race_id": "202601020101",
+          "horse_id": "2024101393",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026082201020101",
+          "race_source_sha256": "1d34a7ca6ed4e72b634ac01a0a7206395e6691d4b75f8ed04710567c68563b83",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05695",
+          "profile_sha256": "3271935e46e4c083cb1642413cce67236550b6fc586db206356be78ee01f7051",
+          "profile_id": "05695"
+        },
+        {
+          "race_id": "202601020207",
+          "horse_id": "2022103156",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026082301020207",
+          "race_source_sha256": "68c3cea035cb4fc226d8211c74c9a7ef3cc14bb35d3537c53a20c34a67aee030",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05695",
+          "profile_sha256": "3271935e46e4c083cb1642413cce67236550b6fc586db206356be78ee01f7051",
+          "profile_id": "05695"
+        }
+      ]
+    },
+    {
+      "abbreviation": "Ｓナレ",
+      "verified_full_name": "Ｓ．ナレドゥ",
+      "verification_method": "two_published_sources_and_exact_dated_horse_ride_matches",
+      "published_identity_url": "https://www.jra.go.jp/news/202608/080202.html",
+      "published_ride_list_url": "https://www.keibalab.jp/db/jockey/05694/history.html?year=2026",
+      "published_ride_count": 9,
+      "matched_historical_ride_count": 9,
+      "matched_rides": [
+        [
+          "2026-08-22",
+          3,
+          9,
+          "モンロワイヤル"
+        ],
+        [
+          "2026-08-22",
+          6,
+          5,
+          "フィエールシャンテ"
+        ],
+        [
+          "2026-08-22",
+          10,
+          13,
+          "フードマン"
+        ],
+        [
+          "2026-08-22",
+          11,
+          2,
+          "ヴァイザーバルコ"
+        ],
+        [
+          "2026-08-23",
+          6,
+          3,
+          "クイーンズワーフ"
+        ],
+        [
+          "2026-08-23",
+          7,
+          6,
+          "トライゴーニック"
+        ],
+        [
+          "2026-08-23",
+          10,
+          10,
+          "カスバートテソーロ"
+        ],
+        [
+          "2026-08-23",
+          11,
+          9,
+          "イツモニコニコ"
+        ],
+        [
+          "2026-08-23",
+          12,
+          7,
+          "ベネスピラ"
+        ]
+      ],
+      "profile_id": null,
+      "profile_link_unusable": true
+    },
+    {
+      "abbreviation": "Ｔハマ",
+      "verified_full_name": "Ｔ．ハマーハンセン",
+      "independent_race_profile_observations": [
+        {
+          "race_id": "202608010101",
+          "horse_id": "2023105353",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026010408010101",
+          "race_source_sha256": "fab11a618d81707e9d1fc983683bc1440d170989923665c32a80e4cfc6a215fb",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05676",
+          "profile_sha256": "20581f1884b27d1557ca2da0795bc50b91b3a14221e7643d989b01882e16c41c",
+          "profile_id": "05676"
+        },
+        {
+          "race_id": "202609010212",
+          "horse_id": "2021103287",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026022209010212",
+          "race_source_sha256": "382c278a1693636c94d436ef16ec67e6ab7be8648f9bd51dae792df6427b0720",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05676",
+          "profile_sha256": "20581f1884b27d1557ca2da0795bc50b91b3a14221e7643d989b01882e16c41c",
+          "profile_id": "05676"
+        }
+      ]
+    },
+    {
+      "abbreviation": "Ｚロイ",
+      "verified_full_name": "Ｚ．ロイド",
+      "independent_race_profile_observations": [
+        {
+          "race_id": "202601020102",
+          "horse_id": "2024102603",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026082201020102",
+          "race_source_sha256": "d85195599d164d5062f155a484d534884e7cf54eccfe420e12e127b893c0d514",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05693",
+          "profile_sha256": "4a55f12a977db59287965aa28d8f9258cfb350a45f0cde337a2e19568d0e06e7",
+          "profile_id": "05693"
+        },
+        {
+          "race_id": "202601020212",
+          "horse_id": "2023100772",
+          "race_source_url": "https://umanity.jp/racing/result.php?race_id=2026082301020212",
+          "race_source_sha256": "78b27b2b1d90c2a9b1a192fb408038152cd122e93771deb6a29b1f2e57405932",
+          "profile_url": "https://umanity.jp/racing/database/jockey.php?jockey_id=05693",
+          "profile_sha256": "4a55f12a977db59287965aa28d8f9258cfb350a45f0cde337a2e19568d0e06e7",
+          "profile_id": "05693"
+        }
+      ]
+    }
+  ],
+  "2025_supplement_races": [
+    {
+      "race_id": "202506050701",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050701",
+      "sha256": "3a4684682d0c3661ad2c5a953381136f5308b60f042bbe602ec4f58ffb5c7153"
+    },
+    {
+      "race_id": "202506050702",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050702",
+      "sha256": "b7eea0c0e4bc6d7e540669c149508700a9c476b481e51350dcab56c4cd7f3bce"
+    },
+    {
+      "race_id": "202506050703",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050703",
+      "sha256": "2f70f08015b5c724d219942448814e8f41cde2a314fb26ca9bdf385af4555549"
+    },
+    {
+      "race_id": "202506050704",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050704",
+      "sha256": "8a3267af3de021fc05e47bbd4eb0319b8f89ca3da1b6f2eee2ae68b5cae30746"
+    },
+    {
+      "race_id": "202506050705",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050705",
+      "sha256": "58db0472def75c6e23a487b4966cdf1916375b9834a2855b860aab45c590e330"
+    },
+    {
+      "race_id": "202506050706",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050706",
+      "sha256": "3b07a444be7593bd59b9e93322e375d8cdd000fef6991aa36ec40891534beb30"
+    },
+    {
+      "race_id": "202506050707",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050707",
+      "sha256": "1e66f937744947b42969c53234393adf0762187f395845e0c19aabbc7d1beb8d"
+    },
+    {
+      "race_id": "202506050708",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050708",
+      "sha256": "6e280e4baeeab8fbe50814bbcc49d06dc6453b9af9ec4ac77adb0758df746288"
+    },
+    {
+      "race_id": "202506050709",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050709",
+      "sha256": "382f1243e46f4fc4195f5ac401082fba7e60f5a505536b15197ab82a8a2c470f"
+    },
+    {
+      "race_id": "202506050711",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050711",
+      "sha256": "97e8b9f2324ccfca8e00a575f3aa06ca51775963708dc9914eee1491ed4ba530"
+    },
+    {
+      "race_id": "202506050712",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050712",
+      "sha256": "f4b81e664e6fc747fe8f7edac332df94978651d1c018ec85cf98dde47996c060"
+    },
+    {
+      "race_id": "202506050801",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050801",
+      "sha256": "70c994ac3da47cbc7fad2bf51b8a5a4145980f6fb79f2a1795b8e01255623f84"
+    },
+    {
+      "race_id": "202506050802",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050802",
+      "sha256": "1e4900005c07848bc1f73a85c1126aed0f35ce999b4287bb6762c7db9162dd1e"
+    },
+    {
+      "race_id": "202506050803",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050803",
+      "sha256": "145725f9497a4e40b7947a9e50bb913f0e19403cbd790c9f3e87093d110c29ff"
+    },
+    {
+      "race_id": "202506050804",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050804",
+      "sha256": "bef90a9a7763e1eed46b1dcd4fd991ea4b661d57a2140042d05c4b8e0f09bc9b"
+    },
+    {
+      "race_id": "202506050805",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050805",
+      "sha256": "d018172e3c1163e11c6171aed4aeb0e2f8ce8d0f016992ee50c16fc6a6e38489"
+    },
+    {
+      "race_id": "202506050806",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050806",
+      "sha256": "1d54c6dce098ddd06cbc336cacc3738dd81c516172ff73cc932f01cce35b1d49"
+    },
+    {
+      "race_id": "202506050807",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050807",
+      "sha256": "716e0160e0b4dfcb5fd83b2688c1aa87c4dc01e48c65a221de5391f13ee36763"
+    },
+    {
+      "race_id": "202506050808",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050808",
+      "sha256": "a417a10d38b2fc04b21e3c795acb784487688f93f21fb5b01f27eee64a2cf89e"
+    },
+    {
+      "race_id": "202506050809",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050809",
+      "sha256": "a1f7418e74bab5a75636a3fdc0009f442fe49e2d63c2ed7c9f93262181aa04f3"
+    },
+    {
+      "race_id": "202506050810",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050810",
+      "sha256": "38a534a99ffb9ec08d63d15dae6f4f4502d13aed2d3939c6b17a4eed1961fe7a"
+    },
+    {
+      "race_id": "202506050811",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050811",
+      "sha256": "a2ab65d5c562401c167742a8ffabae422e0a95777f7e4d848bab5d634eecbf87"
+    },
+    {
+      "race_id": "202506050812",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2506050812",
+      "sha256": "33e7c5f37dc1b72c0dcd401b55a0454f5791da9bb61151bb6f35a1b4bdff5ce1"
+    },
+    {
+      "race_id": "202509050701",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050701",
+      "sha256": "3740accc68a05a962a84a1a1b5fe12068007b4d9181de97ad1fca9ce49f08aaf"
+    },
+    {
+      "race_id": "202509050702",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050702",
+      "sha256": "f6e933eb2e3ae62a797f00727ddd200e5fc127d47cf07ac1c93e74ef807d7ac8"
+    },
+    {
+      "race_id": "202509050703",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050703",
+      "sha256": "f57d71904c7cd71fdb1aacc81b6624bfc4d8a6c89c3b884a08ac997c980d1c8b"
+    },
+    {
+      "race_id": "202509050704",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050704",
+      "sha256": "eb496865331efc82f929b7fd34a74a65bbbba3a702489db0e552330044204b4e"
+    },
+    {
+      "race_id": "202509050705",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050705",
+      "sha256": "abcf5f9c8ba320ebeb47ae384b0d7a749e1152ffbde227d0f131643d57a944a6"
+    },
+    {
+      "race_id": "202509050706",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050706",
+      "sha256": "4ded938ae9ac3e92ba68a15ec1a3611f8736d2197fb00d7717a7eeeb0413ba18"
+    },
+    {
+      "race_id": "202509050707",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050707",
+      "sha256": "68a4c685e27b2853ce96e05a9246add5947915a9373964958f6ab70870ca83e3"
+    },
+    {
+      "race_id": "202509050708",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050708",
+      "sha256": "11894bd5586b42c30bd41b70274ea76183aaa92344511982113dd3b42510f136"
+    },
+    {
+      "race_id": "202509050709",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050709",
+      "sha256": "bf2978021cc3f7bb25f395469818905edec018834d86bec7cb2b8f8ccbeb671a"
+    },
+    {
+      "race_id": "202509050710",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050710",
+      "sha256": "ce3b7a81d31672805ac8223a16afaf0ad718324dd7e99ed98251a90099d23ef1"
+    },
+    {
+      "race_id": "202509050711",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050711",
+      "sha256": "1715cad40bfa162cf6edf22bdce08a5552dd58bf0f064ec0aaea72e238aeab79"
+    },
+    {
+      "race_id": "202509050712",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050712",
+      "sha256": "ed371dfdd7b979d3bc24fbf09d0d82989e9040c1b55bb89f28352cfd78b6d9fa"
+    },
+    {
+      "race_id": "202509050801",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050801",
+      "sha256": "1d226233d60e7ced1dd479b83d5dc7c3f2c91008d7d1b8f878a56d367c15715a"
+    },
+    {
+      "race_id": "202509050802",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050802",
+      "sha256": "ce4bdff0b927a245657a55f14edc484b95de6537b221222a086a64cace50fc22"
+    },
+    {
+      "race_id": "202509050803",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050803",
+      "sha256": "7077490618002831f2db3efe78c9e14b8b21f64ad5559e49f6a08e6472b78eed"
+    },
+    {
+      "race_id": "202509050804",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050804",
+      "sha256": "f6bf2b90121fd57084522dd1a583e4dcb035d980060c783f20cb08bb43da3a27"
+    },
+    {
+      "race_id": "202509050806",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050806",
+      "sha256": "c0edc64e27d02cb590621bcd4a77ed9ac2450a9c708480f93336c77c66af4503"
+    },
+    {
+      "race_id": "202509050807",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050807",
+      "sha256": "d6d85494cedb4434b168362b8b9f34847676bccbd3c340fa96b8ca2ae5530963"
+    },
+    {
+      "race_id": "202509050808",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050808",
+      "sha256": "ad8136b70605ede0274ee9dd999b379306d5d966cd61d616162e529c8afbea3f"
+    },
+    {
+      "race_id": "202509050809",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050809",
+      "sha256": "aeb42884baf473ff5e42359c2e18831f68c83cbe62523b0e813f0a765c03c9e9"
+    },
+    {
+      "race_id": "202509050810",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050810",
+      "sha256": "213e483449c39e44500d92777f0dfd7823fb9f3c1f574556085bf60e8c06cb60"
+    },
+    {
+      "race_id": "202509050811",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050811",
+      "sha256": "f51c7b7fc785f668ed22045e8b8c229620ab7b6eb6a29ba27a8c93d92547802a"
+    },
+    {
+      "race_id": "202509050812",
+      "url": "https://sports.yahoo.co.jp/keiba/race/result/2509050812",
+      "sha256": "8d6607f2a24bfeede5014a76075c13146ceb8d92c9030ea726bdba8448dc2cd5"
+    }
+  ],
+  "relative_feature_coverage": [
+    {
+      "feature": "rel_career_top3_vs_others",
+      "full_field_rows": 17,
+      "full_field_nonmissing": 17
+    },
+    {
+      "feature": "rel_same_distance_top3_vs_others",
+      "full_field_rows": 17,
+      "full_field_nonmissing": 17
+    },
+    {
+      "feature": "rel_same_course_top3_vs_others",
+      "full_field_rows": 17,
+      "full_field_nonmissing": 17
+    },
+    {
+      "feature": "rel_recent3_finish_vs_others",
+      "full_field_rows": 17,
+      "full_field_nonmissing": 17
+    },
+    {
+      "feature": "rel_recent3_time_vs_others",
+      "full_field_rows": 17,
+      "full_field_nonmissing": 17
+    }
+  ],
+  "input_source_sha256": {
+    "standardized_2010_2025_sha256": "d8bf137d851a241bb29be7518f1ea6bbcda4aa3dcc350ae03c081ee93d099127",
+    "live_2026_snapshot_sha256": "08f423520014830f53195ea3b31440cad478419e3c9e861e5da9c625c29a724f",
+    "live_2026_snapshot_id": "jra_flat_live_history_v1-20261030-974422eb4949",
+    "raw_2026_source_manifest_sha256": "f17132b4e0dc5d8555c4cfcf44030d3a9557158c85338e2a2976759f30436f5e",
+    "kaggle_results_v1_sha256": "fb9345273b21a7c23d41260dc77e45134a1bc2fe756899f3416b24ac0dd51de3",
+    "kaggle_races_v1_sha256": "b9ba4423efbaec641f9285ff01d79895c7b3821c2146522a397127245c81fadb",
+    "inventory_source_sha256": "41bcb23bcb068fc97ceed4f78870d0893165e0711a26b4ff58ea3b7471302a94",
+    "roster_source_sha256": "b20ba5932e23d07a1830e330b8ac89b9db0637013d9b1249b047112058a5b548"
+  },
+  "forwards_2026_11_01_t10_not_yet_locked": true
+}
