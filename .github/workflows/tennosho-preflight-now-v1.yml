@@ -1,0 +1,35 @@
+name: Tennosho 2026 live-source access-only preflight
+on:
+  push:
+    branches:
+      - research/tennosho-akiten-preoff-20261101
+    paths:
+      - .github/workflows/tennosho-preflight-now-v1.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-public-entry-and-odds:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install minimum preflight dependency set
+        run: |
+          python -m pip install -e '.[historical]' -c requirements-scope.txt
+      - name: Fetch, verify, and report Yahoo timestamp/17-horse availability
+        run: |
+          python -u scripts/tennosho_preoff_capture.py preflight \
+            --config config/tennosho_preoff_20261101.json \
+            --output /tmp/tennosho_20261101_preflight
+      - name: Explain that this was not a lock
+        if: always()
+        run: |
+          echo 'Preflight is an October 31 provider-access check only'
+          echo 'Not the November 1 15:30 official lock and does not change Stage 5'
