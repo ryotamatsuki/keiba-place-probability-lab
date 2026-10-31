@@ -353,6 +353,11 @@ def rebuild(a):
     if sha(a.standardized_base) != FROZEN_HISTORY_SHA256:
         raise ValueError("2010-2025 base does not match original standardized SHA")
     base = load_frozen_history(a.standardized_base)
+    # Historical JRA starter identities in the immutable base mix a legacy
+    # jra: namespace with bare ten-digit IDs. Normalize in memory AFTER the
+    # frozen SHA check so earlier and later starts refer to the same horse.
+    base = base.copy()
+    base["horse_id"] = base.horse_id.map(_jra_internal_id)
     current, live = _load_f3_git_checkpoint(a.live_root)
     if current is None or pd.Timestamp(current["complete_through"]) < pd.Timestamp("2026-10-25"):
         raise ValueError("2026 all-JRA flat source too stale for 17-horse forecast")
@@ -360,8 +365,8 @@ def rebuild(a):
         raise ValueError("Source beyond preregistered 2026-10-30 cutoff")
     if live.empty or not pd.to_datetime(live.race_date).dt.year.eq(2026).all():
         raise ValueError("2026 complete-flat source missing")
-    # Frozen JRA IDs are jra:NNNNNNNNNN, whereas 2026 official IDs are
-    # bare ten-digit numbers. Normalize only after verifying snapshot SHA.
+    # The frozen model's historic records contain both ID representations;
+    # normalize only after independently verifying both source file hashes.
     live = live.copy()
     live["horse_id"] = live.horse_id.map(_jra_internal_id)
     roster_html = a.roster_html.read_text()
@@ -387,7 +392,10 @@ def rebuild(a):
     if standard.duplicated(["race_id", "horse_id"]).any():
         raise ValueError("Duplicate historical result identity")
     panel = build_historical_panel(standard)
-    raw, raw_audit = raw_observations(panel, a.results_csv, a.races_csv)
+    raw, raw_audit = raw_observations(
+        panel, a.results_csv, a.races_csv,
+        horse_id_normalizer=_jra_internal_id,
+    )
     raw.race_date = pd.to_datetime(raw.race_date)
     historical_2025, supplement_sources = _supplement_2025(
         raw, older, a.cache
