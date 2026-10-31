@@ -1,0 +1,75 @@
+name: Trio V4 fixed-budget XGBoost depth and regularization OOF
+on:
+  push:
+    branches: [research/trio-structures-and-pooling-v4-20261031]
+    paths: [.github/workflows/trio-v4-xgb-depth.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: trio-v4-xgb-depth
+  cancel-in-progress: false
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/trio-structures-and-pooling-v4-20261031
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Pinned historical trainer dependencies
+        run: |
+          python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+          python -m pip install 'catboost==1.2.10' 'lightgbm==4.7.0'
+      - name: Static checks of nonleaking chronological model candidates
+        run: |
+          ruff check --select E4,E7,E9,F scripts/research_trio_v4_xgb_depth.py
+          python -m compileall -q scripts/research_trio_v4_xgb_depth.py
+      - name: Immutable Stage3.6 training panel
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Immutable original JRA race result source
+        run: |
+          python - <<'PY'
+          import kagglehub
+          kagglehub.dataset_download(
+              'noriyukifurufuru/japan-horse-racing-2010-2025/versions/1',
+              output_dir='/tmp/kaggle_trio_v4_xgb'
+          )
+          PY
+      - name: Fix 2023-only depth choice then train on 2018-2023 and compare exact PR40 2024
+        run: |
+          set -euo pipefail
+          RESULT=$(find /tmp/kaggle_trio_v4_xgb -name keiba_results.csv -print -quit)
+          RACES=$(find /tmp/kaggle_trio_v4_xgb -name keiba_races.csv -print -quit)
+          test -s "$RESULT" && test -s "$RACES"
+          python -u scripts/research_trio_v4_xgb_depth.py \
+            --historical-dir /tmp/stage36/data/historical_processed/stage36_freeze_v1 \
+            --results "$RESULT" --races "$RACES" \
+            --reference-oof analysis/trio_v3_matched_oof/2023_2024_matched_800_400_oof.csv \
+            --pr40-2023 analysis/trio_v3_matched_oof/2023_training_year_diagnostics.csv \
+            --pr40-2024 analysis/trio_v3_matched_oof/2024_comparable_complete_trio_scores.csv \
+            --out analysis/trio_v4_xgb_depth
+      - name: Commit dated XGB depth benchmark and source evidence
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/trio_v4_xgb_depth/
+          git commit -m 'research: archive fixed-budget XGB depth family 2023 preselection and 2024 test'
+          for n in 1 2 3 4 5; do
+            git fetch origin research/trio-structures-and-pooling-v4-20261031
+            git rebase origin/research/trio-structures-and-pooling-v4-20261031
+            if git push origin HEAD:research/trio-structures-and-pooling-v4-20261031; then exit 0; fi
+          done
+          exit 1

@@ -1,0 +1,52 @@
+name: Trio V4 three-structure ensemble late-2023 weights and 2024 exact-field test
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/trio-structures-and-pooling-v4-20261031
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+      - name: Strictly reject missing prerequisite OOF predictions
+        run: |
+          set -euo pipefail
+          test -s analysis/trio_v4_rank/late_2023_rank_meta_tickets.csv.gz
+          test -s analysis/trio_v4_rank/2024_rank_trio_probabilities.csv.gz
+          test -s analysis/trio_v4_official_tabm/2023_tabm_oof_all_tickets.csv.gz
+          test -s analysis/trio_v4_official_tabm/2024_tabm_all_tickets.csv.gz
+          test -s analysis/trio_v4_postmix/2024_post_v1_all_trio_predictions.csv.gz
+      - name: Run pre-period only meta-ensemble plus date bootstrap
+        run: |
+          ruff check --select E4,E7,E9,F scripts/research_trio_v4_multistructure.py
+          pytest -q tests/test_trio_v4_multistructure.py
+          python -u scripts/research_trio_v4_multistructure.py \
+            --rank-late-2023 analysis/trio_v4_rank/late_2023_rank_meta_tickets.csv.gz \
+            --tabm-2023 analysis/trio_v4_official_tabm/2023_tabm_oof_all_tickets.csv.gz \
+            --rank-2024 analysis/trio_v4_rank/2024_rank_trio_probabilities.csv.gz \
+            --tabm-2024 analysis/trio_v4_official_tabm/2024_tabm_all_tickets.csv.gz \
+            --incumbent-2024 analysis/trio_v4_postmix/2024_post_v1_all_trio_predictions.csv.gz \
+            --pr40-2024 analysis/trio_v3_matched_oof/2024_comparable_complete_trio_scores.csv \
+            --out analysis/trio_v4_multistructure
+      - name: Archive racewise scores and all ticket joint probabilities
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/trio_v4_multistructure/
+          git commit -m 'research: save 2023 chronological multi-structure weights and 2024 exact trio evaluation'
+          for i in 1 2 3 4 5; do
+            git fetch origin research/trio-structures-and-pooling-v4-20261031
+            git rebase origin/research/trio-structures-and-pooling-v4-20261031
+            if git push origin HEAD:research/trio-structures-and-pooling-v4-20261031; then exit 0; fi
+          done
+          exit 1

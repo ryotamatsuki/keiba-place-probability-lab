@@ -1,0 +1,86 @@
+name: Trio V4 official TabM prior-only F3 inputs and exact3 V1 OOF
+on:
+  push:
+    branches: [research/trio-structures-and-pooling-v4-20261031]
+    paths: [.github/workflows/trio-v4-tabm.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: trio-v4-official-tabm
+  cancel-in-progress: false
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 125
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/trio-structures-and-pooling-v4-20261031
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Official stable TabM version and CPU Torch environment
+        run: |
+          set -euo pipefail
+          python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+          python -m pip install 'torch==2.5.1' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install 'tabm==0.0.3' 'catboost==1.2.10' 'lightgbm==4.7.0'
+          python - <<'PY'
+          import torch,tabm
+          print('TORCH_VERSION',torch.__version__,'CPU_ONLY',not torch.cuda.is_available())
+          print('OFFICIAL_TABM_VERSION',tabm.__version__)
+          assert tabm.__version__ == '0.0.3'
+          PY
+      - name: Verify TabM member shapes and prior-only transform
+        run: |
+          ruff check --select E4,E7,E9,F scripts/research_trio_v4_tabm.py tests/test_trio_tabm_v4.py
+          pytest -q tests/test_trio_tabm_v4.py
+      - name: Restore full previous-source standardized fixed historical panel
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Retrieve same original Kaggle data source V1
+        run: |
+          python - <<'PY'
+          import kagglehub
+          kagglehub.dataset_download(
+              'noriyukifurufuru/japan-horse-racing-2010-2025/versions/1',
+              output_dir='/tmp/kaggle_trio_v4_tabm'
+          )
+          PY
+      - name: Train official TabM for 2023 and 2024 strictly out of time
+        env:
+          OMP_NUM_THREADS: "2"
+          MKL_NUM_THREADS: "2"
+        run: |
+          set -euo pipefail
+          RESULT=$(find /tmp/kaggle_trio_v4_tabm -name keiba_results.csv -print -quit)
+          RACES=$(find /tmp/kaggle_trio_v4_tabm -name keiba_races.csv -print -quit)
+          test -s "$RESULT" && test -s "$RACES"
+          python -u scripts/research_trio_v4_tabm.py \
+            --historical-dir /tmp/stage36/data/historical_processed/stage36_freeze_v1 \
+            --results "$RESULT" --races "$RACES" \
+            --reference-oof analysis/trio_v3_matched_oof/2023_2024_matched_800_400_oof.csv \
+            --pr40-2023 analysis/trio_v3_matched_oof/2023_training_year_diagnostics.csv \
+            --pr40-2024 analysis/trio_v3_matched_oof/2024_comparable_complete_trio_scores.csv \
+            --out analysis/trio_v4_official_tabm
+      - name: Save actual trained TabM OOF 2024 predictions and source audit
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/trio_v4_official_tabm/
+          git commit -m 'research: archive official 0.0.3 TabM chronological 2023-2024 F3 input OOF trial'
+          for n in 1 2 3 4 5; do
+            git fetch origin research/trio-structures-and-pooling-v4-20261031
+            git rebase origin/research/trio-structures-and-pooling-v4-20261031
+            if git push origin HEAD:research/trio-structures-and-pooling-v4-20261031; then exit 0; fi
+          done
+          exit 1
