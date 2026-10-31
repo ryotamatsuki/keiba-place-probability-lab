@@ -1,0 +1,283 @@
+{
+  "status": "EXPLORATORY_OBSERVATIONAL_OUT_OF_TIME_NOT_CAUSAL",
+  "target": "top3_label",
+  "horse_controls": [
+    "draw_pct",
+    "age",
+    "assigned_weight_kg",
+    "assigned_weight_delta_from_prev_kg",
+    "log_days_since_prev",
+    "distance_change_from_prev_m",
+    "surface_changed_from_prev",
+    "career_top3_shrunk",
+    "log_career_starts",
+    "turf_top3_shrunk",
+    "log_turf_starts",
+    "same_distance_top3_shrunk",
+    "log_same_distance_starts",
+    "same_course_top3_shrunk",
+    "log_same_course_starts",
+    "recent3_finish_pct_mean",
+    "recent3_top3_count",
+    "recent3_open_plus_count",
+    "recent3_graded_count",
+    "recent3_relative_time_mean",
+    "recent4_early_pos_pct_mean",
+    "front_forward_share",
+    "field_size",
+    "distance_m"
+  ],
+  "jockey_common_features": [
+    "rider_prior_top3_rate",
+    "rider_log_prior_starts",
+    "rider_surface_top3_rate",
+    "rider_surface_log_starts",
+    "rider_pair_log_starts",
+    "rider_same_as_previous"
+  ],
+  "jockey_distance_specific_features": [
+    "rider_band_top3_rate",
+    "rider_band_log_starts",
+    "rider_band_lift",
+    "rider_band_surface_top3_rate",
+    "rider_band_surface_log_starts"
+  ],
+  "distance_bands_m": {
+    "short": "<=1600",
+    "middle": "1601..2399",
+    "long": ">=2400"
+  },
+  "rider_history": "Jockey performance strictly before the TARGET race date; same-day results omitted",
+  "horse_history": "Pre-existing leakage-safe frozen horse prior features",
+  "source_sha256": {
+    "jra_flat_warmup_v1.parquet": "9826b5efdd2825f384f125a41602bb3948506b852b38b6f2186709d25d51532e",
+    "jra_flat_train_v1.parquet": "1fc9702838982a574d09f03d05a0c95aa4ece319f1090f37af6772c1a9f8bbb7",
+    "jra_flat_validation_v1.parquet": "aa7263518713e62af2da6d1b6f712e5b4d3c62200365f47974a903291e7e41ff",
+    "keiba_results.csv": "fb9345273b21a7c23d41260dc77e45134a1bc2fe756899f3416b24ac0dd51de3",
+    "keiba_races.csv": "b9ba4423efbaec641f9285ff01d79895c7b3821c2146522a397127245c81fadb"
+  },
+  "raw_source": {
+    "total_official_rows": 707067,
+    "matched_raw_runner_rows": 707067,
+    "unmatched_raw_runner_rows": 0,
+    "raw_rank_label_conflicts_excluded": 0,
+    "raw_result_duplicate_keys": 0,
+    "raw_race_duplicate_ids": 0,
+    "usable": {
+      "raw_last3f": 704715,
+      "raw_corner_first": 706399,
+      "raw_passing_gain": 706386,
+      "raw_mass": 707066,
+      "raw_mass_change": 707066,
+      "raw_wet": 707067,
+      "jockey_name": 707067,
+      "trainer": 707067
+    }
+  },
+  "folds": [
+    {
+      "outer_year": 2023,
+      "training_latest_date": "2022-12-28",
+      "evaluation_earliest_date": "2023-01-05",
+      "train_rows": 163201,
+      "eval_rows": 32396,
+      "eval_races": 2909,
+      "rider_column_valid": 32396
+    },
+    {
+      "outer_year": 2024,
+      "training_latest_date": "2023-12-28",
+      "evaluation_earliest_date": "2024-01-06",
+      "train_rows": 195597,
+      "eval_rows": 31608,
+      "eval_races": 2869,
+      "rider_column_valid": 31608
+    }
+  ],
+  "bootstrap_2024": {
+    "all:rider_common_vs_base": {
+      "status": "OK",
+      "bootstrap_draws": 2000,
+      "cluster": "race_date",
+      "n_cluster_dates": 106,
+      "comparison": "all:rider_common_vs_base",
+      "improvement_by_band": {
+        "short_le1600": 0.0009009245738435065,
+        "middle_1601_2399": 0.0009872637663826094,
+        "long_ge2400": 0.0024472820850340213
+      },
+      "long_minus_short": 0.0015463575111905148,
+      "contrast_95pct_percentile_CI": [
+        -0.0005650614961940151,
+        0.0035355256986984982
+      ],
+      "contrast_two_sided_bootstrap_sign_p": 0.151
+    },
+    "all:rider_distance_vs_base": {
+      "status": "OK",
+      "bootstrap_draws": 2000,
+      "cluster": "race_date",
+      "n_cluster_dates": 106,
+      "comparison": "all:rider_distance_vs_base",
+      "improvement_by_band": {
+        "short_le1600": 0.0008020522191781588,
+        "middle_1601_2399": 0.0007982614273033658,
+        "long_ge2400": 0.0019169779735721752
+      },
+      "long_minus_short": 0.0011149257543940163,
+      "contrast_95pct_percentile_CI": [
+        -0.0007531731288773378,
+        0.002957390515987305
+      ],
+      "contrast_two_sided_bootstrap_sign_p": 0.234
+    },
+    "all:distance_specific_vs_common": {
+      "status": "OK",
+      "bootstrap_draws": 2000,
+      "cluster": "race_date",
+      "n_cluster_dates": 106,
+      "comparison": "all:distance_specific_vs_common",
+      "improvement_by_band": {
+        "short_le1600": -9.887235466534776e-05,
+        "middle_1601_2399": -0.00018900233907924351,
+        "long_ge2400": -0.0005303041114618446
+      },
+      "long_minus_short": -0.00043143175679649686,
+      "contrast_95pct_percentile_CI": [
+        -0.001401363274503814,
+        0.00041462741626935
+      ],
+      "contrast_two_sided_bootstrap_sign_p": 0.4
+    },
+    "turf:rider_common_vs_base": {
+      "status": "OK",
+      "bootstrap_draws": 2000,
+      "cluster": "race_date",
+      "n_cluster_dates": 106,
+      "comparison": "turf:rider_common_vs_base",
+      "improvement_by_band": {
+        "short_le1600": 0.0013220975144434,
+        "middle_1601_2399": 0.0011211216286283678,
+        "long_ge2400": 0.0026012846244555035
+      },
+      "long_minus_short": 0.0012791871100121036,
+      "contrast_95pct_percentile_CI": [
+        -0.0011814854312924838,
+        0.003786639207326431
+      ],
+      "contrast_two_sided_bootstrap_sign_p": 0.303
+    },
+    "turf:rider_distance_vs_base": {
+      "status": "OK",
+      "bootstrap_draws": 2000,
+      "cluster": "race_date",
+      "n_cluster_dates": 106,
+      "comparison": "turf:rider_distance_vs_base",
+      "improvement_by_band": {
+        "short_le1600": 0.0011453823605627844,
+        "middle_1601_2399": 0.0008889642054187238,
+        "long_ge2400": 0.0019647129833156
+      },
+      "long_minus_short": 0.0008193306227528155,
+      "contrast_95pct_percentile_CI": [
+        -0.0014044281035360659,
+        0.0029832206486448236
+      ],
+      "contrast_two_sided_bootstrap_sign_p": 0.45
+    },
+    "turf:distance_specific_vs_common": {
+      "status": "OK",
+      "bootstrap_draws": 2000,
+      "cluster": "race_date",
+      "n_cluster_dates": 106,
+      "comparison": "turf:distance_specific_vs_common",
+      "improvement_by_band": {
+        "short_le1600": -0.00017671515388061642,
+        "middle_1601_2399": -0.00023215742320964455,
+        "long_ge2400": -0.000636571641139903
+      },
+      "long_minus_short": -0.00045985648725928665,
+      "contrast_95pct_percentile_CI": [
+        -0.0016013640471033695,
+        0.0005809384421442748
+      ],
+      "contrast_two_sided_bootstrap_sign_p": 0.393
+    },
+    "dirt:rider_common_vs_base": {
+      "status": "OK",
+      "bootstrap_draws": 2000,
+      "cluster": "race_date",
+      "n_cluster_dates": 106,
+      "comparison": "dirt:rider_common_vs_base",
+      "improvement_by_band": {
+        "short_le1600": 0.0005545290743945081,
+        "middle_1601_2399": 0.0008827373082146067,
+        "long_ge2400": 0.0015848678642737188
+      },
+      "long_minus_short": 0.0010303387898792107,
+      "contrast_95pct_percentile_CI": [
+        -0.0020403351913931863,
+        0.004407711099144225
+      ],
+      "contrast_two_sided_bootstrap_sign_p": 0.506
+    },
+    "dirt:rider_distance_vs_base": {
+      "status": "OK",
+      "bootstrap_draws": 2000,
+      "cluster": "race_date",
+      "n_cluster_dates": 106,
+      "comparison": "dirt:rider_distance_vs_base",
+      "improvement_by_band": {
+        "short_le1600": 0.0005196788652978536,
+        "middle_1601_2399": 0.0007274337599304175,
+        "long_ge2400": 0.0016496619190090017
+      },
+      "long_minus_short": 0.0011299830537111481,
+      "contrast_95pct_percentile_CI": [
+        -0.0021354822513456806,
+        0.0045975167627687495
+      ],
+      "contrast_two_sided_bootstrap_sign_p": 0.491
+    },
+    "dirt:distance_specific_vs_common": {
+      "status": "OK",
+      "bootstrap_draws": 2000,
+      "cluster": "race_date",
+      "n_cluster_dates": 106,
+      "comparison": "dirt:distance_specific_vs_common",
+      "improvement_by_band": {
+        "short_le1600": -3.4850209096654345e-05,
+        "middle_1601_2399": -0.00015530354828418937,
+        "long_ge2400": 6.479405473528239e-05
+      },
+      "long_minus_short": 9.964426383193674e-05,
+      "contrast_95pct_percentile_CI": [
+        -0.001176428132356745,
+        0.0018333496592038104
+      ],
+      "contrast_two_sided_bootstrap_sign_p": 0.923
+    }
+  },
+  "model_params": {
+    "n_estimators": 180,
+    "max_depth": 3,
+    "learning_rate": 0.04,
+    "min_child_weight": 50,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "reg_alpha": 2,
+    "reg_lambda": 20,
+    "seed": 20261031
+  },
+  "limitations": [
+    "Predictive ablation DOES NOT identify causal jockey ability: assignment to better horses is confounded.",
+    "No live pre-race market odds are controlled, so this cannot establish extra edge beyond betting market.",
+    "Outer 2023 is secondary and 2024 is primary. All model settings are fixed, no result-based selection.",
+    "Distance bands have different race conditions, rival quality, and sample sizes.",
+    "Rider probability estimates use previous outcomes of other horses, only preceding calendar days.",
+    "F3 production and Nov 1 frozen experimental model are unchanged."
+  ],
+  "code_sha256": "a8adb156c5108526ae058fe849da4b5327be50da3bbb43dd60a3e185d9d0226b",
+  "python": "3.11.17",
+  "xgboost": "3.2.0"
+}
