@@ -5,6 +5,7 @@ on:
       - research/tennosho-akiten-preoff-20261101
     paths:
       - .github/workflows/tennosho-f3-history-inventory-v1.yml
+      - scripts/tennosho_f3_history_inventory.py
   workflow_dispatch:
 permissions:
   contents: write
