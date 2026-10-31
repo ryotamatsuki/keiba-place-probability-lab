@@ -52,8 +52,12 @@ def _asof_agent(x:pd.DataFrame,column:str,prefix:str)->pd.DataFrame:
     return joined[[prefix+"_prior_place",prefix+"_log_starts"]]
 
 
-def engineer_v5_asof(frame:pd.DataFrame)->pd.DataFrame:
-    """Use complete historic panel; preserve all source row identifiers."""
+def engineer_v5_asof(frame:pd.DataFrame, *, validate_races=None)->pd.DataFrame:
+    """Use complete historical panel; audit ALL starters of evaluated races.
+
+    Historical background races are allowed outside the validated F3 scope,
+    but every target race must have its entire original field available.
+    """
     req={"race_id","horse_id","race_date","horse_no","field_size",
          "top3_label","jockey_name","trainer",
          "raw_last3f_rel","raw_finish_position","raw_passing_gain",
@@ -117,8 +121,18 @@ def engineer_v5_asof(frame:pd.DataFrame)->pd.DataFrame:
     x["_v5_front_share_market"]=np.where(front,m,0.)
     n=x.groupby("race_id").race_id.transform("size").to_numpy(float)
     expected=_numeric(x.field_size).to_numpy(float)
-    if not np.array_equal(n,expected):
-        raise ValueError("Field pace context requires ALL actual starters")
+    # The full historical background contains races outside the F3 eligibility
+    # scope. Never demand completeness there; but NEVER relax it for evaluated
+    # races, which must supply exact true starter field composition.
+    checking=x.race_id.isin(validate_races).to_numpy() if validate_races is not None else np.ones(len(x),dtype=bool)
+    if validate_races is not None and set(validate_races)-set(x.race_id):
+        raise ValueError("Missing target races from full historical starter context")
+    mismatched=checking & ((n!=expected) | ~np.isfinite(expected))
+    if mismatched.any():
+        examples=x.loc[mismatched,["race_id","field_size"]].copy()
+        examples["actual_context_rows"]=n[mismatched].astype(int)
+        examples=examples.drop_duplicates("race_id").head(10).to_dict("records")
+        raise ValueError("Field pace context requires ALL actual starters: "+repr(examples))
     group=x.groupby("race_id",sort=False)
     x["v5_front_share"]=group["_v5_front"].transform("mean")
     x["v5_front_count"]=group["_v5_front"].transform("sum")
