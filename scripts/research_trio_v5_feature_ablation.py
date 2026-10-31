@@ -166,9 +166,43 @@ def main():
     if a.out.exists() and any(a.out.iterdir()):
         raise FileExistsError("No overwriting versioned experiment output")
     started=time.perf_counter()
-    source,audit=prepare_dataset(a.historical_dir,a.results,a.races)
-    print("V5_HISTORICAL_PANEL_READY "+str(len(source)),flush=True)
-    panel=engineer_v5_asof(source)
+    source,audit,full_history,full_market=prepare_dataset(
+        a.historical_dir,a.results,a.races,include_full_context=True
+    )
+    print("V5_ELIGIBLE_PANEL_READY "+str(len(source)),flush=True)
+    # The original F3 source is filtered by career_starts>=3. Consequently
+    # it CANNOT provide a full starter race for 3-renpuku pace construction.
+    # Compute all as-of history on the unfiltered 2010–2024 raw panel, then
+    # use whole-field final market shares for races in the eligible panel.
+    wanted=set(source.race_id.astype(str))
+    if set(full_market.race_id.astype(str)) != wanted:
+        raise ValueError("Full-field market races differ from eligible source")
+    runner_keys=["race_id","horse_id","horse_no"]
+    context=full_history.merge(
+        full_market[["race_id","horse_no","market_p_win"]].rename(
+            columns={"market_p_win":"market_win_probability"}
+        ),on=["race_id","horse_no"],how="left",sort=False,
+        validate="one_to_one"
+    )
+    absent=context.race_id.isin(wanted) & context.market_win_probability.isna()
+    if absent.any():
+        examples=context.loc[absent,runner_keys].head(10).to_dict("records")
+        raise ValueError("No full-field market share for known starter: "+repr(examples))
+    # Only the evaluation-scope race IDs need all-field completeness; the
+    # 2010–2015 and excluded historical races remain available for lagged
+    # jockey/trainer/horse updates, irrespective of their market coverage.
+    panel=engineer_v5_asof(context,validate_races=wanted)
+    v5_cols=list(FEATURE_BLOCKS["all"])
+    source=source.merge(panel[runner_keys+v5_cols],on=runner_keys,
+                        how="left",sort=False,validate="one_to_one",
+                        indicator=True)
+    if not source["_merge"].eq("both").all():
+        examples=source.loc[source["_merge"].ne("both"),runner_keys].head(10)
+        raise ValueError("Failed to attach full-context V5 starter features: "+
+                         repr(examples.to_dict("records")))
+    source.drop(columns="_merge",inplace=True)
+    print("V5_FULL_FIELD_CONTEXT_READY "+str(len(context))+
+          " rows; "+str(len(wanted))+" eligible races",flush=True)
     oof=pd.read_csv(a.matched_oof,dtype={"race_id":str,"horse_id":str})
     cols=["race_id","horse_id","horse_no","p_matched_f3"]
     if len(oof)!=len(oof.drop_duplicates(cols[:3])):
