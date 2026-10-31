@@ -47,7 +47,7 @@ def _prepare(horses: np.ndarray, log_weights: np.ndarray,
     n = len(hs)
     triplets = np.array(list(combinations(range(n), 3)), dtype=np.int16)
     rows = np.array([tuple(sorted(row)) for row in hs[triplets]])
-    market = {tuple(sorted(tuple(v))): float(z)
+    market = {tuple(sorted(v)): float(z)
               for v, z in zip(market_trios, market_joint, strict=True)}
     if len(market) != len(rows) or len(market) != len(set(map(tuple, rows))):
         raise ValueError("Market/F3 trio sets disagree")
