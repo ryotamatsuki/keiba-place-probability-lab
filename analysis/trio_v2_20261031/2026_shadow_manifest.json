@@ -1,0 +1,16 @@
+{
+  "status": "SHADOW_ONLY_NEVER_BETTING_PRODUCTION",
+  "model_fit_year": 2023,
+  "historical_proxy": "120tree",
+  "forward_f3": "XGB800+CAT400",
+  "incompatible_validation_domain": true,
+  "frozen_bundle_hash": "f8db9efe4245782165a0732945f5ab50c9c845d52fec25f20150d65e6ab096aa",
+  "input_f3_preview_hash": "595ac9b010fbdd019717bb197056054828709038c727b99f19820d8a5e957a94",
+  "input_prior_features_hash": "6d184c48008a4dd5664823baac00de779635270a660ed0415f6469d61f26daa5",
+  "f3_model_and_official_preoff_lock_unchanged": true,
+  "number_trios": 680,
+  "raw_sum": 1.0,
+  "shadow_sum": 1.0,
+  "max_probability_change": 0.007345859653618822,
+  "not_a_recommended_bet": true
+}

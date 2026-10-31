@@ -1,0 +1,59 @@
+{
+  "model": "trio_v2_2023_historical_f3_120tree_PROXY",
+  "fit_only_year": 2023,
+  "train_races": 1355,
+  "model_candidates": {
+    "pair_strength": {
+      "beta": [
+        -0.05417626760134223
+      ],
+      "train_races": 1355,
+      "ridge": 0.05,
+      "training_joint_logloss_regularized": 4.574841277326326,
+      "features": [
+        "pair_strength"
+      ],
+      "optimizer_success": true,
+      "optimizer_iterations": 3
+    },
+    "race_interactions": {
+      "beta": [
+        -0.05483024560817957,
+        0.06403841499931565,
+        0.05971828243705447
+      ],
+      "train_races": 1355,
+      "ridge": 0.05,
+      "training_joint_logloss_regularized": 4.574579399949762,
+      "features": [
+        "pair_strength",
+        "pace_similarity",
+        "draw_similarity"
+      ],
+      "optimizer_success": true,
+      "optimizer_iterations": 8
+    },
+    "market_hybrid": {
+      "beta": [
+        0.00396355088021352,
+        0.06341556621650234,
+        0.059112443314697095,
+        -0.17427434255033875
+      ],
+      "train_races": 1355,
+      "ridge": 0.05,
+      "training_joint_logloss_regularized": 4.573209071077725,
+      "features": [
+        "pair_strength",
+        "pace_similarity",
+        "draw_similarity",
+        "market_pl_residual"
+      ],
+      "optimizer_success": true,
+      "optimizer_iterations": 11
+    }
+  },
+  "main_predeclared_candidate": "race_interactions",
+  "forward_model_compatibility": false,
+  "no_promote": true
+}

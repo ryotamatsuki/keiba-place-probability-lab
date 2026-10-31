@@ -1,0 +1,134 @@
+{
+  "status": "RESEARCH_2023_TRAIN_2024_TEST_NO_LIVE_ADOPTION",
+  "2023_training_races": 1355,
+  "2024_untouched_test_races": 1336,
+  "f3_120tree_historical_not_2026_frozen_xgb800_cat400": true,
+  "full_field_verified": true,
+  "identical_baseline_2024_logloss": 4.4964765097602095,
+  "candidate_summaries_2024": {
+    "f3_raw": {
+      "joint_logloss": 4.496476509630573,
+      "joint_brier": 0.9736505253642201,
+      "top1_accuracy": 0.0748502994011976,
+      "top5_coverage": 0.24850299401197604,
+      "top10_observed_coverage": 0.36976047904191617,
+      "top10_predicted_mass": 0.3886032284681853,
+      "top10_coverage_gap": -0.018842749426269123
+    },
+    "pair_strength": {
+      "joint_logloss": 4.496050378466999,
+      "joint_brier": 0.9735485312650982,
+      "top1_accuracy": 0.0748502994011976,
+      "top5_coverage": 0.24850299401197604,
+      "top10_observed_coverage": 0.36676646706586824,
+      "top10_predicted_mass": 0.3759741805239256,
+      "top10_coverage_gap": -0.009207713458057376
+    },
+    "race_interactions": {
+      "joint_logloss": 4.495090692125259,
+      "joint_brier": 0.9735087360597714,
+      "top1_accuracy": 0.07559880239520958,
+      "top5_coverage": 0.2470059880239521,
+      "top10_observed_coverage": 0.36751497005988026,
+      "top10_predicted_mass": 0.3760570797614841,
+      "top10_coverage_gap": -0.00854210970160385
+    },
+    "market_hybrid": {
+      "joint_logloss": 4.493835503936754,
+      "joint_brier": 0.9734538957667886,
+      "top1_accuracy": 0.07634730538922156,
+      "top5_coverage": 0.24625748502994013,
+      "top10_observed_coverage": 0.37050898203592814,
+      "top10_predicted_mass": 0.3718523479723859,
+      "top10_coverage_gap": -0.0013433659364577855
+    }
+  },
+  "comparison_2024": {
+    "f3_raw_minus_pair_strength": {
+      "difference_baseline_minus_candidate": 0.000426131163573436,
+      "cluster_dates": 106,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        -0.001555855468404928,
+        0.0024864548572536955
+      ],
+      "positive_improvement_bootstrap_share": 0.6616,
+      "joint_brier_baseline_minus_candidate": 0.00010199409912192703
+    },
+    "f3_raw_minus_race_interactions": {
+      "difference_baseline_minus_candidate": 0.001385817505315261,
+      "cluster_dates": 106,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        -0.000605206437896601,
+        0.003464475070272918
+      ],
+      "positive_improvement_bootstrap_share": 0.9004,
+      "joint_brier_baseline_minus_candidate": 0.00014178930444874727
+    },
+    "f3_raw_minus_market_hybrid": {
+      "difference_baseline_minus_candidate": 0.0026410056938188826,
+      "cluster_dates": 106,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        -0.0004307369541871981,
+        0.005638833213566844
+      ],
+      "positive_improvement_bootstrap_share": 0.9492,
+      "joint_brier_baseline_minus_candidate": 0.00019662959743149688
+    }
+  },
+  "primary_gate_pass_statistically": false,
+  "promotion_allowed": false,
+  "reason_no_promotion": "2024 validation is on historical 120-tree F3 proxy; Nov-1 frozen 800/400 ensemble and T-minus-10 odds are different domain",
+  "racing_day_cluster_bootstrap": 2500,
+  "original_source_integrity": {
+    "source_sha256": {
+      "jra_flat_warmup_v1.parquet": "9826b5efdd2825f384f125a41602bb3948506b852b38b6f2186709d25d51532e",
+      "jra_flat_train_v1.parquet": "1fc9702838982a574d09f03d05a0c95aa4ece319f1090f37af6772c1a9f8bbb7",
+      "jra_flat_validation_v1.parquet": "aa7263518713e62af2da6d1b6f712e5b4d3c62200365f47974a903291e7e41ff",
+      "jra_results": "fb9345273b21a7c23d41260dc77e45134a1bc2fe756899f3416b24ac0dd51de3",
+      "jra_races": "b9ba4423efbaec641f9285ff01d79895c7b3821c2146522a397127245c81fadb",
+      "f3_oof": "db49a4423277190ac80cf71a6276955bc48a25dd14006ff6e50e1c956e1d6f98"
+    },
+    "history": {
+      "total_official_rows": 707067,
+      "matched_raw_runner_rows": 707067,
+      "unmatched_raw_runner_rows": 0,
+      "raw_rank_label_conflicts_excluded": 0,
+      "raw_result_duplicate_keys": 0,
+      "raw_race_duplicate_ids": 0,
+      "usable": {
+        "raw_last3f": 704715,
+        "raw_corner_first": 706399,
+        "raw_passing_gain": 706386,
+        "raw_mass": 707066,
+        "raw_mass_change": 707066,
+        "raw_wet": 707067,
+        "jockey_name": 707067,
+        "trainer": 707067
+      }
+    },
+    "market": {
+      "requested_races": 5731,
+      "complete_market_races": 5731,
+      "incomplete_market_races": 0,
+      "malformed_requested_rows": 0,
+      "incomplete_reason_counts": {}
+    },
+    "eligibility": {
+      "oof_races": 5731,
+      "full_starter_races_with_exactly_three_ranks": 2691,
+      "complete_market_final_eligible_races": 2691,
+      "excluded_races_due_to_missing_starters_ties_or_market": 3040
+    }
+  },
+  "limits": [
+    "As-of race start snapshots historical FINAL win odds, not actual archived T-10 odds.",
+    "No observed live race 3-renpuku pools or historic joint tote prices; ROI cannot be inferred.",
+    "Race selection restricted to complete starter OOF and unique top three only.",
+    "No 2025 independent locked-ensemble evaluation was performed.",
+    "Parameters selected only using the 2023 training outcomes; no 2024 retraining.",
+    "Multiple comparison exploratory: only race_interactions designated primary gate."
+  ]
+}
