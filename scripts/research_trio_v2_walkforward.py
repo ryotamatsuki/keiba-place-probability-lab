@@ -53,8 +53,7 @@ def _build_history(oof: Path, historic: Path, results: Path, races: Path):
     # The following two features are strictly prior horse form and assigned draw.
     # Never use actual race-run pace, finish or post-race passage.
     context = panel[["race_id", "horse_id", "horse_no",
-                     "recent4_early_pos_pct_mean", "draw_pct", "distance_m",
-                     "surface", "racecourse"]]
+                     "recent4_early_pos_pct_mean", "draw_pct", "racecourse"]]
     linked = linked.merge(context, on=["race_id", "horse_id", "horse_no"],
                           how="left", validate="one_to_one", indicator=True)
     if not linked._merge.eq("both").all():
