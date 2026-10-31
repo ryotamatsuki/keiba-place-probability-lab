@@ -66,7 +66,7 @@ def raw_result(html: str, provider_id: str) -> pd.DataFrame:
             "rank": c[0].get_text(strip=True),
             "last_3f": times[-1] if times else None,
             "passing": passing[1] if passing and meta["turn_direction"] != "straight" else None,
-            "horse_weight": f"{mass[1]}({mass[2]})" if mass else None,
+            "horse_weight": f"{mass[1]}({mass[2].replace('±', '')})" if mass else None,
             "jockey_name": jockey.get_text(strip=True) if jockey else None,
             "trainer": trainer.get_text(strip=True) if trainer else None,
             "track_condition": condition_match[1],
@@ -117,7 +117,7 @@ def umanity_raw_result(html: str, race_id: str, race_date: pd.Timestamp) -> pd.D
         hid, _ = live_umanity.identity(c[3])
         horse_no = int(c[1].get_text(strip=True))
         mass = re.search(
-            r"(?<!\d)([3-7]\d{2})\s*([+-]?\d+)(?!\d)",
+            r"(?<!\d)([3-7]\d{2})\s*([+-]?\d+|±0)(?!\d)",
             c[3].get_text(" ", strip=True),
         )
         # Umanity shows passage squares followed by "後3F" in cell 7.
