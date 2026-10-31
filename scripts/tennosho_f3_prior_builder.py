@@ -97,6 +97,24 @@ def _extra_raw_observations(
     ).ne(pd.to_numeric(original.horse_no))
     if mismatch.any():
         raise ValueError("Independent historical raw horse-number discrepancy")
+    # Postrace ranks from the audited 2025/26 source are necessary to update
+    # opponent Elo. Missing ranks would silently freeze all 2026 Elo histories.
+    supplement_rank = pd.to_numeric(
+        original.loc[supplement, "extra_rank"].astype("string").str.extract(
+            r"^(\d{1,2})(?:\((?:降|再)\))?$", expand=False
+        ),
+        errors="coerce",
+    )
+    confirmed_rank = pd.to_numeric(
+        original.loc[supplement, "finish_position"], errors="coerce",
+    )
+    if not supplement_rank.notna().equals(confirmed_rank.notna()) or not (
+        supplement_rank.loc[confirmed_rank.notna()].to_numpy(float)
+        == confirmed_rank.loc[confirmed_rank.notna()].to_numpy(float)
+    ).all():
+        raise ValueError("Audited supplemental finishing ranks disagree with verified results")
+    original.loc[supplement, "raw_finish_position"] = supplement_rank.to_numpy(float)
+
     original.loc[supplement, "jockey_name"] = original.loc[supplement, "extra_jockey_name"]
     original.loc[supplement, "trainer"] = original.loc[supplement, "extra_trainer"]
     original.loc[supplement, "raw_last3f"] = _parse_3f(
