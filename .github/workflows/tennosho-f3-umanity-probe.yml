@@ -60,4 +60,6 @@ jobs:
               differences=xy.loc[a.ne(b),['horse_no',field+'_yahoo',field+'_alt']].head(5).to_dict(orient='records')
               print('source parity',field,'mismatch count',int(a.ne(b).sum()),'examples',differences,flush=True)
           assert len(xy)==17 and xy.last_3f_yahoo.equals(xy.last_3f_alt)
+          assert xy.horse_weight_yahoo.equals(xy.horse_weight_alt), 'Published source mass must be identical'
+
           PY
