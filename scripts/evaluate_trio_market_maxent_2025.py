@@ -12,12 +12,11 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
 from research_trio_f3_v1 import paired_day_ci
+from scipy.special import logsumexp
 
 from keiba_place_lab.trio_bridge_v1 import invert_subset_marginals, project_exactly_three
 from keiba_place_lab.trio_residual_v2 import score_probabilities
-from scipy.special import logsumexp
 
 
 def score_market_maxent(runner:pd.DataFrame)->pd.DataFrame:
@@ -93,7 +92,7 @@ def main()->None:
     merged.to_csv(args.out/"2025_same_family_joint_scores.csv",index=False)
     report={
         "status":"DESCRIPTIVE_2025_ALREADY_EXAMINED_NOT_FRESH_CONFIRMATION",
-        "races":int(len(merged)),
+        "races":len(merged),
         "individual_market_input":"frozen_pre2025_calibrated Harville top3",
         "same_exact_3_subset_maxentropy_used_for_market_and_f3":True,
         "market_prices":"historic final WIN odds, not actual trio odds and not T10",
