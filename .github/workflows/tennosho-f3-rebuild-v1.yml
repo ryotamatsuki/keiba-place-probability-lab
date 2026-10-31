@@ -1,0 +1,146 @@
+name: Tennosho F3 end-to-end all prior races and 17 starters
+on:
+  push:
+    branches:
+      - research/tennosho-akiten-preoff-20261101
+    paths:
+      - .github/workflows/tennosho-f3-rebuild-v1.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/tennosho-akiten-preoff-20261101
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: |
+          python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+          python -m pip install 'catboost==1.2.10' 'lightgbm==4.7.0'
+      - name: Reject unsafe F3 source/regression before expensive data
+        run: |
+          ruff check .
+          pytest -q tests/test_tennosho_preoff_20261101.py
+      - name: Refresh all 2026 JRA flat results to last fully completed Oct 30
+        shell: bash
+        run: |
+          set -uo pipefail
+          if ! python -u scripts/update_live_history.py \
+               --through 2026-10-30 --recheck-days 0 --max-workers 8 \
+               --root data/live_history/2026 --cache /tmp/tennosho-live-cache \
+               --source yahoo; then
+            python - <<'PY'
+          from pathlib import Path
+          import json
+          import hashlib
+          from keiba_place_lab.live_history import RESULT_URL, DENMA_URL
+          root = Path("data/live_history/2026")
+          failed = json.loads((root/"last_failure.json").read_text())["failed_races"]
+          cache = Path("/tmp/tennosho-live-cache")
+          for rid in failed:
+              for url in (RESULT_URL.format(provider_id=rid[2:]),
+                          DENMA_URL.format(provider_id=rid[2:])):
+                  key = hashlib.sha256(url.encode()).hexdigest()
+                  for suffix in (".html", ".json"):
+                      (cache / (key+suffix)).unlink(missing_ok=True)
+          print("Yahoo-only failures for selective Umanity alternate source:",len(failed))
+          PY
+            python -u scripts/update_live_history.py \
+                 --through 2026-10-30 --recheck-days 0 --max-workers 8 \
+                 --root data/live_history/2026 --cache /tmp/tennosho-live-cache \
+                 --source umanity
+          fi
+          python - <<'PY' >> "$GITHUB_ENV"
+          import json
+          from pathlib import Path
+          current = json.loads(Path("data/live_history/2026/current.json").read_text())
+          assert current["complete_through"]=="2026-10-30"
+          print("PRIOR_2026_PARQUET=data/live_history/2026/snapshots/" + current["snapshot_id"] + "/jra_flat_history.parquet")
+          PY
+      - name: Capture all published raw prior JRA flat last3f/jockey/trainer/going
+        run: |
+          python -u scripts/tennosho_f3_raw_audit.py \
+            --history "$PRIOR_2026_PARQUET" \
+            --output /tmp/tennosho_2026_raw.csv \
+            --manifest /tmp/tennosho_2026_raw.manifest.json \
+            --cache /tmp/tennosho-f3-raw-cache \
+            --max-workers 8
+      - name: Restore exact frozen standardized 2010-2025 historical base
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Get immutable original Kaggle V1 raw results and race metadata
+        run: |
+          python - <<'PY'
+          import kagglehub
+          print(kagglehub.dataset_download(
+             'noriyukifurufuru/japan-horse-racing-2010-2025/versions/1',
+             output_dir='/tmp/kaggle_v1'
+          ))
+          PY
+          RESULT=$(find /tmp/kaggle_v1 -name keiba_results.csv -print -quit)
+          RACES=$(find /tmp/kaggle_v1 -name keiba_races.csv -print -quit)
+          test -n "$RESULT" && test -n "$RACES"
+          echo "RESULTS_CSV=$RESULT" >> "$GITHUB_ENV"
+          echo "RACES_CSV=$RACES" >> "$GITHUB_ENV"
+      - name: Save exact T-minus-10 scheduled 17-horse roster without odds
+        run: |
+          python - <<'PY'
+          import json, requests
+          from pathlib import Path
+          cfg=json.loads(Path('config/tennosho_preoff_20261101.json').read_text())
+          r=requests.get(cfg['roster_url'],timeout=(10,25),
+              headers={'User-Agent':'keiba-place-lab/0.1 research'})
+          r.raise_for_status()
+          Path('/tmp/tennosho_roster.html').write_text(r.text)
+          PY
+      - name: Compute original F3 numerical/categorical feature registry and 17 verified past histories
+        run: |
+          python -u scripts/tennosho_f3_prior_builder.py \
+            --standardized-base /tmp/stage36/data/historical_processed/stage36_freeze_v1/standardized_jra_flat_source_v1.parquet \
+            --live-root data/live_history/2026 \
+            --results-csv "$RESULTS_CSV" --races-csv "$RACES_CSV" \
+            --inventory analysis/tennosho_preoff_20261101/history_inventory_asof_20261030.json \
+            --roster-html /tmp/tennosho_roster.html \
+            --extra-csv /tmp/tennosho_2026_raw.csv \
+            --extra-manifest /tmp/tennosho_2026_raw.manifest.json \
+            --config config/tennosho_preoff_20261101.json \
+            --output analysis/tennosho_preoff_20261101/prior_f3_features_asof_20261030.csv \
+            --manifest analysis/tennosho_preoff_20261101/prior_f3_features_asof_20261030.manifest.json
+      - name: Publish only source-verified F3 prior features for later timestamped T-10 lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/tennosho_preoff_20261101/prior_f3_features_asof_20261030.csv \
+                  analysis/tennosho_preoff_20261101/prior_f3_features_asof_20261030.manifest.json
+          git commit -m 'research: freeze verified prior-only F3 inputs for all 17 Tennosho horses'
+          for try in 1 2 3 4 5; do
+            git fetch origin research/tennosho-akiten-preoff-20261101
+            git rebase origin/research/tennosho-akiten-preoff-20261101
+            if git push origin HEAD:research/tennosho-akiten-preoff-20261101; then exit 0; fi
+          done
+          exit 1
+      - name: Capture only raw-data errors if F3 could not be rebuilt
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tennosho-f3-source-failure-diagnostics
+          path: |
+            /tmp/tennosho_2026_raw.manifest.json
+            data/live_history/2026/last_failure.json
+          if-no-files-found: ignore
+          retention-days: 7
