@@ -9,7 +9,7 @@ import pandas as pd
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from tennosho_f3_prior_builder import _extra_raw_observations  # noqa: E402
+from tennosho_f3_prior_builder import _extra_raw_observations
 
 
 def _sources() -> tuple[pd.DataFrame, pd.DataFrame]:
