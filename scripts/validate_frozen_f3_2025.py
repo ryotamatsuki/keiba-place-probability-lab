@@ -24,10 +24,14 @@ from keiba_place_lab.ensemble import apply_logit_calibrator
 from keiba_place_lab.historical_market import reconstruct_historical_market
 from keiba_place_lab.historical_panel import build_historical_panel
 from keiba_place_lab.information_expansion_v1 import (
-    add_historical_result_features, add_opponent_elo, raw_observations,
+    add_historical_result_features,
+    add_opponent_elo,
+    raw_observations,
 )
 from keiba_place_lab.input_learning_v1 import (
-    add_calibrated_market_splits, attach_information, full_starter_market_context,
+    add_calibrated_market_splits,
+    attach_information,
+    full_starter_market_context,
 )
 from keiba_place_lab.live_history import load_frozen_history
 from keiba_place_lab.market import harville_top_k_probabilities, normalized_win_probabilities
@@ -35,10 +39,15 @@ from keiba_place_lab.nonmarket import engineer_features
 from keiba_place_lab.scope_expansion import straight_course_mask
 from keiba_place_lab.tennosho_forward import locked_bundle
 from keiba_place_lab.trio_bridge_v1 import (
-    invert_subset_marginals, plackett_luce_trio, project_exactly_three,
+    invert_subset_marginals,
+    plackett_luce_trio,
+    project_exactly_three,
 )
 from keiba_place_lab.trio_residual_v2 import (
-    CANDIDATE_SETS, _prepare, residual_distribution, score_probabilities,
+    CANDIDATE_SETS,
+    _prepare,
+    residual_distribution,
+    score_probabilities,
 )
 
 # This cut excludes the 4 independently documented late-2025 cards where
@@ -250,7 +259,7 @@ def build_2025_holdout(
     cohort={
         "all_2025_source_races":int(test.race_id.nunique()),
         "all_2025_source_rows":len(test),
-        "full_2025_cohort_before_rank_source_check":int(len(full_ids)),
+        "full_2025_cohort_before_rank_source_check":len(full_ids),
         "full_after_strict_original_rank_and_identity_check":int(source_verified.sum()),
         "full_after_market_check":int(joined.race_id.nunique()),
         "2025_scored_rows":len(joined),
@@ -322,10 +331,6 @@ def race_joint_summary(frame:pd.DataFrame, fitted:dict,
             )),
         }
         pp=market_pl.probability.to_numpy(float)
-        for name,p in (("market_pl",pp),):
-            for key,v in score_probabilities(p,int(idx[0])).items():
-                # PL probability row order differs! Align exact ticket keys first.
-                pass
         # Align market PL to trio enumeration (market_pl sorted descending).
         market_map={
             tuple(sorted((int(x.horse_1),int(x.horse_2),int(x.horse_3)))):float(x.probability)
