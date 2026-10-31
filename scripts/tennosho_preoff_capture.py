@@ -8,7 +8,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -153,7 +153,7 @@ def verified_provider_time(html: str, timestamp: datetime) -> None:
         raise ValueError("Provider has no independently encoded update time")
     if "T" not in value:
         raise ValueError("Odds updated-at has no ISO calendar date/time")
-    stated = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    stated = datetime.fromisoformat(value)
     # Source is a Japan-only public racing site; naive source timestamp is
     # still ambiguous and is rejected rather than forged into a current time.
     if stated.tzinfo is None:
@@ -215,7 +215,7 @@ def capture(
     odds_html, odds_meta = fetch_html(config["odds_url"])
     acquired = datetime.fromisoformat(odds_meta["captured_at_utc"])
     roster, _ = parse_roster(roster_html, config)
-    active_horses = strict_roster(roster, config, config["race_id"])
+    strict_roster(roster, config, config["race_id"])
     odds, provider = parse_win_snapshot(odds_html, config)
     verified_provider_time(odds_html, provider)
     matched = strict_same_market(roster, odds)
