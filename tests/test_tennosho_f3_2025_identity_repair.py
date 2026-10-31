@@ -1,13 +1,15 @@
 """The seven pre-registered late-2025 corrupt frozen horse IDs are repaired only by two matching sources."""
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
 import pandas as pd
 import pytest
 
-from scripts import tennosho_f3_2025_identity_repair as correction
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+import tennosho_f3_2025_identity_repair as correction
 
 
 def _fixture():
