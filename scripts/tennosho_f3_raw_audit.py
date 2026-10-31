@@ -15,7 +15,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
-from bs4 import BeautifulSoup
 
 from keiba_place_lab.live_history import CachedFetcher, RESULT_URL, _status_from_rank
 from keiba_place_lab.live_public import _identity, metadata
