@@ -91,8 +91,7 @@ def collect(config: dict, baseline: pd.DataFrame, cutoff: str) -> tuple[list[dic
             (int(row.horse_no), str(row.horse_id), str(row.horse_name))
             for row in roster.itertuples(index=False)
         ]
-        for row in pool.map(one, items):
-            records.append(row)
+        records.extend(pool.map(one, items))
     records.sort(key=lambda item: item["horse_no"])
     return records, roster_source
 
