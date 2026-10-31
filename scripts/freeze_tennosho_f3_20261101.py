@@ -9,7 +9,6 @@ import argparse
 import hashlib
 import json
 import platform
-import sys
 import time
 from pathlib import Path
 
@@ -17,12 +16,12 @@ import joblib
 import numpy as np
 import pandas as pd
 from catboost import CatBoostClassifier, Pool
-from scipy.special import expit, logit
-
-from keiba_place_lab.ensemble import fit_logit_calibrator
 from run_information_expansion_v1 import _build_pipeline
 from run_input_learning_a_v1 import feature_registry, prepare_dataset
 from run_model_families_c1 import CATBOOST_PARAMS, _categorical_input, _race_weight
+from scipy.special import logit
+
+from keiba_place_lab.ensemble import fit_logit_calibrator
 
 FROZEN_TRAINING_YEARS = (2018, 2024)
 TRAIN_CUTOFF = "2024-12-31"
@@ -136,8 +135,8 @@ def train(data: pd.DataFrame) -> tuple[dict, dict]:
 
 def main() -> None:
     import catboost
-    import xgboost
     import sklearn
+    import xgboost
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--historical-dir", type=Path, required=True)
