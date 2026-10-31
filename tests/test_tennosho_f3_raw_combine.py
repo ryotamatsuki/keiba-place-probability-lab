@@ -78,7 +78,7 @@ def test_partial_checkpoint_is_rejected(tmp_path: Path):
 def test_tampered_checkpoint_is_rejected(tmp_path: Path):
     source, shards, output, manifest = fixture_shards(tmp_path)
     path = shards / "shard-1" / "2026_raw.csv"
-    path.write_text(path.read_text().replace("h2", "forged_horse"))
+    path.write_text(path.read_text().replace("h3", "forged_horse"))
     with pytest.raises(ValueError, match="provenance or content hash"):
         assemble(source, shards, 2, output, manifest)
 
