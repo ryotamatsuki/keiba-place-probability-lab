@@ -17,9 +17,9 @@ from collections import Counter
 from pathlib import Path
 from urllib.parse import parse_qs, urljoin, urlparse
 
-from bs4 import BeautifulSoup
 import numpy as np
 import pandas as pd
+from bs4 import BeautifulSoup
 from run_information_expansion_v1 import SOURCE_SHA
 from run_input_learning_a_v1 import feature_registry
 from tennosho_f3_2025_identity_repair import repair_frozen_2025_identities
