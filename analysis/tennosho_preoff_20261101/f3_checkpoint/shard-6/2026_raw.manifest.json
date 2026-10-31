@@ -1,0 +1,9 @@
+{
+  "status": "INCOMPLETE_RAW_SOURCE_NOT_F3_READY",
+  "attempted": 231,
+  "failures": {
+    "202607020301": "Alternate passage has >4 corners"
+  },
+  "successful": 230,
+  "finished_at_utc": "2026-10-31T05:42:12.328301+00:00"
+}
