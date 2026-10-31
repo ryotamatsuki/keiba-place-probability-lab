@@ -47,3 +47,14 @@ TabM ICLR2025 Gorishniy et al. 公式repo `https://github.com/yandex-research/ta
 
 ## 追跡
 source SHA・Git blob SHA・seed・依存と実行時間・GitHub Actions run ID・各評価コホートをJSON保存。新しいスコアを書き出す前に本仕様をcommit。
+
+
+## 2026-10-31 同日事前誤記訂正：木モデルの既存値を明確化（深さ探索開始前）
+
+もとの仕様に`(2,1,1) incumbent`と記したのは**誤り**。`scripts/run_information_expansion_v1.py`の実際の`FIXED_MODEL`は`max_depth=2,min_child_weight=60,reg_lambda=20,reg_alpha=2,subsample=.8,colsample_bytree=.8,eta=.03`である。モデル本体を凍結し、木の本数・depth以外の既存値を変えた候補を『incumbent』と呼ばないため、**深さ探索を始める前に**候補を以下へ改める：
+
+1. 既存仕様の400木：depth2, child60, lambda20, alpha2
+2. 新設定Aの400木：depth3, child5, lambda10, alpha2
+3. 新設定Bの400木：depth4, child10, lambda20, alpha2
+
+全モデルの学習年・2016-前年までの市場校正、予測前のオフセット、他のXGBパラメータ、計算予算は不変。2023年NLLの最良候補だけ2024年にfitして保存済みF3＋V1と比較。**この訂正は新たな木モデル実測を確認する前**にコミットする。旧文字列も監査目的で残す。
