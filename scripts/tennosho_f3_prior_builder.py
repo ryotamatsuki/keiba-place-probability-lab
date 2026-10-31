@@ -113,7 +113,7 @@ def _extra_raw_observations(
         == confirmed_rank.loc[confirmed_rank.notna()].to_numpy(float)
     ).all():
         raise ValueError("Audited supplemental finishing ranks disagree with verified results")
-    original.loc[supplement, "raw_finish_position"] = supplement_rank.to_numpy(float)
+    original.loc[supplement, "raw_finish_position"] = supplement_rank.to_numpy(dtype=float, na_value=np.nan)
 
     original.loc[supplement, "jockey_name"] = original.loc[supplement, "extra_jockey_name"]
     original.loc[supplement, "trainer"] = original.loc[supplement, "extra_trainer"]
