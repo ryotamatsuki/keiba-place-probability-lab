@@ -1,4 +1,5 @@
 name: Trio V4 prereg posttransform arithmetic ensemble 2023 -> 2024
+# Relaunch after initial unit-test script lands.
 on:
   push:
     branches: [research/trio-structures-and-pooling-v4-20261031]
