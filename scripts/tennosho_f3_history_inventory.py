@@ -16,7 +16,6 @@ from pathlib import Path
 import pandas as pd
 import requests
 
-from keiba_place_lab.live_history import load_frozen_history
 from keiba_place_lab.live_public import parse_horse_inventory, parse_roster
 
 TARGET_RACE = "202605041111"
@@ -110,7 +109,9 @@ def main():
     if pd.Timestamp(a.cutoff) >= pd.Timestamp("2026-11-01"):
         raise ValueError("Target or future date not allowed")
     cfg = json.loads(a.config.read_text())
-    data = load_frozen_history(a.historical)
+    data = pd.read_parquet(a.historical)
+    if not pd.to_datetime(data.race_date).dt.year.eq(2026).all():
+        raise ValueError("Baseline must be the registered 2026 current snapshot")
     records, roster_source = collect(cfg, data, a.cutoff)
     aggregate = {
         "status": "INVENTORY_ONLY_F3_NOT_YET_RECONSTRUCTED",
