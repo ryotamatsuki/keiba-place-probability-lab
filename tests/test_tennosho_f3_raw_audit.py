@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from tennosho_f3_raw_audit import _parse_umanity_passage  # noqa: E402
+from tennosho_f3_raw_audit import _parse_umanity_passage
 
 
 @pytest.mark.parametrize(
