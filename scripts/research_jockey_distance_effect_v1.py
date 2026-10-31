@@ -18,7 +18,6 @@ from sklearn.preprocessing import OneHotEncoder
 from xgboost import XGBClassifier
 import xgboost
 
-from keiba_place_lab.historical_panel import select_phase_a_cohort
 from keiba_place_lab.information_expansion_v1 import raw_observations
 from keiba_place_lab.nonmarket import engineer_features, feature_columns
 from run_information_expansion_v1 import load_full_panel
