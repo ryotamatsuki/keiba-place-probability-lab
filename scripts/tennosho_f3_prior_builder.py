@@ -101,7 +101,7 @@ def _load_f3_git_checkpoint(root: Path) -> tuple[dict, pd.DataFrame]:
 def _jra_internal_id(value: object) -> str:
     """Map verified numeric JRA IDs to the frozen training source namespace."""
     horse_id = str(value)
-    numeric_id = horse_id[4:] if horse_id.startswith("jra:") else horse_id
+    numeric_id = horse_id.removeprefix("jra:")
     if not re.fullmatch(r"\d{10}", numeric_id):
         raise ValueError(f"Invalid verified JRA horse identity: {horse_id}")
     return f"jra:{numeric_id}"
