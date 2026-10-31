@@ -44,9 +44,9 @@ jobs:
                   c=tr.find_all('td',recursive=False)
                   if len(c)<11:continue
                   passage=c[7].get_text(' ',strip=True)
-                  times=re.findall(r'(?<![\\d.])([2-6]\\d\\.\\d)(?!\\d)',passage)
+                  times=re.findall(r'(?<![\d.])([2-6]\d\.\d)(?!\d)',passage)
                   ahead=passage[:passage.rfind(times[-1])].strip() if times else passage
-                  blocks=re.findall(r'\\b\\d{1,2}\\b',ahead)
+                  blocks=re.findall(r'\b\d{1,2}\b',ahead)
                   if len(blocks)>4:
                       bad.append({'horse_no':c[1].get_text(strip=True),
                                   'passage':passage[:250],'ahead':ahead[:250],
