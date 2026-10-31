@@ -141,7 +141,7 @@ def repair_frozen_2025_identities(
             ):
                 raise ValueError(f"Unexpected audited original/source 2025 mismatch {rid} number {no}")
             real_name = names.get(no)
-            if not real_name or real_name == old_name:
+            if not real_name:
                 raise ValueError(f"2025 corrected horse name unconfirmed: {rid} number {no}")
             mask = x.race_id.astype(str).eq(rid) & x.horse_no.eq(no)
             if mask.sum() != 1:
