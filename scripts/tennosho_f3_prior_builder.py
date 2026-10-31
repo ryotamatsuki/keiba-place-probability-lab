@@ -20,8 +20,9 @@ import numpy as np
 import pandas as pd
 from run_information_expansion_v1 import SOURCE_SHA
 from run_input_learning_a_v1 import feature_registry
-from tennosho_f3_raw_audit import raw_result
+from tennosho_f3_raw_audit import raw_result, umanity_raw_result
 
+from keiba_place_lab import live_umanity
 from keiba_place_lab.historical_panel import REQUIRED_COLUMNS, build_historical_panel
 from keiba_place_lab.information_expansion_v1 import (
     _parse_3f,
@@ -262,11 +263,23 @@ def _supplement_2025(raw: pd.DataFrame, original: pd.DataFrame,
     fetcher = CachedFetcher(cache, pause_seconds=.5)
     rows, sources = [], []
     for rid in sorted(missing):
-        html, record = fetcher.fetch(RESULT_URL.format(provider_id=rid[2:]))
-        part = raw_result(html, rid[2:])
-        observed = original.loc[
-            original.race_id.astype(str).eq(rid), ["horse_id", "horse_no"]
-        ].copy()
+        historical = original.loc[
+            original.race_id.astype(str).eq(rid)
+        ]
+        date = pd.Timestamp(historical.race_date.iloc[0])
+        provider = "yahoo"
+        try:
+            html, record = fetcher.fetch(RESULT_URL.format(provider_id=rid[2:]))
+            part = raw_result(html, rid[2:])
+        except Exception as exc:  # noqa: BLE001 - verified alternative must pass full-field QA
+            print(f"2025 prior result Yahoo unavailable {rid}: {exc}", flush=True)
+            provider = "umanity"
+            sid = live_umanity.source_id(rid, date)
+            url = f"https://umanity.jp/racing/result.php?race_id={sid}"
+            html, record = fetcher.fetch(url)
+            part = umanity_raw_result(html, rid, date)
+        part["source_provider"] = provider
+        observed = historical[["horse_id", "horse_no"]].copy()
         observed.horse_id = observed.horse_id.astype(str)
         if len(part) != len(observed) or set(zip(part.horse_id, part.horse_no)) != set(
             zip(observed.horse_id, observed.horse_no)
