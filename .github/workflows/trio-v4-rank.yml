@@ -1,0 +1,62 @@
+name: Trio V4 covariate Plackett Luce and generalized order ranks
+on:
+  push:
+    branches: [research/trio-structures-and-pooling-v4-20261031]
+    paths: [.github/workflows/trio-v4-rank.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: trio-v4-rank
+  cancel-in-progress: false
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/trio-structures-and-pooling-v4-20261031
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+      - name: Rank likelihood and six-permutation tests
+        run: |
+          ruff check --select E4,E7,E9,F src/keiba_place_lab/trio_covariate_rank_v4.py scripts/research_trio_v4_rank.py tests/test_trio_covariate_rank_v4.py
+          pytest -q tests/test_trio_covariate_rank_v4.py
+      - name: Get immutable original 2010 to 2025 ordered JRA results
+        run: |
+          python - <<'PY'
+          import kagglehub
+          kagglehub.dataset_download(
+              "noriyukifurufuru/japan-horse-racing-2010-2025/versions/1",
+              output_dir="/tmp/kaggle_v4_ranks"
+          )
+          PY
+      - name: 2023 chronological rank validation and 2024 PR40 fixed-cohort trial
+        run: |
+          set -euo pipefail
+          RANKS=$(find /tmp/kaggle_v4_ranks -name keiba_results.csv -print -quit)
+          test -s "$RANKS"
+          python -u scripts/research_trio_v4_rank.py \
+            --oof analysis/trio_v3_matched_oof/2023_2024_matched_800_400_oof.csv \
+            --pr40-2023 analysis/trio_v3_matched_oof/2023_training_year_diagnostics.csv \
+            --pr40-2024 analysis/trio_v3_matched_oof/2024_comparable_complete_trio_scores.csv \
+            --ranks "$RANKS" \
+            --out analysis/trio_v4_rank
+      - name: Preserve rank learner, calibration chronology and full ticket predictions
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add analysis/trio_v4_rank/
+          git commit -m "research: record chronological ordered rank PL and generalized PL 2024 evaluation"
+          for k in 1 2 3 4 5; do
+            git fetch origin research/trio-structures-and-pooling-v4-20261031
+            git rebase origin/research/trio-structures-and-pooling-v4-20261031
+            if git push origin HEAD:research/trio-structures-and-pooling-v4-20261031; then exit 0; fi
+          done
+          exit 1
