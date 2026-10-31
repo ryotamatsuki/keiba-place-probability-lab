@@ -13,10 +13,11 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from run_information_expansion_v1 import load_full_panel
 
 from keiba_place_lab.historical_market import reconstruct_historical_market
-from keiba_place_lab.market import normalized_win_probabilities
 from keiba_place_lab.information_expansion_v1 import raw_observations
+from keiba_place_lab.market import normalized_win_probabilities
 from keiba_place_lab.trio_bridge_v1 import (
     historical_trio_temperature,
     invert_subset_marginals,
@@ -24,7 +25,6 @@ from keiba_place_lab.trio_bridge_v1 import (
     project_exactly_three,
     trio_distribution,
 )
-from run_information_expansion_v1 import load_full_panel
 
 F3_PROXY = "p_F3_market_field"
 FROZEN_P = "p_XC_75_25_logit"
@@ -270,7 +270,7 @@ def forecast(preview_csv: Path, calibration: dict, out: Path,
     residual = float(np.max(abs(projected - reconstructed)))
     if residual > 3e-5:
         raise ValueError("Joint probabilities do not reproduce projected F3 marginals")
-    win, overround = normalized_win_probabilities(p.win_odds.to_numpy(float))
+    win, _overround = normalized_win_probabilities(p.win_odds.to_numpy(float))
     raw = trio_distribution(weights, numbers)
     proxy_temp = trio_distribution(weights, numbers,
                                    temperature=calibration["temperature"])
@@ -339,7 +339,7 @@ def main() -> None:
     # Research-only outputs cannot overwrite existing immutable F3 snapshots.
     if out.exists() and any(out.iterdir()):
         raise FileExistsError("Trio research output directory must be new")
-    calibration, report = retrospective(
+    calibration, _report = retrospective(
         args.oof_csv, args.historical_dir, args.results_csv, args.races_csv, out
     )
     forecast(args.preview_csv, calibration, out, args.bundle_manifest)
