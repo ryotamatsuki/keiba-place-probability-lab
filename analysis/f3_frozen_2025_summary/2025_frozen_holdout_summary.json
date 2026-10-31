@@ -1,0 +1,256 @@
+{
+  "status": "INDEPENDENT_2025_FROZEN_2024_END_800_400_HOLDOUT",
+  "2018_2024_training_only": true,
+  "2025_test_races": 1253,
+  "2025_test_runners": 17391,
+  "2025_test_days": 107,
+  "full_field_3_placers_each_race": true,
+  "original_frozen_model_sha256": "f8db9efe4245782165a0732945f5ab50c9c845d52fec25f20150d65e6ab096aa",
+  "exact_2026_forward_preview_parity": {
+    "exact_frozen_model_parity_max_abs": {
+      "p_B_raw_400": 4.976574707882264e-13,
+      "p_XGB800_raw": 3.457650832316972e-13,
+      "p_CatBoost400_raw": 3.7125857943465235e-13,
+      "p_XC_75_25_logit": 3.402833570476105e-13
+    },
+    "preview_sha256": "595ac9b010fbdd019717bb197056054828709038c727b99f19820d8a5e957a94",
+    "prior_sha256": "6d184c48008a4dd5664823baac00de779635270a660ed0415f6469d61f26daa5"
+  },
+  "market_data": "historical final win odds, NOT historical T-10",
+  "model_metrics": {
+    "market": {
+      "race_macro_brier": 0.13963940353720178,
+      "race_macro_logloss": 0.4310914900781388,
+      "runner_macro_brier": 0.13637962029824593,
+      "runner_macro_logloss": 0.4225965467267523
+    },
+    "xgb400": {
+      "race_macro_brier": 0.13912167407275478,
+      "race_macro_logloss": 0.4291308207938792,
+      "runner_macro_brier": 0.13594244207036477,
+      "runner_macro_logloss": 0.42086586628513983
+    },
+    "xgb800": {
+      "race_macro_brier": 0.13907424367401022,
+      "race_macro_logloss": 0.4289053591993958,
+      "runner_macro_brier": 0.13592255186453098,
+      "runner_macro_logloss": 0.42071564839649134
+    },
+    "cat400": {
+      "race_macro_brier": 0.13908485400822485,
+      "race_macro_logloss": 0.4291761217414666,
+      "runner_macro_brier": 0.13591287457064502,
+      "runner_macro_logloss": 0.42092704607240566
+    },
+    "f3_frozen_xc75_25": {
+      "race_macro_brier": 0.13906522528368606,
+      "race_macro_logloss": 0.4289249969663162,
+      "runner_macro_brier": 0.13590912360547058,
+      "runner_macro_logloss": 0.4207219207028058
+    }
+  },
+  "f3_paired_date_cluster_95ci": {
+    "market_minus_frozen_brier": {
+      "difference_baseline_minus_candidate": 0.0005741782535156989,
+      "cluster_dates": 107,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        0.00029974677876882497,
+        0.0008582389153250566
+      ],
+      "positive_improvement_bootstrap_share": 1.0
+    },
+    "market_minus_frozen_logloss": {
+      "difference_baseline_minus_candidate": 0.0021664931118225675,
+      "cluster_dates": 107,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        0.0014018667714283132,
+        0.002945666028128905
+      ],
+      "positive_improvement_bootstrap_share": 1.0
+    },
+    "xgb800_minus_frozen_brier": {
+      "difference_baseline_minus_candidate": 9.018390324144727e-06,
+      "cluster_dates": 107,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        -1.819914372650392e-05,
+        3.520200040188894e-05
+      ],
+      "positive_improvement_bootstrap_share": 0.7436
+    },
+    "xgb800_minus_frozen_logloss": {
+      "difference_baseline_minus_candidate": -1.9637766920431954e-05,
+      "cluster_dates": 107,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        -0.00010509489440401735,
+        6.0924678743261724e-05
+      ],
+      "positive_improvement_bootstrap_share": 0.3212
+    },
+    "cat400_minus_frozen_brier": {
+      "difference_baseline_minus_candidate": 1.9628724538747483e-05,
+      "cluster_dates": 107,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        -5.846269583085974e-05,
+        0.00010156589853482853
+      ],
+      "positive_improvement_bootstrap_share": 0.6876
+    },
+    "cat400_minus_frozen_logloss": {
+      "difference_baseline_minus_candidate": 0.0002511247751504195,
+      "cluster_dates": 107,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        1.0211100868523157e-05,
+        0.0005074376273619244
+      ],
+      "positive_improvement_bootstrap_share": 0.9788
+    },
+    "xgb400_minus_frozen_brier": {
+      "difference_baseline_minus_candidate": 5.6448789068677896e-05,
+      "cluster_dates": 107,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        -8.745477322959904e-06,
+        0.00012272557665548873
+      ],
+      "positive_improvement_bootstrap_share": 0.954
+    },
+    "xgb400_minus_frozen_logloss": {
+      "difference_baseline_minus_candidate": 0.00020582382756298163,
+      "cluster_dates": 107,
+      "bootstrap_resamples": 2500,
+      "ci95": [
+        3.203874639403466e-05,
+        0.0003860155658408796
+      ],
+      "positive_improvement_bootstrap_share": 0.9892
+    }
+  },
+  "trio_models": {
+    "methods": {
+      "market_pl": {
+        "joint_logloss": 4.649925046209695,
+        "joint_brier": 0.9821569615645088,
+        "top10_coverage": 0.33599361532322425,
+        "top10_mass": 0.4746002726270591
+      },
+      "v1_raw": {
+        "joint_logloss": 4.573825504218159,
+        "joint_brier": 0.9765530547715225,
+        "top10_coverage": 0.3423782920989625,
+        "top10_mass": 0.3679353981919904
+      },
+      "v2_2023_transfer": {
+        "joint_logloss": 4.572786864170973,
+        "joint_brier": 0.9763050739539378,
+        "top10_coverage": 0.34317637669592976,
+        "top10_mass": 0.3561413970197007
+      },
+      "v2_market_hybrid_transfer": {
+        "joint_logloss": 4.572556065038835,
+        "joint_brier": 0.9762701526081827,
+        "top10_coverage": 0.3423782920989625,
+        "top10_mass": 0.350834019073451
+      }
+    },
+    "paired_day_ci": {
+      "market_pl_minus_v1_raw": {
+        "difference_baseline_minus_candidate": 0.07609954199153561,
+        "cluster_dates": 107,
+        "bootstrap_resamples": 2500,
+        "ci95": [
+          0.057520827470817215,
+          0.09482947483851617
+        ],
+        "positive_improvement_bootstrap_share": 1.0
+      },
+      "market_pl_minus_v2_2023_transfer": {
+        "difference_baseline_minus_candidate": 0.07713818203872237,
+        "cluster_dates": 107,
+        "bootstrap_resamples": 2500,
+        "ci95": [
+          0.05728795898206318,
+          0.0965877970764347
+        ],
+        "positive_improvement_bootstrap_share": 1.0
+      },
+      "market_pl_minus_v2_market_hybrid_transfer": {
+        "difference_baseline_minus_candidate": 0.07736898117086029,
+        "cluster_dates": 107,
+        "bootstrap_resamples": 2500,
+        "ci95": [
+          0.05571067426507176,
+          0.09858438258992389
+        ],
+        "positive_improvement_bootstrap_share": 1.0
+      },
+      "v1_raw_minus_v2_2023_transfer": {
+        "difference_baseline_minus_candidate": 0.0010386400471867712,
+        "cluster_dates": 107,
+        "bootstrap_resamples": 2500,
+        "ci95": [
+          -0.0009552355093780597,
+          0.0031062862326508597
+        ],
+        "positive_improvement_bootstrap_share": 0.8388,
+        "joint_brier_improvement": 0.00024798081758470314
+      },
+      "v1_raw_minus_v2_market_hybrid_transfer": {
+        "difference_baseline_minus_candidate": 0.0012694391793246836,
+        "cluster_dates": 107,
+        "bootstrap_resamples": 2500,
+        "ci95": [
+          -0.0019472285715435769,
+          0.0044397898229040144
+        ],
+        "positive_improvement_bootstrap_share": 0.784,
+        "joint_brier_improvement": 0.00028290216333981544
+      }
+    },
+    "valid_2025_full_races": 1253,
+    "examples": [
+      {
+        "race_id": "202506010104",
+        "count": 16,
+        "actual": [
+          1,
+          7,
+          8
+        ]
+      },
+      {
+        "race_id": "202506010107",
+        "count": 16,
+        "actual": [
+          5,
+          8,
+          16
+        ]
+      },
+      {
+        "race_id": "202506010108",
+        "count": 16,
+        "actual": [
+          11,
+          12,
+          16
+        ]
+      }
+    ]
+  },
+  "frozen_f3_unchanged": true,
+  "model_retraining_count": 0,
+  "new_calibration_count": 0,
+  "live_betting_promotion": false,
+  "limits": [
+    "No archived pre-race 10-minute market snapshots for 2025.",
+    "No historical all-ticket 3-renpuku prices or payouts were observed.",
+    "Evaluation subset requires every starter has at least three prior JRA starts.",
+    "Only races with exact original full source and three unique podium ranks included."
+  ]
+}
