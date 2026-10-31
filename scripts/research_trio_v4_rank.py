@@ -149,6 +149,7 @@ def main():
         calibration.append({
             "race_id":r["race_id"],"race_date":r["race_date"],
             "actual_idx":r["actual_idx"],"rank_joint":p,
+            "triplets":r["triplets"],
             "incumbent":r["incumbent"],
         })
     rows=[]
@@ -193,6 +194,20 @@ def main():
     )
     pd.DataFrame(calib).to_csv(
         args.out/"late_2023_rank_metavalidation.csv",index=False
+    )
+    late_tickets=[]
+    for item in calibration:
+        for ix, (h1,h2,h3) in enumerate(item["triplets"]):
+            late_tickets.append({
+                "race_id":item["race_id"],
+                "horse_1":int(h1),"horse_2":int(h2),"horse_3":int(h3),
+                "rank":float(item["rank_joint"][ix]),
+                "incumbent":float(item["incumbent"][ix]),
+                "actual":int(ix==item["actual_idx"]),
+            })
+    pd.DataFrame(late_tickets).to_csv(
+        args.out/"late_2023_rank_meta_tickets.csv.gz",
+        index=False,compression="gzip"
     )
     result={
         "status":"2024_DEVELOPMENT_RANK_META_NONINDEPENDENT_F3_BASE",
