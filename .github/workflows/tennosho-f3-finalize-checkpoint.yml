@@ -1,4 +1,5 @@
 name: Tennosho F3 finalize saved historical checkpoints
+# Audit-backed S. Narredu alias verification added; retry after failed run 41178851949.
 on:
   push:
     branches: [research/tennosho-akiten-preoff-20261101]
