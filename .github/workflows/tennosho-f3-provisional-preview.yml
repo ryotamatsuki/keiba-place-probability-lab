@@ -1,0 +1,108 @@
+name: Tennosho F3 provisional market preview (NOT formal T-10 lock)
+on:
+  push:
+    branches: [research/tennosho-akiten-preoff-20261101]
+    paths: [.github/workflows/tennosho-f3-provisional-preview.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: tennosho-f3-provisional-preview
+  cancel-in-progress: false
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/tennosho-akiten-preoff-20261101
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: |
+          python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+          python -m pip install 'catboost==1.2.10' 'lightgbm==4.7.0'
+      - name: Infer frozen F3 models with current public same-snapshot win odds; preview only
+        run: |
+          python - <<'PY'
+          import json
+          import re
+          from datetime import datetime
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+          import pandas as pd
+          from bs4 import BeautifulSoup
+          from keiba_place_lab.live_public import parse_roster, parse_win_snapshot
+          from keiba_place_lab.tennosho_forward import locked_bundle, predict_from_frozen, sha256
+          from scripts.tennosho_preoff_capture import fetch_html, strict_roster, strict_same_market, verified_provider_time
+
+          base=Path("analysis/tennosho_preoff_20261101")
+          config=json.loads(Path("config/tennosho_preoff_20261101.json").read_text())
+          features=base/"prior_f3_features.csv"
+          feature_manifest=base/"prior_f3_features.manifest.json"
+          bundle_path=Path("models/tennosho_f3_20261101/f3_bundle.joblib")
+          model_manifest=Path("models/tennosho_f3_20261101/manifest.json")
+          assert sha256(features)==json.loads(feature_manifest.read_text())["feature_csv_sha256"]
+          model,model_meta=locked_bundle(bundle_path,model_manifest)
+          roster_html,roster_meta=fetch_html(config["roster_url"])
+          odds_html,odds_meta=fetch_html(config["odds_url"])
+          roster,_=parse_roster(roster_html,config)
+          strict_roster(roster,config,config["race_id"])
+          odds,asof=parse_win_snapshot(odds_html,config)
+          clock_proof=verified_provider_time(odds_html,asof)
+          observed=strict_same_market(roster,odds)
+          age=(datetime.now(ZoneInfo("Asia/Tokyo"))-asof).total_seconds()
+          if age < 0 or age > 7200:
+              raise ValueError(f"Provisional provider odds are not recent enough: {age} seconds")
+          prior=pd.read_csv(features,dtype={"race_id":str,"horse_id":str})
+          prior_meta=json.loads(feature_manifest.read_text())
+          forecasts,proof=predict_from_frozen(model,model_meta,prior,prior_meta,observed)
+          assert len(forecasts)==17
+          # Extract same-page place range only from unambiguous horse-specific table rows.
+          name_to_no=dict(zip(observed.horse_name,observed.horse_no))
+          ranges={}
+          for tr in BeautifulSoup(odds_html,"html.parser").select("tr"):
+              cells=[c.get_text(" ",strip=True) for c in tr.find_all(["th","td"],recursive=False)]
+              if len(cells)<5:
+                  continue
+              found=[(name,num) for name,num in name_to_no.items() if name in cells]
+              if len(found)!=1:
+                  continue
+              m=re.search(r"(\d+(?:\.\d+)?)\s*[-–〜~]\s*(\d+(?:\.\d+)?)",cells[-1])
+              if m:
+                  low,high=map(float,m.groups())
+                  if 1.0<=low<=high:
+                      ranges[int(found[0][1])]=(low,high)
+          forecast=forecasts.merge(observed[["horse_no","win_odds"]],on="horse_no",validate="one_to_one")
+          forecast["place_low"]=forecast.horse_no.map({k:v[0] for k,v in ranges.items()})
+          forecast["place_high"]=forecast.horse_no.map({k:v[1] for k,v in ranges.items()})
+          for col in ["p_M0_live_raw","p_B_raw_400","p_XGB800_raw","p_CatBoost400_raw","p_XC_75_25_logit"]:
+              forecast["expected_profit_500_min_"+col]=500*(forecast[col]*forecast["place_low"]-1)
+          # Results are informational, not a model validation, ROI guarantee or formal race lock.
+          directory=base/"previews"
+          directory.mkdir(parents=True,exist_ok=True)
+          stamp=asof.strftime("%Y%m%dT%H%M%S")
+          output=directory/f"f3_preview_{stamp}.csv"
+          assert not output.exists(), "Never overwrite a previous preview"
+          forecast.to_csv(output,index=False,float_format="%.12g")
+          info={"status":"PROVISIONAL_DAY_BEFORE_NOT_T_MINUS_10","observed_at_provider":asof.isoformat(),"provider_clock":clock_proof,"roster_observation":roster_meta,"odds_observation":odds_meta,"odds_age_seconds":age,"model_sha256":model_meta["bundle_sha256"],"prior_feature_sha256":prior_meta["feature_csv_sha256"],"forecast_sha256":sha256(output),"place_range_coverage":len(ranges),"prediction_proof":proof,"policy":"No formal lock, no adoption, no selection after race, no ROI guarantees"}
+          (directory/f"f3_preview_{stamp}.json").write_text(json.dumps(info,ensure_ascii=False,indent=2)+"\n")
+          print("F3_PREVIEW_META="+json.dumps({"odds_asof":asof.isoformat(),"rows":len(forecast),"place_count":len(ranges),"output":str(output)},ensure_ascii=False))
+          print(forecast[["horse_no","horse_name","win_odds","place_low","place_high","p_M0_live_raw","p_B_raw_400","p_XGB800_raw","p_CatBoost400_raw","p_XC_75_25_logit","expected_profit_500_min_p_XC_75_25_logit"]].sort_values("p_XC_75_25_logit",ascending=False).to_string(index=False))
+          PY
+      - name: Commit immutable preview CSV and source hashes to research branch
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/tennosho_preoff_20261101/previews/
+          git commit -m 'research: record Oct 31 provisional F3 probability preview, not T-10 lock'
+          for i in 1 2 3 4 5; do
+            git fetch origin research/tennosho-akiten-preoff-20261101
+            git rebase origin/research/tennosho-akiten-preoff-20261101
+            if git push origin HEAD:research/tennosho-akiten-preoff-20261101; then exit 0; fi
+          done
+          exit 1
