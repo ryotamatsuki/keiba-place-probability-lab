@@ -15,12 +15,13 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from keiba_place_lab.historical_panel import build_historical_panel
-from keiba_place_lab.information_expansion_v1 import raw_observations
-from keiba_place_lab.live_history import CachedFetcher, RESULT_URL, load_frozen_history
-from keiba_place_lab import live_umanity
 from tennosho_f3_prior_builder import _jra_internal_id
 from tennosho_f3_raw_audit import raw_result, umanity_raw_result
+
+from keiba_place_lab import live_umanity
+from keiba_place_lab.historical_panel import build_historical_panel
+from keiba_place_lab.information_expansion_v1 import raw_observations
+from keiba_place_lab.live_history import RESULT_URL, CachedFetcher, load_frozen_history
 
 
 def main():
@@ -64,7 +65,7 @@ def main():
                             else raw_result(html, rid[2:]))
                 provider = name
                 break
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001 - audit all remote source failures
                 print("RETRY",rid,name,str(exc)[:90],flush=True)
         if provider is None:
             failed.append(rid)
