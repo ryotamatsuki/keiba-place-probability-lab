@@ -1,4 +1,5 @@
 name: Research F3-derived unordered trio (680 tickets) historical validation
+# New experiment run uses audit-restored raw rank results and both source CSVs.
 on:
   push:
     branches: [research/tennosho-akiten-preoff-20261101]
