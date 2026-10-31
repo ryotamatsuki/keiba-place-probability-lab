@@ -16,6 +16,7 @@ import pandas as pd
 
 from keiba_place_lab.historical_market import reconstruct_historical_market
 from keiba_place_lab.market import normalized_win_probabilities
+from keiba_place_lab.information_expansion_v1 import raw_observations
 from keiba_place_lab.trio_bridge_v1 import (
     historical_trio_temperature,
     invert_subset_marginals,
@@ -51,7 +52,7 @@ def sorted_full_races(oof: pd.DataFrame, panel: pd.DataFrame,
         raise ValueError("Duplicate historical race starters")
     if not {F3_PROXY, "p_M0", "top3_label", "race_date"}.issubset(oof):
         raise ValueError("Wrong historical OOF format: F3 and M0 required")
-    cols = keys + ["field_size", "finish_position"]
+    cols = keys + ["field_size", "raw_finish_position"]
     linked = oof.merge(panel[cols], on=keys, how="left",
                        validate="one_to_one", indicator=True)
     if not linked._merge.eq("both").all():
@@ -66,7 +67,7 @@ def sorted_full_races(oof: pd.DataFrame, panel: pd.DataFrame,
     linked = linked.loc[linked.race_id.isin(complete)].copy()
     valid = []
     for rid, g in linked.groupby("race_id", sort=False):
-        finish = g.loc[g.top3_label.eq(1), "finish_position"]
+        finish = g.loc[g.top3_label.eq(1), "raw_finish_position"]
         if len(finish) == 3 and set(finish.astype(int).tolist()) == {1, 2, 3}:
             valid.append(rid)
     linked = linked.loc[linked.race_id.isin(valid)]
@@ -175,8 +176,11 @@ def paired_day_ci(df: pd.DataFrame, earlier: str, later: str,
 
 
 def retrospective(oof_csv: Path, historical_dir: Path, results_csv: Path,
-                  out: Path) -> tuple[dict, dict]:
+                  races_csv: Path, out: Path) -> tuple[dict, dict]:
     full, base_sources = load_full_panel(historical_dir)
+    full, raw_audit = raw_observations(full, results_csv, races_csv)
+    if raw_audit["unmatched_raw_runner_rows"] != 0:
+        raise ValueError("Historical race finish positions not complete")
     oof = pd.read_csv(oof_csv, dtype={"race_id": str, "horse_id": str})
     oof["race_date"] = pd.to_datetime(oof["race_date"])
     if not set(oof.race_date.dt.year.unique()).issubset({2023, 2024}):
@@ -326,6 +330,7 @@ def main() -> None:
     parser.add_argument("--oof-csv", required=True, type=Path)
     parser.add_argument("--historical-dir", required=True, type=Path)
     parser.add_argument("--results-csv", required=True, type=Path)
+    parser.add_argument("--races-csv", required=True, type=Path)
     parser.add_argument("--preview-csv", required=True, type=Path)
     parser.add_argument("--bundle-manifest", required=True, type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
@@ -335,7 +340,7 @@ def main() -> None:
     if out.exists() and any(out.iterdir()):
         raise FileExistsError("Trio research output directory must be new")
     calibration, report = retrospective(
-        args.oof_csv, args.historical_dir, args.results_csv, out
+        args.oof_csv, args.historical_dir, args.results_csv, args.races_csv, out
     )
     forecast(args.preview_csv, calibration, out, args.bundle_manifest)
 
