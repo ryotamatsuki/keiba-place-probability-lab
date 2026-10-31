@@ -90,3 +90,37 @@ def test_abbreviated_agents_are_rejected_when_homonyms_ambiguous():
     })
     with pytest.raises(ValueError, match="Ambiguous or unknown abbreviated jockey_name"):
         _canonicalize_extra_agents(history, shortened)
+
+
+def test_same_starter_reference_resolves_ambiguous_abbreviation_per_race():
+    historical = pd.DataFrame({
+        "race_id": ["r1", "r2"],
+        "horse_id": ["h1", "h2"],
+        "jockey_name": ["角田 大河", "角田 大和"],
+        "trainer": ["奥村 武", "橋口 慎介"],
+    })
+    alternate = pd.DataFrame({
+        "race_id": ["r1", "r2"],
+        "horse_id": ["h1", "h2"],
+        "source_provider": ["umanity", "umanity"],
+        "jockey_name": ["角田大", "角田大"],
+        "trainer": ["奥村武", "橋口慎"],
+    })
+    fixed, audit = _canonicalize_extra_agents(historical, alternate)
+    assert fixed.jockey_name.tolist() == ["角田 大河", "角田 大和"]
+    assert fixed.trainer.tolist() == ["奥村 武", "橋口 慎介"]
+    assert audit["jockey_name"]["same_starter_source_verified"] == 2
+
+
+def test_same_starter_reference_rejects_contradictory_agent_alias():
+    historical = pd.DataFrame({
+        "race_id": ["r1"], "horse_id": ["h1"],
+        "jockey_name": ["角田 大河"], "trainer": ["奥村 武"],
+    })
+    alternate = pd.DataFrame({
+        "race_id": ["r1"], "horse_id": ["h1"],
+        "source_provider": ["umanity"],
+        "jockey_name": ["岩田康"], "trainer": ["奥村武"],
+    })
+    with pytest.raises(ValueError, match="conflicts with exact historical starter"):
+        _canonicalize_extra_agents(historical, alternate)

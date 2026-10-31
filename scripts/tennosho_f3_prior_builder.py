@@ -132,28 +132,32 @@ def _agent_key(value: str) -> str:
 def _canonicalize_extra_agents(
     original: pd.DataFrame, extra: pd.DataFrame,
 ) -> tuple[pd.DataFrame, dict]:
-    """Unify independently verified abbreviations with full source names.
+    """Resolve alternate abbreviated agents without merging distinct people.
 
-    Umanity publishes abbreviated Japanese agent names (e.g. 岩田康).
-    Only unique canonical full-name matches are allowed. Collisions do not
-    silently collapse two people or fabricate an unknown agent.
+    A verified historical result for the exact (race_id, horse_id) takes
+    precedence over a global name-prefix lookup. This matters for current
+    agents missing from 2010-2025 and for two different people sharing a
+    published abbreviation. If that same-starter identity contradicts the
+    alternate publication, fail closed rather than guessing an agent.
     """
     x = extra.copy()
+    if not x.index.is_unique:
+        raise ValueError("Duplicate raw result dataframe index")
     if "source_provider" not in x:
         x["source_provider"] = "yahoo"
     x["source_provider"] = x["source_provider"].fillna("yahoo")
     if not x.source_provider.isin(("yahoo", "umanity")).all():
         raise ValueError("Unknown raw agent identity source")
     audit: dict[str, object] = {}
+    has_starter_keys = {"race_id", "horse_id"}.issubset(original.columns) and (
+        {"race_id", "horse_id"}.issubset(x.columns)
+    )
     for col in ("jockey_name", "trainer"):
         base_names = original[col].dropna().astype(str)
-        historical = Counter(
-            z for z in base_names if z.strip()
-        )
-        exact = {}
+        historical = Counter(z for z in base_names if z.strip())
+        exact: dict[str, str] = {}
         for name, _ in historical.most_common():
-            key = _agent_key(name)
-            exact.setdefault(key, name)
+            exact.setdefault(_agent_key(name), name)
         current = Counter(
             x.loc[x.source_provider.eq("yahoo"), col].dropna().astype(str)
         )
@@ -164,28 +168,61 @@ def _canonicalize_extra_agents(
                     _agent_key(name), exact.get(_agent_key(name), name)
                 )
         historical_keys = dict(exact)
-        # Prefer a unique full-name occurrence in this year's verified Yahoo
-        # results; older names may include homonymous, retired agents.
-        abbreviations: dict[str, str] = {}
+
+        # These names come from the independently checked, same-starter
+        # historical panel. Never infer an agent from the horse alone.
+        starter_names: dict[tuple[str, str], str] = {}
+        if has_starter_keys:
+            refs = original[["race_id", "horse_id", col]].dropna(subset=[col])
+            if refs.duplicated(["race_id", "horse_id"]).any():
+                raise ValueError("Duplicate verified historical starter agents")
+            starter_names = {
+                (str(rid), str(hid)): str(name)
+                for rid, hid, name in refs.itertuples(index=False, name=None)
+                if str(name).strip()
+            }
+
+        resolved_aliases: set[str] = set()
+        starter_verified = 0
         ambiguous: list[str] = []
-        for name in x.loc[x.source_provider.eq("umanity"), col].dropna().astype(str).unique():
+        alt = x.source_provider.eq("umanity")
+        for idx, row in x.loc[alt].iterrows():
+            name = row[col]
+            if pd.isna(name) or not str(name).strip():
+                ambiguous.append(str(name))
+                continue
+            name = str(name)
             key = _agent_key(name)
-            if key in exact:
-                abbreviations[name] = exact[key]
-                continue
-            if key in active_keys:
-                abbreviations[name] = active_keys[key]
-                continue
-            active_hits = {k for k in active_keys if k.startswith(key)}
-            known_hits = {k for k in historical_keys if k.startswith(key)}
-            hits = active_hits if len(active_hits) == 1 else known_hits
-            if len(hits) != 1:
-                ambiguous.append(name)
-                continue
-            canonical_key = next(iter(hits))
-            abbreviations[name] = active_keys.get(
-                canonical_key, historical_keys.get(canonical_key)
-            )
+            verified = starter_names.get(
+                (str(row["race_id"]), str(row["horse_id"]))
+            ) if has_starter_keys else None
+            if verified is not None:
+                full_key = _agent_key(verified)
+                if not full_key.startswith(key):
+                    raise ValueError(
+                        f"Published {col} alias conflicts with exact historical "
+                        f"starter {row['race_id']}/{row['horse_id']}: "
+                        f"{name!r} vs {verified!r}"
+                    )
+                resolved = exact.get(full_key, verified)
+                starter_verified += 1
+            elif key in exact:
+                resolved = exact[key]
+            elif key in active_keys:
+                resolved = active_keys[key]
+            else:
+                active_hits = {k for k in active_keys if k.startswith(key)}
+                known_hits = {k for k in historical_keys if k.startswith(key)}
+                hits = active_hits if len(active_hits) == 1 else known_hits
+                if len(hits) != 1:
+                    ambiguous.append(name)
+                    continue
+                canonical_key = next(iter(hits))
+                resolved = active_keys.get(
+                    canonical_key, historical_keys.get(canonical_key)
+                )
+            x.at[idx, col] = resolved
+            resolved_aliases.add(name)
         if ambiguous:
             raise ValueError(
                 f"Ambiguous or unknown abbreviated {col} identities: "
@@ -196,13 +233,9 @@ def _canonicalize_extra_agents(
             lambda name, reference=exact: reference.get(_agent_key(name), name)
             if pd.notna(name) else name
         )
-        alt = x.source_provider.eq("umanity")
-        x.loc[alt, col] = x.loc[alt, col].map(
-            lambda name, aliases=abbreviations: aliases.get(str(name))
-            if pd.notna(name) else name
-        )
         audit[col] = {
-            "alternate_distinct_aliases_resolved": len(abbreviations),
+            "alternate_distinct_aliases_resolved": len(resolved_aliases),
+            "same_starter_source_verified": starter_verified,
             "2026_yahoo_full_name_identities": len(active_keys),
             "historical_full_name_identities": len(historical_keys),
         }
