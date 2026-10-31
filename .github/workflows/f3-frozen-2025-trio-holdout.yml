@@ -65,12 +65,17 @@ jobs:
             --prior analysis/tennosho_preoff_20261101/prior_f3_features.csv \
             --v2-2023-fit analysis/trio_v2_20261031/2023_fitted_candidate_coefficients.json \
             --out analysis/f3_frozen_2025_independent_holdout
+          python -u scripts/summarize_f3_frozen_2025_holdout.py \
+            --runners analysis/f3_frozen_2025_independent_holdout/2025_frozen_F3_runner_predictions.csv \
+            --trio analysis/f3_frozen_2025_independent_holdout/2025_frozen_F3_trio_race_scores.csv \
+            --audit analysis/f3_frozen_2025_independent_holdout/validation.json \
+            --output analysis/f3_frozen_2025_summary
       - name: Commit only 2025 out-of-time scores and audits, never model artifacts
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add analysis/f3_frozen_2025_independent_holdout/
+          git add analysis/f3_frozen_2025_independent_holdout/ analysis/f3_frozen_2025_summary/
           git commit -m 'research: preserve 2025 exact-frozen F3 ensemble holdout and trio comparison'
           for n in 1 2 3 4 5; do
             git fetch origin research/f3-frozen-2025-holdout-20261031
