@@ -1,4 +1,5 @@
 name: Research Trio V3 matched F3 800+400 yearly OOF
+# Second experiment includes stricter source checks and latest V3 unit tests.
 on:
   push:
     branches: [research/trio-v3-matched-oof-20261031]
