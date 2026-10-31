@@ -16,13 +16,9 @@ from pathlib import Path
 
 import pandas as pd
 
+from keiba_place_lab import live_umanity
 from keiba_place_lab.live_history import RESULT_URL, CachedFetcher, _status_from_rank
 from keiba_place_lab.live_public import _identity, metadata
-from keiba_place_lab.live_umanity import (
-    identity as umanity_identity,
-    metadata as umanity_metadata,
-    source_id as umanity_source_id,
-)
 
 TARGET = "202605041111"
 SOURCE_CUTOFF = pd.Timestamp("2026-10-30")
@@ -95,7 +91,7 @@ def umanity_raw_result(html: str, race_id: str, race_date: pd.Timestamp) -> pd.D
     Never impute unobserved 3F, mass, running order, agent or going. The
     independent full-field identity check in main() still applies.
     """
-    soup, meta = umanity_metadata(html, race_id, race_date)
+    soup, meta = live_umanity.metadata(html, race_id, race_date)
     if meta["race_id"] == TARGET or meta["race_date"] > SOURCE_CUTOFF:
         raise ValueError("Target or future race in alternate result source")
     tables = [t for t in soup.select("table") if t.select_one("td.td_order")]
@@ -118,7 +114,7 @@ def umanity_raw_result(html: str, race_id: str, race_date: pd.Timestamp) -> pd.D
         status, starter, _ = _status_from_rank(rank)
         if not starter:
             continue
-        hid, _ = umanity_identity(c[3])
+        hid, _ = live_umanity.identity(c[3])
         horse_no = int(c[1].get_text(strip=True))
         mass = re.search(
             r"(?<!\d)([3-7]\d{2})\s*([+-]\d+)(?!\d)",
@@ -202,7 +198,7 @@ def main():
         published_source = str(cohort.result_source_url.iloc[0]) if "result_source_url" in cohort else ""
         selected_alt = published_source.startswith("https://umanity.jp/")
         if selected_alt:
-            source_rid = umanity_source_id(rid, date)
+            source_rid = live_umanity.source_id(rid, date)
             alt_url = f"https://umanity.jp/racing/result.php?race_id={source_rid}"
             html, record = alt_fetcher.fetch(alt_url)
             parsed = umanity_raw_result(html, rid, date)
@@ -215,13 +211,13 @@ def main():
                 # Parsing failures must not quietly accept partial raw rows;
                 # the replacement is separately validated by exact race and
                 # complete official starter identities below.
-                source_rid = umanity_source_id(rid, date)
+                source_rid = live_umanity.source_id(rid, date)
                 alt_url = f"https://umanity.jp/racing/result.php?race_id={source_rid}"
                 print(json.dumps({"alternate_source": rid, "reason": str(exc)[:150]}), flush=True)
                 html, record = alt_fetcher.fetch(alt_url)
                 parsed = umanity_raw_result(html, rid, date)
             except Exception as exc:  # noqa: BLE001 - HTTP status and timeout only
-                source_rid = umanity_source_id(rid, date)
+                source_rid = live_umanity.source_id(rid, date)
                 alt_url = f"https://umanity.jp/racing/result.php?race_id={source_rid}"
                 print(json.dumps({"alternate_source": rid, "reason": str(exc)[:150]}), flush=True)
                 html, record = alt_fetcher.fetch(alt_url)
