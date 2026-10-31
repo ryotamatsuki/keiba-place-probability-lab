@@ -1,0 +1,58 @@
+"""F3 postrace source alignment: future Elo must include verified 2026 results."""
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import pytest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+from tennosho_f3_prior_builder import _extra_raw_observations  # noqa: E402
+
+
+def _sources() -> tuple[pd.DataFrame, pd.DataFrame]:
+    race = "202605040211"
+    horse_ids = ["2020100680", "2022104416", "2020103075"]
+    extra = pd.DataFrame({
+        "race_id": [race] * 3,
+        "horse_id": horse_ids,
+        "horse_no": [1, 2, 3],
+        "rank": ["1", "2", "中止"],
+        "last_3f": ["33.2", "34.0", None],
+        "passing": ["1-1", "2-2", None],
+        "horse_weight": ["500(+2)", "460(-4)", None],
+        "track_condition": ["良"] * 3,
+        "jockey_name": ["騎手A", "騎手B", "騎手C"],
+        "trainer": ["調教師A", "調教師B", "調教師C"],
+    })
+    raw = pd.DataFrame({
+        "race_id": [race] * 3, "horse_id": horse_ids, "horse_no": [1, 2, 3],
+        "field_size": [3] * 3, "finish_position": [1, 2, np.nan],
+        "raw_finish_position": [np.nan] * 3,
+    })
+    for name in (
+        "raw_last3f", "raw_corner_first", "raw_corner_last", "raw_early_pct",
+        "raw_passing_gain", "raw_mass", "raw_mass_change", "raw_wet",
+    ):
+        raw[name] = np.nan
+    return raw, extra
+
+
+def test_new_2026_ranks_update_elo_and_dnf_remains_missing():
+    raw, extra = _sources()
+    combined, audit = _extra_raw_observations(raw, extra)
+    assert combined.raw_finish_position.iloc[:2].tolist() == [1, 2]
+    assert np.isnan(combined.raw_finish_position.iloc[2])
+    assert combined.raw_last3f.tolist()[:2] == [33.2, 34.0]
+    assert combined.raw_wet.eq(0).all()
+    assert combined.raw_last3f_rel.iloc[0] == pytest.approx(1.0)
+    assert audit["extra_source_rows"] == 3
+
+
+def test_new_2026_rank_must_match_confirmed_official_result():
+    raw, extra = _sources()
+    extra.loc[1, "rank"] = "3"
+    with pytest.raises(ValueError, match="finishing ranks disagree"):
+        _extra_raw_observations(raw, extra)
