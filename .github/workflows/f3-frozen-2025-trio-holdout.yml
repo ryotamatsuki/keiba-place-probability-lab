@@ -1,0 +1,85 @@
+name: Independent 2025 holdout exact immutable F3 XGB800 Cat400 trios
+on:
+  push:
+    branches: [research/f3-frozen-2025-holdout-20261031]
+    paths: [.github/workflows/f3-frozen-2025-trio-holdout.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: frozen-f3-2025-exact-holdout
+  cancel-in-progress: false
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 95
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/f3-frozen-2025-holdout-20261031
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Match frozen training library versions
+        run: |
+          python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+          python -m pip install 'catboost==1.2.10' 'lightgbm==4.7.0'
+      - name: Refuse broken code before accessing original historical source
+        run: |
+          ruff check --select E4,E7,E9,F scripts/validate_frozen_f3_2025.py
+          python -m compileall -q scripts/validate_frozen_f3_2025.py
+          pytest -q tests/test_trio_bridge_v1.py tests/test_trio_residual_v2.py tests/test_tennosho_preoff_20261101.py
+      - name: Restore source-locked 2010-2025 standardized complete JRA panel
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Restore exactly original Kaggle v1 finish and final win odds
+        run: |
+          python - <<'PY'
+          import kagglehub
+          print(kagglehub.dataset_download(
+              'noriyukifurufuru/japan-horse-racing-2010-2025/versions/1',
+              output_dir='/tmp/kaggle_frozen_f3_2025'
+          ))
+          PY
+      - name: Exact frozen ensemble scoring 2025 vs source verified JRA results
+        run: |
+          set -euo pipefail
+          RESULT=$(find /tmp/kaggle_frozen_f3_2025 -name keiba_results.csv -print -quit)
+          RACES=$(find /tmp/kaggle_frozen_f3_2025 -name keiba_races.csv -print -quit)
+          test -s "$RESULT" && test -s "$RACES"
+          python -u scripts/validate_frozen_f3_2025.py \
+            --standardized /tmp/stage36/data/historical_processed/stage36_freeze_v1/standardized_jra_flat_source_v1.parquet \
+            --results "$RESULT" \
+            --races "$RACES" \
+            --bundle models/tennosho_f3_20261101/f3_bundle.joblib \
+            --frozen-manifest models/tennosho_f3_20261101/manifest.json \
+            --preview analysis/tennosho_preoff_20261101/previews/f3_preview_20261031T173406.csv \
+            --prior analysis/tennosho_preoff_20261101/prior_f3_features.csv \
+            --v2-2023-fit analysis/trio_v2_20261031/2023_fitted_candidate_coefficients.json \
+            --out analysis/f3_frozen_2025_independent_holdout
+          python -u scripts/summarize_f3_frozen_2025_holdout.py \
+            --runners analysis/f3_frozen_2025_independent_holdout/2025_frozen_F3_runner_predictions.csv \
+            --trio analysis/f3_frozen_2025_independent_holdout/2025_frozen_F3_trio_race_scores.csv \
+            --audit analysis/f3_frozen_2025_independent_holdout/validation.json \
+            --output analysis/f3_frozen_2025_summary
+      - name: Commit only 2025 out-of-time scores and audits, never model artifacts
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/f3_frozen_2025_independent_holdout/ analysis/f3_frozen_2025_summary/
+          git commit -m 'research: preserve 2025 exact-frozen F3 ensemble holdout and trio comparison'
+          for n in 1 2 3 4 5; do
+            git fetch origin research/f3-frozen-2025-holdout-20261031
+            git rebase origin/research/f3-frozen-2025-holdout-20261031
+            if git push origin HEAD:research/f3-frozen-2025-holdout-20261031; then exit 0; fi
+          done
+          exit 1
