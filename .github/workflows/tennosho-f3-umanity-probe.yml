@@ -16,7 +16,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install requests beautifulsoup4 pandas scikit-learn
-      - name: Inspect published fallback data fields without horse result modification
+      - name: Cross-verify alternate-source last3f and all horse weights against Yahoo
         run: |
           python - <<'PY'
           import requests
