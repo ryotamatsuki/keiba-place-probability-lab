@@ -200,6 +200,10 @@ def main():
         raise ValueError("Selected raw source shard is empty")
     fetcher = CachedFetcher(args.cache, pause_seconds=.5)
     alt_fetcher = CachedFetcher(args.cache, pause_seconds=1.)
+    def has_cache(url: str) -> bool:
+        key = hashlib.sha256(url.encode("utf-8")).hexdigest()
+        return (args.cache / f"{key}.html").is_file() and (
+            args.cache / f"{key}.json").is_file()
     def one(rid: str):
         cohort = history.loc[history.race_id.eq(rid)].copy()
         expected = cohort[["horse_id", "horse_no"]].copy()
@@ -213,24 +217,34 @@ def main():
             parsed = umanity_raw_result(html, rid, date)
         else:
             url = RESULT_URL.format(provider_id=rid[2:])
-            try:
-                html, record = fetcher.fetch(url)
-                parsed = raw_result(html, rid[2:])
-            except (ValueError, RuntimeError, OSError) as exc:
-                # Parsing failures must not quietly accept partial raw rows;
-                # the replacement is separately validated by exact race and
-                # complete official starter identities below.
-                source_rid = live_umanity.source_id(rid, date)
-                alt_url = f"https://umanity.jp/racing/result.php?race_id={source_rid}"
-                print(json.dumps({"alternate_source": rid, "reason": str(exc)[:150]}), flush=True)
-                html, record = alt_fetcher.fetch(alt_url)
+            if not has_cache(url):
+                # The standardized result was already audited. When Yahoo
+                # cannot be recovered from the prepared HTML cache, avoid six
+                # redundant Yahoo 500 retries before a separately identity-
+                # verified alternate. This never synthesizes missing fields.
+                sid = live_umanity.source_id(rid, date)
+                alternate_url = f"https://umanity.jp/racing/result.php?race_id={sid}"
+                html, record = alt_fetcher.fetch(alternate_url)
                 parsed = umanity_raw_result(html, rid, date)
-            except Exception as exc:  # noqa: BLE001 - HTTP status and timeout only
-                source_rid = live_umanity.source_id(rid, date)
-                alt_url = f"https://umanity.jp/racing/result.php?race_id={source_rid}"
-                print(json.dumps({"alternate_source": rid, "reason": str(exc)[:150]}), flush=True)
-                html, record = alt_fetcher.fetch(alt_url)
-                parsed = umanity_raw_result(html, rid, date)
+            else:
+                try:
+                        html, record = fetcher.fetch(url)
+                    parsed = raw_result(html, rid[2:])
+                except (ValueError, RuntimeError, OSError) as exc:
+                    # Parsing failures must not quietly accept partial raw rows;
+                    # the replacement is separately validated by exact race and
+                    # complete official starter identities below.
+                    source_rid = live_umanity.source_id(rid, date)
+                    alt_url = f"https://umanity.jp/racing/result.php?race_id={source_rid}"
+                    print(json.dumps({"alternate_source": rid, "reason": str(exc)[:150]}), flush=True)
+                    html, record = alt_fetcher.fetch(alt_url)
+                    parsed = umanity_raw_result(html, rid, date)
+                except Exception as exc:  # noqa: BLE001 - HTTP status and timeout only
+                    source_rid = live_umanity.source_id(rid, date)
+                    alt_url = f"https://umanity.jp/racing/result.php?race_id={source_rid}"
+                    print(json.dumps({"alternate_source": rid, "reason": str(exc)[:150]}), flush=True)
+                    html, record = alt_fetcher.fetch(alt_url)
+                    parsed = umanity_raw_result(html, rid, date)
         parsed["source_provider"] = "umanity" if record.url.startswith(
             "https://umanity.jp/"
         ) else "yahoo"
