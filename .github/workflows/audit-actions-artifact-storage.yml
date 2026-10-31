@@ -12,22 +12,50 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/github-script@v7
-        with:
-          script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const items = await github.paginate(github.rest.actions.listArtifactsForRepo, {
-              owner, repo, per_page: 100,
-            });
-            const sizes = items.map(x => Number(x.size_in_bytes) || 0);
-            const total = sizes.reduce((a,b) => a+b,0);
-            const sorted = items.map(x=>({
-              id:x.id,name:x.name,bytes:x.size_in_bytes,
-              created_at:x.created_at,expires_at:x.expires_at,
-              expired:x.expired,run_id:x.workflow_run?.id,
-            })).sort((a,b)=>b.bytes-a.bytes);
-            core.info(JSON.stringify({kind:'artifact_inventory',count:items.length,
-              total_bytes:total,total_MiB:Math.round(total/1048576*100)/100,
-              top:sorted.slice(0,100)},null,2));
-            core.info('This is a READ-ONLY inventory. No artifacts were deleted.');
+      - name: Summarize exact storage and redundant candidate artifacts with Python
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          from collections import defaultdict
+          from urllib.request import Request, urlopen
+          import json, os
+          repo = os.environ['GITHUB_REPOSITORY']
+          uri = f'https://api.github.com/repos/{repo}/actions/artifacts'
+          headers = {'Authorization':f"Bearer {os.environ['GH_TOKEN']}",
+                     'Accept':'application/vnd.github+json',
+                     'X-GitHub-Api-Version':'2022-11-28'}
+          items=[]
+          for page in range(1,100):
+              url = f'{uri}?per_page=100&page={page}'
+              with urlopen(Request(url,headers=headers),timeout=45) as resp:
+                  part=json.load(resp)['artifacts']
+              items.extend(part)
+              if len(part)<100: break
+          groups=defaultdict(list)
+          for item in items: groups[item['name']].append(item)
+          keep=[]
+          for name,grp in groups.items():
+              if name=='stage36-historical-training-panel-v1':
+                  selected=next((x for x in grp if x['workflow_run']['id']==37104212189),None)
+                  if selected is None: raise ValueError('F3 frozen training artifact missing')
+              else:
+                  selected=max(grp,key=lambda x:x['created_at'])
+              keep.append(selected)
+          current=sum(x['size_in_bytes'] for x in items)
+          remaining=sum(x['size_in_bytes'] for x in keep)
+          result={'kind':'artifact_storage_accounting','repo':repo,
+                  'count':len(items),'total_MiB':round(current/(1024**2),2),
+                  'unique_names':len(groups),
+                  'retain_one_per_name_MiB':round(remaining/(1024**2),2),
+                  'duplicate_candidate_count':len(items)-len(keep),
+                  'duplicate_candidate_MiB':round((current-remaining)/(1024**2),2),
+                  'protected_frozen_artifact_run_id':37104212189,
+                  'largest_names':sorted([
+                      {'name':name,'count':len(v),
+                       'total_MiB':round(sum(x['size_in_bytes'] for x in v)/(1024**2),2)}
+                      for name,v in groups.items()],
+                      key=lambda x:x['total_MiB'],reverse=True)[:25],
+                  'deletion_performed':False}
+          print(json.dumps(result,ensure_ascii=False,indent=2))
+          PY
