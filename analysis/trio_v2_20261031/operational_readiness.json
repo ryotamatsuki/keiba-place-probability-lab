@@ -1,0 +1,19 @@
+{
+  "status": "NO_BET",
+  "reason": "2024 improvement CI includes zero; 2025 frozen-ensemble prospective/OOF not validated; no real trio market time-series; no approved risk limits",
+  "matching_frozen_ensemble_holdout": false,
+  "independent_prospective_t10_validation": false,
+  "empirical_trio_calibration_approved": false,
+  "full_same_snapshot_trio_quotes": false,
+  "price_slippage_assessed": false,
+  "approved_risk_limits": false,
+  "2024_primary_joint_logloss_improvement": 0.001385817505315261,
+  "bootstrap_date_95ci": [
+    -0.000605206437896601,
+    0.003464475070272918
+  ],
+  "november_1_frozen_f3_unchanged": true,
+  "automatic_betting": false,
+  "source": "analysis/trio_v2_20261031/model_evaluation.json",
+  "gate_code": "src/keiba_place_lab/trio_operational_gate.py"
+}
