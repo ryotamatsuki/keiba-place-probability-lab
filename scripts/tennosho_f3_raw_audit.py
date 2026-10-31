@@ -228,12 +228,9 @@ def main():
                 parsed = umanity_raw_result(html, rid, date)
             else:
                 try:
-                        html, record = fetcher.fetch(url)
+                    html, record = fetcher.fetch(url)
                     parsed = raw_result(html, rid[2:])
                 except (ValueError, RuntimeError, OSError) as exc:
-                    # Parsing failures must not quietly accept partial raw rows;
-                    # the replacement is separately validated by exact race and
-                    # complete official starter identities below.
                     source_rid = live_umanity.source_id(rid, date)
                     alt_url = f"https://umanity.jp/racing/result.php?race_id={source_rid}"
                     print(json.dumps({"alternate_source": rid, "reason": str(exc)[:150]}), flush=True)
