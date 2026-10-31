@@ -16,7 +16,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from keiba_place_lab.live_history import CachedFetcher, RESULT_URL, _status_from_rank
+from keiba_place_lab.live_history import RESULT_URL, CachedFetcher, _status_from_rank
 from keiba_place_lab.live_public import _identity, metadata
 
 TARGET = "202605041111"
@@ -132,7 +132,7 @@ def main():
                 parts.append(frame)
                 records.append({"race_id": rid, "source_url": record.url, "source_sha256": record.sha256,
                                 "captured_at_utc": record.retrieved_at})
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001 - record every independent source failure
                 errors[rid] = str(exc)
             count = len(parts) + len(errors)
             if count % 200 == 0 or count == len(race_ids):
