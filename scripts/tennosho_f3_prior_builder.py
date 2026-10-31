@@ -15,7 +15,9 @@ import re
 import unicodedata
 from collections import Counter
 from pathlib import Path
+from urllib.parse import parse_qs, urljoin, urlparse
 
+from bs4 import BeautifulSoup
 import numpy as np
 import pandas as pd
 from run_information_expansion_v1 import SOURCE_SHA
@@ -129,8 +131,141 @@ def _agent_key(value: str) -> str:
     ).casefold()
 
 
+def _verify_umanity_jockey_profiles(
+    original: pd.DataFrame, extra: pd.DataFrame,
+    raw_manifest: dict, cache: Path,
+) -> tuple[dict[str, str], list[dict]]:
+    """Resolve otherwise-ambiguous abbreviations from published profile IDs.
+
+    Use two distinct dated historical race/horse observations per alias when
+    available, requiring the same Umanity jockey profile ID and full name.
+    Do not fetch tomorrow's race or infer identities from name similarity.
+    """
+    historical = {_agent_key(z) for z in original.jockey_name.dropna().astype(str)}
+    active = {
+        _agent_key(z) for z in extra.loc[
+            extra.source_provider.eq("yahoo"), "jockey_name"
+        ].dropna().astype(str)
+    }
+    unknown = []
+    for alias in extra.loc[
+        extra.source_provider.eq("umanity"), "jockey_name"
+    ].dropna().astype(str).unique():
+        key = _agent_key(alias)
+        active_hits = {k for k in active if k.startswith(key)}
+        known_hits = {k for k in historical if k.startswith(key)}
+        if key not in historical and key not in active and (
+            len(active_hits) != 1 and len(known_hits) != 1
+        ):
+            unknown.append(alias)
+    if not unknown:
+        return {}, []
+    source_records = {
+        str(rec["race_id"]): rec
+        for rec in raw_manifest["source_records"]
+    }
+    fetcher = CachedFetcher(cache, pause_seconds=.25, max_attempts=4)
+    verified: dict[str, str] = {}
+    audit: list[dict] = []
+    for alias in sorted(unknown):
+        rows = extra.loc[
+            extra.source_provider.eq("umanity")
+            & extra.jockey_name.eq(alias)
+            & extra.race_id.astype(str).isin(source_records)
+        ].sort_values(["race_date", "race_id", "horse_no"])
+        if rows.empty:
+            raise ValueError(f"No prior race evidence for unknown jockey {alias}")
+        samples = [rows.iloc[0]]
+        if len(rows) > 1 and str(rows.iloc[-1].race_id) != str(rows.iloc[0].race_id):
+            samples.append(rows.iloc[-1])
+        identities = set()
+        observations = []
+        for row in samples:
+            rid = str(row.race_id)
+            date = pd.Timestamp(row.race_date)
+            if rid == TARGET or date > ALLOWED_LATEST_SOURCE:
+                raise ValueError("Future/target race in jockey profile verification")
+            record = source_records[rid]
+            race_url = record["source_url"]
+            parsed = urlparse(race_url)
+            if (
+                parsed.scheme != "https" or parsed.netloc != "umanity.jp"
+                or parsed.path != "/racing/result.php"
+                or parse_qs(parsed.query).get("race_id")
+                != [live_umanity.source_id(rid, date)]
+            ):
+                raise ValueError("Non-verified historical Umanity race source")
+            html, race_record = fetcher.fetch(race_url)
+            soup, meta = live_umanity.metadata(html, rid, date)
+            if meta["race_id"] != rid or meta["race_date"] != date:
+                raise ValueError("Published jockey race metadata mismatch")
+            tables = [t for t in soup.select("table") if t.select_one("td.td_order")]
+            if len(tables) != 1:
+                raise ValueError("Published jockey race result table not unique")
+            matching = []
+            for tr in tables[0].select("tr"):
+                cells = tr.find_all("td", recursive=False)
+                if len(cells) < 11:
+                    continue
+                if int(cells[1].get_text(strip=True)) != int(row.horse_no):
+                    continue
+                hid, _ = live_umanity.identity(cells[3])
+                if _jra_internal_id(hid) != _jra_internal_id(row.horse_id):
+                    raise ValueError("Published jockey race/horse identity mismatch")
+                matching.append(cells)
+            if len(matching) != 1:
+                raise ValueError("Published jockey starter is not unique")
+            jockey = matching[0][5].find("a", href=True)
+            if jockey is None or _agent_key(jockey.get_text(strip=True)) != _agent_key(alias):
+                raise ValueError("Published jockey abbreviation mismatch")
+            profile_url = urljoin(race_url, jockey["href"])
+            p = urlparse(profile_url)
+            profile_id = parse_qs(p.query).get("jockey_id", [])
+            if (
+                p.scheme != "https" or p.netloc != "umanity.jp"
+                or p.path != "/racing/database/jockey.php"
+                or len(profile_id) != 1
+                or re.fullmatch(r"\d{4,8}", profile_id[0]) is None
+            ):
+                raise ValueError("Published jockey profile identity URL invalid")
+            profile_html, profile_record = fetcher.fetch(profile_url)
+            title = BeautifulSoup(profile_html, "html.parser").title
+            match = re.match(
+                r"^(.+?)騎手(?:\s|[-－―]|$)",
+                title.get_text(" ", strip=True) if title else "",
+            )
+            if match is None:
+                raise ValueError("Published jockey full name not found on profile")
+            full = match.group(1).strip()
+            if not _agent_key(full).startswith(_agent_key(alias)):
+                raise ValueError(f"Jockey profile contradicts abbreviation {alias}")
+            identities.add((profile_id[0], _agent_key(full), full))
+            observations.append({
+                "race_id": rid, "horse_id": _jra_external_id(row.horse_id),
+                "race_source_url": race_record.url,
+                "race_source_sha256": race_record.sha256,
+                "profile_url": profile_record.url,
+                "profile_sha256": profile_record.sha256,
+                "profile_id": profile_id[0],
+            })
+        if len(identities) != 1:
+            raise ValueError(f"Historical races disagree on jockey alias {alias}")
+        _, _, full_name = next(iter(identities))
+        verified[alias] = full_name
+        audit.append({
+            "abbreviation": alias, "verified_full_name": full_name,
+            "independent_race_profile_observations": observations,
+        })
+        print(json.dumps({
+            "verified_umanity_jockey_alias": alias, "full": full_name,
+            "observations": len(observations),
+        }, ensure_ascii=False), flush=True)
+    return verified, audit
+
+
 def _canonicalize_extra_agents(
     original: pd.DataFrame, extra: pd.DataFrame,
+    verified_jockey_aliases: dict[str, str] | None = None,
 ) -> tuple[pd.DataFrame, dict]:
     """Resolve alternate abbreviated agents without merging distinct people.
 
@@ -140,6 +275,7 @@ def _canonicalize_extra_agents(
     published abbreviation. If that same-starter identity contradicts the
     alternate publication, fail closed rather than guessing an agent.
     """
+    verified_jockey_aliases = verified_jockey_aliases or {}
     x = extra.copy()
     if not x.index.is_unique:
         raise ValueError("Duplicate raw result dataframe index")
@@ -206,6 +342,10 @@ def _canonicalize_extra_agents(
                     )
                 resolved = exact.get(full_key, verified)
                 starter_verified += 1
+            elif col == "jockey_name" and name in verified_jockey_aliases:
+                resolved = verified_jockey_aliases[name]
+                if not _agent_key(resolved).startswith(key):
+                    raise ValueError("Published profile cannot verify jockey alias")
             elif key in exact:
                 resolved = exact[key]
             elif key in active_keys:
@@ -464,7 +604,12 @@ def rebuild(a):
         raise ValueError("2026 raw results do not cover EVERY JRA flat starter")
     if not historical_2025.empty:
         aux = pd.concat([historical_2025, aux], ignore_index=True)
-    aux, agent_audit = _canonicalize_extra_agents(raw, aux)
+    verified_jockeys, jockey_profile_audit = _verify_umanity_jockey_profiles(
+        raw, aux, extra_manifest, a.cache / "verified_umanity_jockey_profiles"
+    )
+    aux, agent_audit = _canonicalize_extra_agents(
+        raw, aux, verified_jockey_aliases=verified_jockeys
+    )
     raw, injection_audit = _extra_raw_observations(raw, aux)
     enriched = add_opponent_elo(add_historical_result_features(raw))
     prior_mean = float(enriched.loc[
@@ -554,6 +699,7 @@ def rebuild(a):
         "source_injection_audit": injection_audit,
         "independently_verified_2025_identity_repairs": identity_repairs,
         "agent_identity_audit": agent_audit,
+        "independently_verified_umanity_jockey_profiles": jockey_profile_audit,
         "2025_supplement_races": supplement_sources,
         "relative_feature_coverage": relative_audit.to_dict(orient="records"),
         "input_source_sha256": original_sources,
