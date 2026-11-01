@@ -1,0 +1,21 @@
+{
+  "kind": "prospective_publication_attestation_v1",
+  "race_id": "202605041111",
+  "event": "2026-11-01 Tokyo 11R Tennosho Autumn",
+  "scheduled_off_at": "2026-11-01T15:40:00+09:00",
+  "captured_at": "2026-11-01T15:30:02.954877+09:00",
+  "locked_at": "2026-11-01T15:30:03.212938+09:00",
+  "provider_updated_at": "2026-11-01T15:29:22+09:00",
+  "lock_first_main_commit": "e969b663887fb762365ced97490c146debf8b905",
+  "predictions_path": "prospective/tennosho_20261101/locks/202605041111/predictions.csv",
+  "predictions_sha256": "e1788fb43d329ebbc5a208295a4685f02d79473a3ec59aed39df1836c92f7c91",
+  "snapshot_id": "yahoo-tfw-2605041111-20261101T152922+0900-fed10304c1515621",
+  "composite_row_hash_sha256": "4c21eaff7dbc2c9629da63c77cfa47115a9be40837ef9d9837aac04d5efe3f04",
+  "model_sha256": "f8db9efe4245782165a0732945f5ab50c9c845d52fec25f20150d65e6ab096aa",
+  "history_sha256": "e75dcfb0c56ba2cc0d01edd6f7b17621ff6390cf2614407cf64675088e31d766",
+  "source_url": "https://sports.yahoo.co.jp/keiba/race/odds/tfw/2605041111",
+  "purpose": "Trigger a separately authenticated GitHub App push event to prove that the unchanged lock bytes are publicly present on main before the race, because GitHub Actions GITHUB_TOKEN pushes do not trigger subsequent workflow runs.",
+  "no_race_outcome_accessed": true,
+  "no_raw_odds_redistributed": true,
+  "model_refit_during_lock": false
+}
