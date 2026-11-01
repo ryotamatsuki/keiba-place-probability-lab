@@ -1,0 +1,14 @@
+{
+  "status": "OBSERVATION_ONLY",
+  "protocol": "tennosho_tminus10_prospective_v1",
+  "attempt_started_utc": "2026-11-01T06:30:00.000131+00:00",
+  "race_id": "202605041111",
+  "results_used": false,
+  "formal_model_lock": false,
+  "source_url": "https://sports.yahoo.co.jp/keiba/race/odds/tfw/2605041111",
+  "provider_updated_at": "2026-11-01T15:28:18+09:00",
+  "captured_at": "2026-11-01T06:30:03.763048+00:00",
+  "locked_at": "2026-11-01T06:30:03.957175+00:00",
+  "snapshot_id": "yahoo-tfw-2605041111-20261101T152818+0900-0e56dc334223ef1d",
+  "market_observation_sha256": "4e07245dc448cbe291205fe40eafae302748aa6a0bbb0a4e6d76f6ea2aacf8e2"
+}

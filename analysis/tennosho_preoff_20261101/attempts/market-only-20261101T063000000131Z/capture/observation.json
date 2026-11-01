@@ -1,0 +1,68 @@
+{
+  "status": "OBSERVATION_ONLY_NOT_COMPLETE_MODEL_COMPARISON",
+  "protocol": "tennosho_tminus10_prospective_v1",
+  "race_id": "202605041111",
+  "off_at": "2026-11-01T15:40:00+09:00",
+  "capture_started_at": "2026-11-01T06:30:01.246793+00:00",
+  "captured_at": "2026-11-01T06:30:03.763048+00:00",
+  "provider_updated_at": "2026-11-01T15:28:18+09:00",
+  "provider_clock_provenance": {
+    "provider_datetime_literal": "2026-11-01T15:28:18",
+    "timezone_interpretation": "provider_local_calendar_datetime_interpreted_as_Asia_Tokyo",
+    "interpreted_provider_updated_at": "2026-11-01T15:28:18+09:00"
+  },
+  "locked_at": "2026-11-01T06:30:03.957175+00:00",
+  "full_active_field": 17,
+  "active_field_horse_numbers": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17
+  ],
+  "active_field_roster_sha256": "cf42bd9cc23304b8390ebe38072b722e35ee612a9edf4d0079dff2ea72bdb342",
+  "odds_source_html_sha256_only_not_redistributed": "0e56dc334223ef1d4001f07d395414a16205ef2e6184ffa925a0707e6a35b3f2",
+  "source": {
+    "roster": {
+      "url": "https://sports.yahoo.co.jp/keiba/race/denma/2605041111",
+      "request_started_utc": "2026-11-01T06:30:01.246822+00:00",
+      "captured_at_utc": "2026-11-01T06:30:02.917577+00:00",
+      "html_sha256": "eb5d6a64a64524ab7099323b12215c29489d86010bf12f8bddeef580fec76b80",
+      "http_status": 200,
+      "content_type": "text/html;charset=UTF-8",
+      "cache_age_header": "44",
+      "cache_control_header": "public, max-age=60",
+      "provider_observation_not_http_capture": true
+    },
+    "market": {
+      "url": "https://sports.yahoo.co.jp/keiba/race/odds/tfw/2605041111",
+      "request_started_utc": "2026-11-01T06:30:02.918395+00:00",
+      "captured_at_utc": "2026-11-01T06:30:03.763048+00:00",
+      "html_sha256": "0e56dc334223ef1d4001f07d395414a16205ef2e6184ffa925a0707e6a35b3f2",
+      "http_status": 200,
+      "content_type": "text/html;charset=UTF-8",
+      "cache_age_header": "48",
+      "cache_control_header": "public, max-age=60",
+      "provider_observation_not_http_capture": true
+    }
+  },
+  "market_observation_sha256": "4e07245dc448cbe291205fe40eafae302748aa6a0bbb0a4e6d76f6ea2aacf8e2",
+  "conversion": "all-starter win odds normalized + Harville top3",
+  "overround": 1.2747924123087349,
+  "target_outcome_known_at_capture": false,
+  "formal_challenger_lock": false,
+  "publication_to_main_verified": false,
+  "production_changed": false
+}
