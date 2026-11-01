@@ -49,8 +49,13 @@ REFERENCE_YEAR_FINGERPRINT = "cb984b2553647d423e05742d0625988da3129dab3183f79b6f
 F_NAMES=("F0_X2","F1_market_surface","F2_relative","F3_market_field")
 
 
-def prepare_dataset(historical_dir: Path, results: Path, races: Path
-                    ) -> tuple[pd.DataFrame,dict]:
+def prepare_dataset(historical_dir: Path, results: Path, races: Path,
+                    *, include_full_context: bool = False):
+    """Return legacy eligible rows; optionally expose pre-eligibility full history.
+
+    The opt-in context is for V5 full-field and time-lagged feature generation.
+    The default two-return-value contract remains unchanged for previous studies.
+    """
     full,hashes=load_full_panel(historical_dir)
     rich,raw_audit=build_feature_panel(full,results,races)
     eligible=eligibility(rich)
@@ -65,13 +70,18 @@ def prepare_dataset(historical_dir: Path, results: Path, races: Path
     enriched=_sort_keyed(enriched)
     enriched["p_market_oof"]=fold_calibrated_market(enriched)
     enriched=add_calibrated_market_splits(enriched)
-    return enriched,{"source_sha256":{**hashes,"keiba_results.csv":hashfile(results),
-                                     "keiba_races.csv":hashfile(races)},
-                     "raw_summary":{"rows":raw_audit["total_official_rows"],
-                                    "matched":raw_audit["matched_raw_runner_rows"]},
-                     "market_audit":market_audit,
-                     "market_context_audit":confirm,
-                     "relative_coverage":coverage.to_dict(orient="records")}
+    audit={"source_sha256":{**hashes,"keiba_results.csv":hashfile(results),
+                            "keiba_races.csv":hashfile(races)},
+           "raw_summary":{"rows":raw_audit["total_official_rows"],
+                          "matched":raw_audit["matched_raw_runner_rows"]},
+           "market_audit":market_audit,
+           "market_context_audit":confirm,
+           "relative_coverage":coverage.to_dict(orient="records")}
+    if include_full_context:
+        # rich: all JRA starters, 2010–24, including non-F3-eligible ones.
+        # full_market: all starters of the selected complete-market races.
+        return enriched,audit,rich,full_market
+    return enriched,audit
 
 
 def feature_registry() -> dict:
