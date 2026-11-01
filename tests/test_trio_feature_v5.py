@@ -1,12 +1,19 @@
 """V5 counterfactual same-day leakage guards and full-starter integrity."""
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
+
 import numpy as np
 import pandas as pd
 import pytest
 
 from keiba_place_lab.trio_feature_v5 import (
-    FEATURE_BLOCKS, audit_asof_invariance, engineer_v5_asof,
+    FEATURE_BLOCKS,
+    audit_asof_invariance,
+    engineer_v5_asof,
 )
 
 
@@ -117,9 +124,6 @@ def test_missing_target_race_fails_closed():
 
 def test_chronological_slice_prediction_positions_ignore_pandas_index():
     """A late-2023 slice's original 15,000+ row IDs must never index numpy predictions."""
-    from pathlib import Path
-    import sys
-
     scripts=str(Path(__file__).resolve().parents[1]/"scripts")
     if scripts not in sys.path:
         sys.path.insert(0,scripts)

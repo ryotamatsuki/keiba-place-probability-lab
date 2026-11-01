@@ -9,16 +9,18 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
+import subprocess
 import time
+import traceback
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from scipy.optimize import minimize
-from scipy.special import expit, logit
-
 from research_trio_f3_v1 import paired_day_ci
 from run_input_learning_a_v1 import prepare_dataset
+from scipy.optimize import minimize
+from scipy.special import expit, logit
 
 from keiba_place_lab.trio_feature_v5 import FEATURE_BLOCKS, engineer_v5_asof
 from keiba_place_lab.trio_pool_v4 import v1_joint
@@ -42,7 +44,7 @@ class OffsetResidual:
         cols=FEATURE_BLOCKS[self.block]
         if not cols:
             return np.ones((len(x),1),dtype=float)
-        raw=x[list(cols)].apply(pd.to_numeric,errors="coerce").to_numpy(float)
+        raw=x[list(cols)].apply(pd.to_numeric,errors="coerce").to_numpy(dtype=float,copy=True)
         raw[~np.isfinite(raw)]=np.nan
         if not hasattr(self,"medians"):
             if np.isnan(raw).all():
@@ -78,12 +80,18 @@ class OffsetResidual:
             return value,grad
         opt=minimize(loss_and_grad,np.zeros(X.shape[1]),jac=True,
                      method="L-BFGS-B",options={"maxiter":300,"ftol":1e-11})
-        if not np.isfinite(opt.fun) or not np.isfinite(opt.x).all():
-            raise ValueError("OOF residual optimization failed")
-        self.beta=opt.x
-        self.fit_info={"n_features":X.shape[1],"C":self.c,
-                       "objective":float(opt.fun),"iterations":int(opt.nit),
-                       "success":bool(opt.success),"coefficients":opt.x.tolist()}
+        self.fit_info={
+            "n_features":X.shape[1],"C":self.c,"objective":float(opt.fun),
+            "iterations":int(getattr(opt,"nit",-1)),
+            "success":bool(opt.success),
+            "status":int(getattr(opt,"status",-1)),
+            "reason":str(getattr(opt,"message","no optimizer message")),
+            "coefficients":np.asarray(opt.x).tolist(),
+        }
+        if not opt.success or not np.isfinite(opt.fun) or not np.isfinite(opt.x).all():
+            raise RuntimeError("OOF residual optimization failed: "+
+                               json.dumps(self.fit_info,ensure_ascii=False))
+        self.beta=np.array(opt.x,dtype=float,copy=True)
         return self
 
     def predict(self,df:pd.DataFrame)->np.ndarray:
@@ -121,6 +129,11 @@ def joint_race_score(g:pd.DataFrame,probabilities:np.ndarray)->tuple[dict,np.nda
     found=np.flatnonzero(np.all(combinations==actual,axis=1))
     if len(found)!=1:
         raise ValueError("Actual unordered winning triple not uniquely found")
+    expected=len(h)*(len(h)-1)*(len(h)-2)//6
+    if len(combinations)!=expected or not np.isfinite(p).all():
+        raise ValueError("Incomplete or nonfinite exact-3 ticket probabilities")
+    if np.any(p<0) or not np.isclose(p.sum(),1.0,atol=1e-10):
+        raise ValueError("Exact-3 joint probabilities do not sum to one")
     return score_probabilities(p,int(found[0])),combinations,p
 
 
@@ -161,19 +174,63 @@ def score_cohort(df:pd.DataFrame,
     return pd.DataFrame(rows),tickets
 
 
+
+def paired_v5_ci(df:pd.DataFrame,baseline:str,candidate:str,
+                 *,higher_is_better:bool,draws:int=2500)->dict:
+    """V5 signed improvement without altering historic loss-only paired_day_ci."""
+    if higher_is_better:
+        raw=paired_day_ci(df,candidate,baseline,draws=draws)
+        delta_key="difference_candidate_minus_baseline"
+        direction="candidate_minus_baseline"
+    else:
+        raw=paired_day_ci(df,baseline,candidate,draws=draws)
+        delta_key="difference_baseline_minus_candidate"
+        direction="baseline_minus_candidate"
+    return {
+        "improvement_direction":direction,
+        delta_key:raw["difference_baseline_minus_candidate"],
+        "cluster_dates":raw["cluster_dates"],
+        "bootstrap_resamples":raw["bootstrap_resamples"],
+        "ci95":raw["ci95"],
+        "positive_improvement_bootstrap_share":
+            raw["positive_improvement_bootstrap_share"],
+    }
+
+
+def checkpoint(stage:str,**data)->None:
+    """Save small phase diagnostics separately from publishable result outputs."""
+    target=os.environ.get("V5_DIAGNOSTIC_DIR")
+    if target:
+        path=Path(target)
+        path.mkdir(parents=True,exist_ok=True)
+        (path/("phase_"+stage+".json")).write_text(
+            json.dumps({"phase":stage,"source_sha":os.environ.get("GITHUB_SHA"),
+                        "run_id":os.environ.get("GITHUB_RUN_ID"),
+                        "attempt":os.environ.get("GITHUB_RUN_ATTEMPT"),**data},
+                       indent=2,ensure_ascii=False,default=str)+"\\n"
+        )
+
+
 def main():
     parser=argparse.ArgumentParser()
     for key in ("historical-dir","results","races","matched-oof",
                 "pr40-2023","pr40-2024","out"):
         parser.add_argument("--"+key,required=True,type=Path)
     a=parser.parse_args()
-    if a.out.exists() and any(a.out.iterdir()):
-        raise FileExistsError("No overwriting versioned experiment output")
+    # mkdir(exist_ok=False) makes even an empty, failed prior output immutable.
+    a.out.mkdir(parents=True,exist_ok=False)
+    checkout_sha=subprocess.check_output(
+        ["git","rev-parse","HEAD"],text=True
+    ).strip()
+    if os.environ.get("GITHUB_SHA") and checkout_sha!=os.environ["GITHUB_SHA"]:
+        raise RuntimeError("Actual checkout SHA differs from triggered GITHUB_SHA")
+    checkpoint("start",actual_checkout_sha=checkout_sha,output_directory=str(a.out))
     started=time.perf_counter()
     source,audit,full_history,full_market=prepare_dataset(
         a.historical_dir,a.results,a.races,include_full_context=True
     )
     print("V5_ELIGIBLE_PANEL_READY "+str(len(source)),flush=True)
+    checkpoint("eligible_panel",rows=len(source))
     # The original F3 source is filtered by career_starts>=3. Consequently
     # it CANNOT provide a full starter race for 3-renpuku pace construction.
     # Compute all as-of history on the unfiltered 2010–2024 raw panel, then
@@ -207,6 +264,7 @@ def main():
     source.drop(columns="_merge",inplace=True)
     print("V5_FULL_FIELD_CONTEXT_READY "+str(len(context))+
           " rows; "+str(len(wanted))+" eligible races",flush=True)
+    checkpoint("full_context",rows=len(context),eligible_races=len(wanted))
     oof=pd.read_csv(a.matched_oof,dtype={"race_id":str,"horse_id":str})
     cols=["race_id","horse_id","horse_no","p_matched_f3"]
     if len(oof)!=len(oof.drop_duplicates(cols[:3])):
@@ -222,6 +280,10 @@ def main():
         raise ValueError("Wrong original PR40 cohort sizes")
     d23=cohort(data,refs[2023],2023)
     d24=cohort(data,refs[2024],2024)
+    if len(d24)!=18258:
+        raise ValueError(f"Frozen 2024 runner count drift: {len(d24)} != 18258")
+    checkpoint("cohorts",races_2023=d23.race_id.nunique(),
+               races_2024=d24.race_id.nunique(),runners_2024=len(d24))
     days=np.sort(pd.to_datetime(d23.race_date.unique()).to_numpy())
     cutoff=pd.Timestamp(days[int(.75*len(days))])
     early=d23[d23.race_date.lt(cutoff)].copy()
@@ -248,6 +310,8 @@ def main():
             "inner_valid_races":late.race_id.nunique(),
             "fit":fit.fit_info,
         })
+        checkpoint("selection_"+block+"_"+str(c).replace(".","p"),
+                   completed_candidates=len(selection),candidate=selection[-1])
         print("V5_INNER_SELECTION "+json.dumps({
             "block":block,"C":c,
             "joint_nll":selection[-1]["inner_validation_joint_logloss"]
@@ -255,6 +319,7 @@ def main():
     chosen=min(selection,key=lambda z:(z["inner_validation_joint_logloss"],
                                        z["block"]!="offset_only",
                                        z["block"],z["C"]))
+    checkpoint("chosen",choice=chosen)
     print("V5_LOCKED_CHOICE_FROM_2023 "+json.dumps({
         "block":chosen["block"],"C":chosen["C"]
     }),flush=True)
@@ -272,6 +337,12 @@ def main():
         predictions[block]=model.predict(d24)
         fitted[block]={"C":c,"training_year":2023,**model.fit_info}
     scored,tickets=score_cohort(d24,predictions,write_tickets=True)
+    if len(scored)!=1336 or len(tickets)!=506219:
+        raise ValueError("Frozen PR40 joint-ticket population drift: "+
+                         repr((len(scored),len(tickets))))
+    if sum(int(t["actual"]) for t in tickets)!=1336:
+        raise ValueError("Winning unordered triple must be unique per race")
+    checkpoint("scored",races=len(scored),runners=len(d24),tickets=len(tickets))
     reference=refs[2024].set_index("race_id")
     match=max(abs(row.f3_v1_joint_logloss-
                   float(reference.loc[row.race_id,"v1_joint_logloss"]))
@@ -288,14 +359,17 @@ def main():
         }
         if model!="f3_v1":
             paired[model]={
-                "joint_nll":paired_day_ci(
-                    scored,"f3_v1_joint_logloss",model+"_joint_logloss",
-                    draws=2500
-                ),
-                "top10_hit":paired_day_ci(
-                    scored,"f3_v1_top10_hit",model+"_top10_hit",
-                    draws=2500
-                ),
+                key:paired_v5_ci(
+                    scored,"f3_v1_"+metric,model+"_"+metric,
+                    higher_is_better=higher,draws=2500
+                )
+                for key,metric,higher in (
+                    ("joint_nll","joint_logloss",False),
+                    ("joint_brier","joint_brier",False),
+                    ("top1_hit","top1_hit",True),
+                    ("top5_hit","top5_hit",True),
+                    ("top10_hit","top10_hit",True),
+                )
             }
     report={
         "status":"2024_KNOWN_DEVELOPMENT_NOT_NEW_HOLDOUT",
@@ -311,6 +385,14 @@ def main():
         "2024_scores":summary,
         "2024_paired_day_bootstrap":paired,
         "2024_baseline_parity_max_abs":match,
+        "2024_runners":len(d24),"2024_full_trio_tickets":len(tickets),
+        "execution":{
+            "actual_checkout_sha":checkout_sha,
+            "github_trigger_sha":os.environ.get("GITHUB_SHA"),
+            "github_run_id":os.environ.get("GITHUB_RUN_ID"),
+            "github_run_attempt":os.environ.get("GITHUB_RUN_ATTEMPT"),
+            "output_directory":str(a.out),
+        },
         "asof_day_only_agents":True,
         "asof_horse_only_history":True,
         "full_field_pace":True,
@@ -324,7 +406,6 @@ def main():
         "no_production_changes":True,
         "no_real_3renpuku_odds":True,
     }
-    a.out.mkdir(parents=True,exist_ok=True)
     scored.to_csv(a.out/"2024_v5_features_racewise.csv",index=False)
     pd.DataFrame(tickets).to_csv(a.out/"2024_v5_features_full_trio.csv.gz",
                                  index=False,compression="gzip")
@@ -334,6 +415,9 @@ def main():
     (a.out/"v5_features_experiment.json").write_text(
         json.dumps(report,indent=2,ensure_ascii=False)+"\n"
     )
+    checkpoint("success",output_directory=str(a.out),
+               selected_block=chosen["block"],selected_C=chosen["C"],
+               baseline_parity=match)
     print("V5_FEATURES_REALDATA="+json.dumps({
         "cohort":report["strict_2023_2024_races"],
         "chosen":(chosen["block"],chosen["C"]),"summary":summary,
@@ -342,4 +426,9 @@ def main():
 
 
 if __name__=="__main__":
-    main()
+    try:
+        main()
+    except Exception as exc:
+        checkpoint("failure",exception=type(exc).__name__,
+                   message=str(exc),traceback=traceback.format_exc())
+        raise

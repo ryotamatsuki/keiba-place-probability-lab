@@ -1,5 +1,4 @@
 name: Trio V5 as-of feature ablation 2023 OOF -> PR40 2024 exact joint
-# Fresh workflow run to diagnose pre-step failure of attempts 1-3 (2026-10-31).
 on:
   push:
     branches: [research/trio-feature-ablation-v5-20261031]
@@ -9,6 +8,7 @@ on:
       - scripts/research_trio_v5_feature_ablation.py
       - src/keiba_place_lab/trio_feature_v5.py
       - tests/test_trio_feature_v5.py
+      - tests/test_trio_v5_pipeline.py
   workflow_dispatch:
 permissions:
   contents: write
@@ -20,11 +20,29 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    env:
+      V5_DIAGNOSTIC_DIR: /tmp/v5_diagnostics
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: research/trio-feature-ablation-v5-20261031
+          ref: ${{ github.sha }}
           fetch-depth: 0
+      - name: Verify triggered SHA and snapshot protected file hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          printf 'trigger_sha=%s\ncheckout_sha=%s\nrun_id=%s\nattempt=%s\n' \
+            "$GITHUB_SHA" "$(git rev-parse HEAD)" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" > /tmp/v5_identity.txt
+          PROTECTED=(
+            models/tennosho_f3_20261101/f3_bundle.joblib
+            models/tennosho_f3_20261101/manifest.json
+            analysis/tennosho_preoff_20261101/prior_f3_features.csv
+            analysis/tennosho_preoff_20261101/previews/f3_preview_20261031T173406.csv
+            .github/workflows/tennosho-preoff-freeze-v1.yml
+          )
+          sha256sum "${PROTECTED[@]}" > /tmp/v5_protected_before.sha256
+          echo "V5_RUN_DIR=analysis/trio_v5_feature_ablation/${GITHUB_SHA}-run${GITHUB_RUN_ID}-attempt${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -33,10 +51,10 @@ jobs:
           python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
           python -m pip install 'catboost==1.2.10' 'lightgbm==4.7.0'
           python -m pip freeze > /tmp/v5_all_dependencies.txt
-      - name: Counterfactual target leak and as-of historical invariant tests
+      - name: Counterfactual and regression tests
         run: |
-          ruff check --select E4,E7,E9,F src/keiba_place_lab/trio_feature_v5.py scripts/research_trio_v5_feature_ablation.py tests/test_trio_feature_v5.py
-          pytest -q tests/test_trio_feature_v5.py tests/test_trio_bridge_v1.py tests/test_trio_pool_v4.py
+          ruff check .
+          pytest -q tests/test_trio_feature_v5.py tests/test_trio_v5_pipeline.py tests/test_trio_bridge_v1.py tests/test_trio_pool_v4.py
       - name: Obtain exact immutable historical training panel originally used in PR40
         uses: actions/download-artifact@v4
         with:
@@ -54,13 +72,15 @@ jobs:
               output_dir='/tmp/kaggle_trio_v5'
           ))
           PY
-      - name: Run prereg 2023 inner-OOF feature selection and strict 2024 full race test
+      - name: Run prereg 2023 selection and PR40 2024 exact full field evaluation
         env:
           OMP_NUM_THREADS: '2'
           OPENBLAS_NUM_THREADS: '2'
           MKL_NUM_THREADS: '2'
+        shell: bash
         run: |
           set -euo pipefail
+          mkdir -p "$V5_DIAGNOSTIC_DIR"
           RESULT=$(find /tmp/kaggle_trio_v5 -name keiba_results.csv -print -quit)
           RACES=$(find /tmp/kaggle_trio_v5 -name keiba_races.csv -print -quit)
           test -s "$RESULT" && test -s "$RACES"
@@ -70,18 +90,66 @@ jobs:
             --matched-oof analysis/trio_v3_matched_oof/2023_2024_matched_800_400_oof.csv \
             --pr40-2023 analysis/trio_v3_matched_oof/2023_training_year_diagnostics.csv \
             --pr40-2024 analysis/trio_v3_matched_oof/2024_comparable_complete_trio_scores.csv \
-            --out analysis/trio_v5_feature_ablation
-      - name: Persist source audit, all-combination probabilities and no-promotion report
+            --out "$V5_RUN_DIR" 2>&1 | tee /tmp/v5_run.log
+      - name: Verify protected files, validate saved results and commit without force
+        shell: bash
         run: |
           set -euo pipefail
+          sha256sum \
+            models/tennosho_f3_20261101/f3_bundle.joblib \
+            models/tennosho_f3_20261101/manifest.json \
+            analysis/tennosho_preoff_20261101/prior_f3_features.csv \
+            analysis/tennosho_preoff_20261101/previews/f3_preview_20261031T173406.csv \
+            .github/workflows/tennosho-preoff-freeze-v1.yml > /tmp/v5_protected_after.sha256
+          diff -u /tmp/v5_protected_before.sha256 /tmp/v5_protected_after.sha256
+          python - <<'PY'
+          import gzip
+          import json
+          import os
+          from pathlib import Path
+          import pandas as pd
+          p=Path(os.environ["V5_RUN_DIR"])
+          report=json.loads((p/"v5_features_experiment.json").read_text())
+          assert report["execution"]["actual_checkout_sha"]==os.environ["GITHUB_SHA"]
+          assert report["execution"]["output_directory"]==str(p)
+          assert report["strict_2023_2024_races"]==[1355,1336]
+          assert report["2024_runners"]==18258
+          assert report["2024_full_trio_tickets"]==506219
+          assert report["2024_baseline_parity_max_abs"]<=5e-6
+          r=pd.read_csv(p/"2024_v5_features_racewise.csv")
+          assert len(r)==1336
+          tickets=pd.read_csv(p/"2024_v5_features_full_trio.csv.gz")
+          assert len(tickets)==506219 and tickets.actual.sum()==1336
+          for c in ("f3_v1","offset_only","agents","dynamics","pace","all"):
+              assert tickets.groupby("race_id")[c].sum().sub(1).abs().max()<1e-9
+          assert len(pd.read_csv(p/"2024_v5_features_runner_probabilities.csv"))==18258
+          print("V5_SAVED_FILES_READBACK_OK",p)
+          PY
+          cp /tmp/v5_all_dependencies.txt "$V5_RUN_DIR/dependencies.txt"
+          cp /tmp/v5_protected_before.sha256 "$V5_RUN_DIR/protected_before.sha256"
+          cp /tmp/v5_protected_after.sha256 "$V5_RUN_DIR/protected_after.sha256"
+          cp /tmp/v5_identity.txt "$V5_RUN_DIR/execution_identity.txt"
+          cp /tmp/v5_run.log "$V5_RUN_DIR/execution_log.txt"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          cp /tmp/v5_all_dependencies.txt analysis/trio_v5_feature_ablation/dependencies.txt
-          git add analysis/trio_v5_feature_ablation/
-          git commit -m 'research: record as-of feature block ablation on genuine 2023 OOF and PR40 2024 all tickets'
+          git add -- "$V5_RUN_DIR"
+          git commit -m "research: record immutable V5 ablation run $GITHUB_RUN_ID attempt $GITHUB_RUN_ATTEMPT"
           for i in 1 2 3 4 5; do
             git fetch origin research/trio-feature-ablation-v5-20261031
             git rebase origin/research/trio-feature-ablation-v5-20261031
             if git push origin HEAD:research/trio-feature-ablation-v5-20261031; then exit 0; fi
           done
           exit 1
+      - name: Upload failure diagnostics separate from publishable results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: trio-v5-diagnostics-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          path: |
+            /tmp/v5_diagnostics/
+            /tmp/v5_run.log
+            /tmp/v5_identity.txt
+            /tmp/v5_protected_before.sha256
+            /tmp/v5_protected_after.sha256
+          if-no-files-found: warn
