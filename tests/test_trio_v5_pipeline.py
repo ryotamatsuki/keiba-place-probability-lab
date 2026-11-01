@@ -164,9 +164,9 @@ def test_full_synthetic_selection_refit_score_and_roundtrip(v5,sample,tmp_path):
         out/"runners.csv",index=False
     )
     (out/"report.json").write_text(json.dumps({"chosen":chosen,"paired":paired}))
-    pd.testing.assert_frame_equal(pd.read_csv(out/"racewise.csv"),scored,
+    pd.testing.assert_frame_equal(pd.read_csv(out/"racewise.csv",dtype={"race_id":str}),scored,
                                   check_dtype=False,check_exact=False,rtol=1e-10)
-    pd.testing.assert_frame_equal(pd.read_csv(out/"tickets.csv.gz"),actual,
+    pd.testing.assert_frame_equal(pd.read_csv(out/"tickets.csv.gz",dtype={"race_id":str}),actual,
                                   check_exact=False,rtol=1e-10)
     assert len(pd.read_csv(out/"runners.csv"))==40
     assert json.loads((out/"report.json").read_text())["chosen"]==chosen
