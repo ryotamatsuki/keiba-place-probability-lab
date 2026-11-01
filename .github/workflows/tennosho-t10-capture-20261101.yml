@@ -1,0 +1,155 @@
+name: Tennosho T-minus-10 strict prospective capture 2026-11-01
+on:
+  push:
+    branches: [research/tennosho-akiten-preoff-20261101]
+    paths: [.github/workflows/tennosho-t10-capture-20261101.yml]
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: tennosho-20261101-one-shot-capture
+  cancel-in-progress: false
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/tennosho-akiten-preoff-20261101
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install frozen inference environment without training
+        run: |
+          python -m pip install -e '.[historical,modeldev]' -c requirements-scope.txt
+          python -m pip install 'catboost==1.2.10'
+      - name: Wait for real UTC T-10 and attempt exactly once
+        shell: bash
+        run: |
+          python - <<'PY'
+          import datetime as dt, json, subprocess, time, pathlib, hashlib, traceback
+          UTC=dt.timezone.utc
+          target=dt.datetime(2026,11,1,6,30,tzinfo=UTC)
+          deadline=dt.datetime(2026,11,1,6,31,tzinfo=UTC)
+          root=pathlib.Path('analysis/tennosho_preoff_20261101/attempts')
+          root.mkdir(parents=True,exist_ok=True)
+          print('runner_utc_before_wait',dt.datetime.now(UTC).isoformat(),flush=True)
+          while dt.datetime.now(UTC)<target:
+              time.sleep(min(3.0,(target-dt.datetime.now(UTC)).total_seconds()))
+          started=dt.datetime.now(UTC)
+          tag=started.strftime('%Y%m%dT%H%M%S%fZ')
+          attempt=root/tag
+          formal=pathlib.Path('prospective/tennosho_20261101/locks/202605041111')
+          cmd=['python','scripts/tennosho_preoff_capture.py','capture',
+               '--config','config/tennosho_preoff_20261101.json',
+               '--bundle','models/tennosho_f3_20261101/f3_bundle.joblib',
+               '--bundle-manifest','models/tennosho_f3_20261101/manifest.json',
+               '--prior-features','analysis/tennosho_preoff_20261101/prior_f3_features.csv',
+               '--prior-manifest','analysis/tennosho_preoff_20261101/prior_f3_features.manifest.json',
+               '--output',str(attempt),'--formal-out',str(formal)]
+          result={'protocol':'tennosho_tminus10_prospective_v1','race_id':'202605041111',
+                  'attempt_started_utc':started.isoformat(),'off_at':'2026-11-01T06:40:00+00:00',
+                  'source_url':'https://sports.yahoo.co.jp/keiba/race/odds/tfw/2605041111',
+                  'result_data_not_accessed':True,'model_retrained':False}
+          try:
+              if started>=deadline: raise RuntimeError('FAIL_CLOSED: runner began after T-10 window')
+              proc=subprocess.run(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,
+                                  text=True,timeout=65)
+              print('capture stdout:',proc.stdout[-5000:],flush=True)
+              print('capture stderr:',proc.stderr[-5000:],flush=True)
+              if proc.returncode: raise RuntimeError('capture exit '+str(proc.returncode)+': '+proc.stderr[-2500:])
+              if not (formal/'predictions.csv').exists(): raise RuntimeError('No model prediction file')
+              mfile=formal/'manifest.json'
+              manifest=json.loads(mfile.read_text())
+              observed=json.loads((attempt/'observation.json').read_text())
+              if manifest.get('full_active_field')!=17 or manifest.get('formal_challenger_lock') is not True:
+                  raise RuntimeError('Not a verified full-field challenger capture')
+              snapshot='yahoo-tfw-2605041111-'+manifest['provider_updated_at'].replace(':','').replace('-','')+'-'+manifest['odds_source_html_sha256_only_not_redistributed'][:16]
+              csv=(formal/'predictions.csv').read_bytes()
+              row_hashes=[hashlib.sha256(line).hexdigest() for line in csv.splitlines(keepends=True)[1:]]
+              manifest['snapshot_id']=snapshot
+              manifest['composite_row_hash_sha256']=hashlib.sha256(('\n'.join(row_hashes)+'\n').encode()).hexdigest()
+              manifest['row_count']=len(row_hashes)
+              manifest['capture_runner_source_commit']=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+              manifest['raw_odds_not_redistributed']=True
+              manifest['no_results_used']=True
+              mfile.write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
+              result.update(status='MODEL_CAPTURE_SUCCEEDED_PUBLICATION_PENDING',
+                            snapshot_id=snapshot,predictions_sha256=hashlib.sha256(csv).hexdigest(),
+                            composite_row_hash_sha256=manifest['composite_row_hash_sha256'],
+                            provider_updated_at=manifest['provider_updated_at'],
+                            captured_at=manifest['captured_at'],locked_at=manifest['locked_at'])
+          except Exception as exc:
+              result.update(status='FAIL_CLOSED',error=str(exc),failed_at_utc=dt.datetime.now(UTC).isoformat())
+              if formal.exists():
+                  # Never publish incomplete predictions to main.
+                  result['incomplete_formal_path_not_published']=str(formal)
+              print('FAIL_CLOSED:',str(exc),flush=True)
+          pathlib.Path('/tmp/tennosho_attempt_tag').write_text(tag)
+          pathlib.Path('/tmp/tennosho_attempt_result.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+          print('attempt status',result['status'],flush=True)
+          PY
+      - name: Publish exact frozen lock to main only if successful and before off
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,datetime as dt
+          d=json.load(open('/tmp/tennosho_attempt_result.json'))
+          print('status for publication:',d['status'])
+          PY
+          if [ "$(python -c "import json;print(json.load(open('/tmp/tennosho_attempt_result.json'))['status'])")" != MODEL_CAPTURE_SUCCEEDED_PUBLICATION_PENDING ]; then
+            echo 'No formal lock; do not push to main'
+            exit 0
+          fi
+          python - <<'PY'
+          import datetime as dt
+          if dt.datetime.now(dt.timezone.utc)>=dt.datetime(2026,11,1,6,40,tzinfo=dt.timezone.utc):
+              raise SystemExit('Too late to publish a prospective lock')
+          PY
+          mkdir -p /tmp/tennosho-lock-bytes
+          cp prospective/tennosho_20261101/locks/202605041111/predictions.csv /tmp/tennosho-lock-bytes/
+          cp prospective/tennosho_20261101/locks/202605041111/manifest.json /tmp/tennosho-lock-bytes/
+          git fetch origin main
+          git worktree add -b tennosho-lock-publication /tmp/tennosho-main origin/main
+          mkdir -p /tmp/tennosho-main/prospective/tennosho_20261101/locks/202605041111
+          test ! -e /tmp/tennosho-main/prospective/tennosho_20261101/locks/202605041111/manifest.json
+          cp /tmp/tennosho-lock-bytes/* /tmp/tennosho-main/prospective/tennosho_20261101/locks/202605041111/
+          git -C /tmp/tennosho-main config user.name 'github-actions[bot]'
+          git -C /tmp/tennosho-main config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C /tmp/tennosho-main add prospective/tennosho_20261101/locks/202605041111/
+          git -C /tmp/tennosho-main commit -m 'prospective: publish frozen 2026 Tennosho T-10 full-field lock'
+          python - <<'PY'
+          import datetime as dt
+          if dt.datetime.now(dt.timezone.utc)>=dt.datetime(2026,11,1,6,40,tzinfo=dt.timezone.utc):
+              raise SystemExit('FAIL_CLOSED: publication no longer pre-off')
+          PY
+          git -C /tmp/tennosho-main push origin HEAD:main
+          echo "PUBLISHED_MAIN_COMMIT=$(git -C /tmp/tennosho-main rev-parse HEAD)"
+      - name: Preserve append-only observation or failure on research branch
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f /tmp/tennosho_attempt_result.json ]; then
+            echo 'Runner failed before capture attempt could be recorded'
+            exit 0
+          fi
+          tag=$(cat /tmp/tennosho_attempt_tag)
+          mkdir -p "analysis/tennosho_preoff_20261101/attempts/$tag"
+          cp /tmp/tennosho_attempt_result.json "analysis/tennosho_preoff_20261101/attempts/$tag/attempt_result.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "analysis/tennosho_preoff_20261101/attempts/$tag"
+          if ! git diff --cached --quiet; then
+            git commit -m 'audit: preserve Tennosho T-10 attempt without raw odds'
+            for i in 1 2 3; do
+              git fetch origin research/tennosho-akiten-preoff-20261101
+              git rebase origin/research/tennosho-akiten-preoff-20261101
+              if git push origin HEAD:research/tennosho-akiten-preoff-20261101; then exit 0; fi
+            done
+            exit 1
+          fi

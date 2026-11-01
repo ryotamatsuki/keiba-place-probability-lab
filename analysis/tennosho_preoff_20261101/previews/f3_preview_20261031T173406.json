@@ -1,0 +1,49 @@
+{
+  "status": "PROVISIONAL_DAY_BEFORE_NOT_T_MINUS_10",
+  "observed_at_provider": "2026-10-31T17:34:06+09:00",
+  "provider_clock": {
+    "provider_datetime_literal": "2026-10-31T17:34:06",
+    "timezone_interpretation": "provider_local_calendar_datetime_interpreted_as_Asia_Tokyo",
+    "interpreted_provider_updated_at": "2026-10-31T17:34:06+09:00"
+  },
+  "roster_observation": {
+    "url": "https://sports.yahoo.co.jp/keiba/race/denma/2605041111",
+    "request_started_utc": "2026-10-31T08:48:42.692849+00:00",
+    "captured_at_utc": "2026-10-31T08:48:43.878103+00:00",
+    "html_sha256": "9f8a6e5301a66711888e0624f0bc0595266d22d718be63c3c278376205a397f9",
+    "http_status": 200,
+    "content_type": "text/html;charset=UTF-8",
+    "cache_age_header": "32",
+    "cache_control_header": "public, max-age=60",
+    "provider_observation_not_http_capture": true
+  },
+  "odds_observation": {
+    "url": "https://sports.yahoo.co.jp/keiba/race/odds/tfw/2605041111",
+    "request_started_utc": "2026-10-31T08:48:43.878764+00:00",
+    "captured_at_utc": "2026-10-31T08:48:44.470652+00:00",
+    "html_sha256": "41d8f74be2110dd91e126f0324bcbe2ce3fe5f396fc5d21c59ce31855e40429b",
+    "http_status": 200,
+    "content_type": "text/html;charset=UTF-8",
+    "cache_age_header": "9",
+    "cache_control_header": "public, max-age=60",
+    "provider_observation_not_http_capture": true
+  },
+  "odds_age_seconds": 878.668659,
+  "model_sha256": "f8db9efe4245782165a0732945f5ab50c9c845d52fec25f20150d65e6ab096aa",
+  "prior_feature_sha256": "6d184c48008a4dd5664823baac00de779635270a660ed0415f6469d61f26daa5",
+  "forecast_sha256": "595ac9b010fbdd019717bb197056054828709038c727b99f19820d8a5e957a94",
+  "place_range_coverage": 17,
+  "prediction_proof": {
+    "model_version": "f3_20261101_research_forward_v1",
+    "model_sha256": "f8db9efe4245782165a0732945f5ab50c9c845d52fec25f20150d65e6ab096aa",
+    "history_sha256": "e75dcfb0c56ba2cc0d01edd6f7b17621ff6390cf2614407cf64675088e31d766",
+    "history_cutoff": "2026-10-30",
+    "market_source_domain": "same-snapshot T-10 win odds, not final odds",
+    "market_calibration_training_domain": "2016-2024 final win odds",
+    "market_probability_convention": "all starters normalized win Harville",
+    "catboost_offset_contract": "baseline_included",
+    "overround": 1.2751076661453806,
+    "all_entrants_prior_history_audited": true
+  },
+  "policy": "No formal lock, no adoption, no selection after race, no ROI guarantees"
+}

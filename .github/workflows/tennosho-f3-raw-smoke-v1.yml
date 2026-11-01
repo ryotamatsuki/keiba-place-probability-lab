@@ -1,0 +1,40 @@
+name: Tennosho F3 raw-source two-race smoke
+on:
+  push:
+    branches:
+      - research/tennosho-akiten-preoff-20261101
+    paths:
+      - .github/workflows/tennosho-f3-raw-smoke-v1.yml
+      - scripts/tennosho_f3_raw_audit.py
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -e '.[historical]' -c requirements-scope.txt
+      - name: Verify most recent two complete Yahoo race result source fields
+        run: |
+          python - <<'PY'
+          import json, requests
+          from scripts.tennosho_f3_raw_audit import raw_result
+          for rid in ['2605040211','2605040511']:
+              url = 'https://sports.yahoo.co.jp/keiba/race/result/' + rid
+              response = requests.get(url, timeout=(10,25),
+                                      headers={'User-Agent':'keiba-place-lab/0.1 research'})
+              response.raise_for_status()
+              rows = raw_result(response.text, rid)
+              print(json.dumps({
+                  'race_id':'20'+rid,'starters':len(rows),
+                  'last3f_nonmissing':int(rows.last_3f.notna().sum()),
+                  'mass_nonmissing':int(rows.horse_weight.notna().sum()),
+                  'jockey_nonmissing':int(rows.jockey_name.notna().sum()),
+                  'trainer_nonmissing':int(rows.trainer.notna().sum()),
+              }))
+          PY

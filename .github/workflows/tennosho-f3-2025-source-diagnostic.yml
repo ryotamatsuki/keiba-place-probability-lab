@@ -1,0 +1,76 @@
+name: Tennosho F3 2025 specific starter-source mismatch diagnostic
+on:
+  push:
+    branches: [research/tennosho-akiten-preoff-20261101]
+    paths: [.github/workflows/tennosho-f3-2025-source-diagnostic.yml]
+  workflow_dispatch:
+permissions:
+  actions: read
+  contents: read
+jobs:
+  investigate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/tennosho-akiten-preoff-20261101
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -e '.[historical,modeldev]' -c requirements-scope.txt
+      - name: Restore frozen audited 2010-2025 full starter cohort
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Compare 2025 race 202506050706 against published alternate and Yahoo results
+        run: |
+          python - <<'PY'
+          import json
+          import pandas as pd
+          from pathlib import Path
+          import sys
+          sys.path.insert(0,'scripts')
+          from keiba_place_lab.live_history import (
+              load_frozen_history, CachedFetcher, RESULT_URL,
+          )
+          from keiba_place_lab import live_umanity
+          from tennosho_f3_raw_audit import raw_result, umanity_raw_result
+          rid='202506050706'
+          base=load_frozen_history(Path(
+              '/tmp/stage36/data/historical_processed/stage36_freeze_v1/'
+              'standardized_jra_flat_source_v1.parquet'
+          ))
+          base['race_id']=base.race_id.astype(str)
+          expected=base.loc[base.race_id.eq(rid)]
+          print('EXPECTED',json.dumps({
+              'count':len(expected),
+              'rows':expected[['horse_id','horse_no','horse_name','race_date']].
+                  astype(str).to_dict('records')},ensure_ascii=False),flush=True)
+          date=pd.Timestamp(expected.race_date.iloc[0])
+          sid=live_umanity.source_id(rid,date)
+          candidates=[
+             ('umanity',f'https://umanity.jp/racing/result.php?race_id={sid}'),
+             ('yahoo',RESULT_URL.format(provider_id=rid[2:]))
+          ]
+          fetcher=CachedFetcher(Path('/tmp/tennosho-2025-specific-check'),pause_seconds=.5)
+          expected_keys=set(zip(expected.horse_id.astype(str),expected.horse_no.astype(int)))
+          for name,url in candidates:
+              try:
+                  html,rec=fetcher.fetch(url)
+                  data=(umanity_raw_result(html,rid,date) if name=='umanity'
+                        else raw_result(html,rid[2:]))
+                  keys=set(zip(data.horse_id.astype(str),data.horse_no.astype(int)))
+                  print('PUBLISHED',json.dumps({'provider':name,'url':rec.url,
+                      'sha256':rec.sha256,'rows':len(data),
+                      'missing':sorted([list(x) for x in expected_keys-keys]),
+                      'extra':sorted([list(x) for x in keys-expected_keys]),
+                      'data':data[['horse_id','horse_no','rank','finish_status']].astype(str).to_dict('records')},
+                      ensure_ascii=False),flush=True)
+              except Exception as e:
+                  print('SOURCE_FAILED',name,type(e).__name__,str(e)[:800],flush=True)
+          PY

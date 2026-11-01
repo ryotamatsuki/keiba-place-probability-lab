@@ -1,0 +1,69 @@
+name: Tennosho F3 alternate detailed result source probe
+on:
+  push:
+    branches: [research/tennosho-akiten-preoff-20261101]
+    paths: [.github/workflows/tennosho-f3-umanity-probe.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install requests beautifulsoup4 pandas scikit-learn
+      - name: Verify normalized plus-minus-zero masses against all 17 Yahoo runners
+        run: |
+          python - <<'PY'
+          import requests
+          from bs4 import BeautifulSoup
+          from urllib.parse import urlsplit
+          from pathlib import Path
+          from sys import path
+          import pandas as pd
+          path.insert(0, str(Path('scripts').resolve()))
+          path.insert(0, str(Path('src').resolve()))
+          from keiba_place_lab.live_umanity import source_id, metadata
+          rid, date='202605040211','2026-10-04'
+          sid=source_id(rid,date)
+          url=f'https://umanity.jp/racing/result.php?race_id={sid}'
+          r=requests.get(url,timeout=30,headers={'User-Agent':'Mozilla/5.0'})
+          print('source',urlsplit(r.url).path,'status',r.status_code,'bytes',len(r.content),flush=True)
+          r.raise_for_status()
+          soup,meta=metadata(r.text,rid,date)
+          print('identity',meta,flush=True)
+          for t in soup.select('table'):
+              if not t.select_one('td.td_order'):
+                  continue
+              print('heads',[(th.get_text(' ',strip=True),th.get('class')) for th in t.select('th')][:45],flush=True)
+              for tr in t.select('tr'):
+                  cells=tr.find_all('td',recursive=False)
+                  if cells:
+                      print('row',[(i,c.get('class'),c.get_text(' ',strip=True)[:130]) for i,c in enumerate(cells)][:22],flush=True)
+                      break
+          print('race header',soup.get_text(' ',strip=True)[:600],flush=True)
+          from tennosho_f3_raw_audit import umanity_raw_result, raw_result
+          for row in next(t for t in soup.select('table') if t.select_one('td.td_order')).select('tr'):
+              cells=row.find_all('td',recursive=False)
+              if cells and cells[1].get_text(strip=True) in ('14','4','9','16'):
+                  print('weight raw',cells[1].get_text(strip=True),repr(cells[3].get_text(' ',strip=True)),flush=True)
+          alt = umanity_raw_result(r.text, rid, date)
+          print('alternate parsed',len(alt),alt[['horse_no','horse_id','last_3f','passing','horse_weight','jockey_name','trainer']].head(3).to_dict(orient='records'),flush=True)
+          yahoo = requests.get('https://sports.yahoo.co.jp/keiba/race/result/2605040211',timeout=30)
+          yahoo.raise_for_status()
+          original=raw_result(yahoo.text,'2605040211')
+          xy=original.merge(alt,on=['race_id','horse_id','horse_no'],suffixes=('_yahoo','_alt'),validate='one_to_one')
+          print('same race coverage',len(original),len(alt),len(xy),flush=True)
+          for field in ['last_3f','passing','horse_weight','jockey_name','trainer']:
+              a=xy[field+'_yahoo'].fillna('-').astype(str)
+              b=xy[field+'_alt'].fillna('-').astype(str)
+              differences=xy.loc[a.ne(b),['horse_no',field+'_yahoo',field+'_alt']].head(5).to_dict(orient='records')
+              print('source parity',field,'mismatch count',int(a.ne(b).sum()),'examples',differences,flush=True)
+          assert len(xy)==17 and xy.last_3f_yahoo.equals(xy.last_3f_alt)
+          assert xy.horse_weight_yahoo.equals(xy.horse_weight_alt), 'Published source mass must be identical'
+
+          PY

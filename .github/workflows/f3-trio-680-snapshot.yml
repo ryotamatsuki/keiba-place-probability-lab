@@ -1,0 +1,46 @@
+name: Research F3 trio 680 snapshot fallback
+on:
+  push:
+    branches: [research/tennosho-akiten-preoff-20261101]
+    paths: [.github/workflows/f3-trio-680-snapshot.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: f3-trio-680-snapshot
+  cancel-in-progress: false
+jobs:
+  compute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/tennosho-akiten-preoff-20261101
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: |
+          python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+      - name: Check trio math and historical forward lock safety
+        run: |
+          ruff check --select E4,E7,E9,F scripts/f3_trio_680_preview_only.py src/keiba_place_lab/trio_bridge_v1.py
+          pytest -q tests/test_trio_bridge_v1.py tests/test_tennosho_preoff_20261101.py
+      - name: Compute exactly 680 provisional unordered top-three probabilities
+        run: |
+          python -u scripts/f3_trio_680_preview_only.py             --preview analysis/tennosho_preoff_20261101/previews/f3_preview_20261031T173406.csv             --bundle-manifest models/tennosho_f3_20261101/manifest.json             --output analysis/trio_f3_preview_20261031
+      - name: Publish immutable F3 trio preview, without modifying F3 lock
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/trio_f3_preview_20261031/
+          git commit -m 'research: archive immutable 680-way F3 marginal-constrained trio preview'
+          for i in 1 2 3 4 5; do
+            git fetch origin research/tennosho-akiten-preoff-20261101
+            git rebase origin/research/tennosho-akiten-preoff-20261101
+            if git push origin HEAD:research/tennosho-akiten-preoff-20261101; then exit 0; fi
+          done
+          exit 1

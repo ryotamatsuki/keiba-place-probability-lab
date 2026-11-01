@@ -1,0 +1,42 @@
+name: Tennosho F3 exhaustive 2025 frozen source identity audit
+on:
+  push:
+    branches: [research/tennosho-akiten-preoff-20261101]
+    paths: [.github/workflows/tennosho-f3-2025-exhaustive-audit.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/tennosho-akiten-preoff-20261101
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -e '.[historical,modeldev]' -c requirements-scope.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          run-id: 37104212189
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get original immutable Kaggle V1 postrace results
+        run: |
+          python - <<'PY'
+          import kagglehub
+          kagglehub.dataset_download(
+             'noriyukifurufuru/japan-horse-racing-2010-2025/versions/1',
+             output_dir='/tmp/kaggle_v1'
+          )
+          PY
+      - name: Exhaustively compare last-day missing Kaggle 2025 records with published JRA results
+        run: |
+          python -u scripts/tennosho_f3_2025_identity_audit.py \
+            --standardized /tmp/stage36/data/historical_processed/stage36_freeze_v1/standardized_jra_flat_source_v1.parquet \
+            --results /tmp/kaggle_v1/keiba_results.csv \
+            --races /tmp/kaggle_v1/keiba_races.csv

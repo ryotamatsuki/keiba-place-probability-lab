@@ -1,0 +1,68 @@
+name: Research JRA jockey distance-dependence out-of-time (independent of F3 lock)
+on:
+  push:
+    branches: [research/tennosho-akiten-preoff-20261101]
+    paths: [.github/workflows/jra-jockey-distance-effect-v1.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: jra-jockey-distance-effect-v1
+  cancel-in-progress: false
+jobs:
+  empirical:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/tennosho-akiten-preoff-20261101
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install reproducible JRA historical research dependencies
+        run: |
+          python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+      - name: Validate date-safe jockey prior features and distance windows
+        run: |
+          ruff check scripts/research_jockey_distance_effect_v1.py tests/test_jockey_distance_effect_v1.py
+          pytest -q tests/test_jockey_distance_effect_v1.py
+      - name: Restore original frozen 2010 to 2024 standardized full-runner panel
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Restore source-verified original 2010 to 2025 jockey and race results
+        run: |
+          python - <<'PY'
+          import kagglehub
+          print(kagglehub.dataset_download(
+              "noriyukifurufuru/japan-horse-racing-2010-2025/versions/1",
+              output_dir="/tmp/kaggle_jockey_v1",
+          ))
+          PY
+      - name: Independent held-out 2023 and 2024 distance-specific rider ablations
+        run: |
+          RESULT=$(find /tmp/kaggle_jockey_v1 -name keiba_results.csv -print -quit)
+          RACES=$(find /tmp/kaggle_jockey_v1 -name keiba_races.csv -print -quit)
+          test -n "$RESULT" && test -n "$RACES"
+          python -u scripts/research_jockey_distance_effect_v1.py              --historical-dir /tmp/stage36/data/historical_processed/stage36_freeze_v1              --results-csv "$RESULT"              --races-csv "$RACES"              --out analysis/jockey_distance_effect_v1
+      - name: Commit aggregates and source audit, not licensed raw race data
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/jockey_distance_effect_v1/distance_effect_metrics.csv                   analysis/jockey_distance_effect_v1/audit.json
+          git commit -m 'research: freeze JRA 2024 held-out jockey by distance ablation'
+          for n in 1 2 3 4 5; do
+            git fetch origin research/tennosho-akiten-preoff-20261101
+            git rebase origin/research/tennosho-akiten-preoff-20261101
+            if git push origin HEAD:research/tennosho-akiten-preoff-20261101; then exit 0; fi
+          done
+          exit 1

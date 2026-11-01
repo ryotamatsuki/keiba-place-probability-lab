@@ -1,0 +1,119 @@
+name: Tennosho 2026 pre-off frozen research model and source preflight
+# Re-run after strict prospective timestamp and no-leak unit tests passed lint.
+on:
+  push:
+    branches:
+      - research/tennosho-akiten-preoff-20261101
+    paths:
+      - .github/workflows/tennosho-preoff-freeze-v1.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  freeze-f3-shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      BRANCH: research/tennosho-akiten-preoff-20261101
+      ORIGINAL: /tmp/stage36/data/historical_processed/stage36_freeze_v1
+      KAGGLE: /tmp/kaggle_v1
+      BUNDLE: models/tennosho_f3_20261101
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/tennosho-akiten-preoff-20261101
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install reproducible research library versions
+        run: |
+          python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+          python -m pip install 'catboost==1.2.10' 'lightgbm==4.7.0'
+      - name: Run code hygiene and strict T-10 source/model gate tests
+        run: |
+          ruff check .
+          pytest -q
+      - name: Freeze independently retrainable research model once
+        if: success()
+        run: |
+          if [ -s "$BUNDLE/f3_bundle.joblib" ]; then
+            echo "Existing frozen model must NOT be retrained"
+            exit 0
+          fi
+          echo 'Retrieving original Stage3.6 data and Kaggle V1 in next steps'
+      - name: Restore original Stage3.6 2010-2024 full-runner history
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Fetch immutable original Kaggle 2010-2025 V1 results
+        run: |
+          python - <<'PY'
+          import kagglehub
+          print(kagglehub.dataset_download(
+              'noriyukifurufuru/japan-horse-racing-2010-2025/versions/1',
+              output_dir='/tmp/kaggle_v1'
+          ))
+          PY
+      - name: Freeze F3 XGBoost800 / 400 prefix and CatBoost400 once
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -s "$BUNDLE/f3_bundle.joblib" ] && [ -s "$BUNDLE/manifest.json" ]; then
+            echo "Pre-existing bundle: no overwrite or refit"
+            exit 0
+          fi
+          RESULT=$(find "$KAGGLE" -name 'keiba_results.csv' -print -quit)
+          RACES=$(find "$KAGGLE" -name 'keiba_races.csv' -print -quit)
+          test -n "$RESULT" && test -n "$RACES"
+          python -u scripts/freeze_tennosho_f3_20261101.py \
+            --historical-dir "$ORIGINAL" \
+            --results-csv "$RESULT" \
+            --races-csv "$RACES" \
+            --out "$BUNDLE"
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          path=Path('models/tennosho_f3_20261101')
+          recorded=json.loads((path/'manifest.json').read_text())
+          actual=hashlib.sha256((path/'f3_bundle.joblib').read_bytes()).hexdigest()
+          assert recorded['bundle_sha256']==actual, "Model freeze hash changed"
+          assert recorded['training_max_date']<'2025-01-01'
+          assert recorded['no_2025_2026_train_labels'] is True
+          print('Frozen candidate model SHA256:',actual)
+          PY
+      - name: Commit ONLY derived model artifact and source hashes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add models/tennosho_f3_20261101/
+          if ! git diff --cached --quiet; then
+            git commit -m 'research: immutably freeze 2018-2024 F3 XGB800/400 and CatBoost400 for Nov 1'
+            for try in 1 2 3 4 5; do
+              git fetch origin "$BRANCH"
+              git rebase "origin/$BRANCH"
+              if git push origin "HEAD:$BRANCH"; then
+                echo "Frozen model published to research branch before the target event"
+                exit 0
+              fi
+            done
+            exit 1
+          fi
+      - name: Access-only Yahoo source preflight, never a T-10 lock
+        continue-on-error: true
+        run: |
+          python -u scripts/tennosho_preoff_capture.py preflight \
+            --config config/tennosho_preoff_20261101.json \
+            --output /tmp/tennosho_20261101_preflight
+      - name: Confirm this workflow makes NO production adoption
+        run: |
+          echo 'F3 forward research bundle only. No prospective T-10 lock created.'
+          echo 'Do not call this workflow output a live comparison or a T-10 odds snapshot.'
