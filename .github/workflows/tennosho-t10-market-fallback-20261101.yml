@@ -1,0 +1,78 @@
+name: Tennosho T-minus-10 independent market-only fallback
+on:
+  push:
+    branches: [research/tennosho-akiten-preoff-20261101]
+    paths: [.github/workflows/tennosho-t10-market-fallback-20261101.yml]
+permissions:
+  contents: write
+concurrency:
+  group: tennosho-market-observation-fallback-20261101
+  cancel-in-progress: false
+jobs:
+  market:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/tennosho-akiten-preoff-20261101
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install market-only runtime
+        run: python -m pip install -e . requests beautifulsoup4
+      - name: Capture live market only in true T-10 window
+        shell: bash
+        run: |
+          python - <<'PY'
+          import datetime as dt,time,subprocess,json,pathlib,hashlib
+          utc=dt.timezone.utc
+          target=dt.datetime(2026,11,1,6,30,tzinfo=utc)
+          deadline=dt.datetime(2026,11,1,6,31,tzinfo=utc)
+          while dt.datetime.now(utc)<target:
+              time.sleep(min(3,(target-dt.datetime.now(utc)).total_seconds()))
+          now=dt.datetime.now(utc)
+          folder=pathlib.Path('analysis/tennosho_preoff_20261101/attempts')/('market-only-'+now.strftime('%Y%m%dT%H%M%S%fZ'))
+          folder.mkdir(parents=True,exist_ok=False)
+          out=folder/'capture'
+          report={'status':'FAIL_CLOSED','protocol':'tennosho_tminus10_prospective_v1',
+                  'attempt_started_utc':now.isoformat(),'race_id':'202605041111',
+                  'results_used':False,'formal_model_lock':False,
+                  'source_url':'https://sports.yahoo.co.jp/keiba/race/odds/tfw/2605041111'}
+          try:
+              if now>=deadline: raise RuntimeError('Runner missed T-10 window')
+              cmd=['python','scripts/tennosho_preoff_capture.py','capture',
+                   '--config','config/tennosho_preoff_20261101.json','--output',str(out)]
+              p=subprocess.run(cmd,capture_output=True,text=True,timeout=65)
+              print('capture stdout',p.stdout[-4000:],flush=True)
+              print('capture stderr',p.stderr[-4000:],flush=True)
+              if p.returncode: raise RuntimeError('capture error '+p.stderr[-2000:])
+              m=json.loads((out/'observation.json').read_text())
+              if m['full_active_field']!=17: raise RuntimeError('Roster incomplete')
+              report.update(status='OBSERVATION_ONLY',provider_updated_at=m['provider_updated_at'],
+                            captured_at=m['captured_at'],locked_at=m['locked_at'],
+                            snapshot_id='yahoo-tfw-2605041111-'+m['provider_updated_at'].replace(':','').replace('-','')+'-'+m['odds_source_html_sha256_only_not_redistributed'][:16],
+                            market_observation_sha256=m['market_observation_sha256'])
+          except Exception as e:
+              report.update(error=str(e),failed_at_utc=dt.datetime.now(utc).isoformat())
+              print('FAIL_CLOSED',str(e),flush=True)
+          (folder/'attempt_result.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+          PY
+      - name: Preserve observation or failure on research branch, never main
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/tennosho_preoff_20261101/attempts/
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'audit: capture independently timed market-only Tennosho attempt'
+          for i in 1 2 3; do
+            git fetch origin research/tennosho-akiten-preoff-20261101
+            git rebase origin/research/tennosho-akiten-preoff-20261101
+            if git push origin HEAD:research/tennosho-akiten-preoff-20261101; then exit 0; fi
+          done
+          exit 1
