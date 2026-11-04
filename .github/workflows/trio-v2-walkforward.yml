@@ -1,0 +1,76 @@
+name: Trio V2 prospective-safe historical interaction learning
+on:
+  push:
+    branches: [research/trio-v2-conditional-20261031]
+    paths: [.github/workflows/trio-v2-walkforward.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: trio-v2-walkforward
+  cancel-in-progress: false
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/trio-v2-conditional-20261031
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Reproducible research dependencies
+        run: |
+          python -m pip install -e '.[dev,historical,modeldev]' -c requirements-scope.txt
+      - name: Lint and full trio/F3 regression test
+        run: |
+          ruff check --select E4,E7,E9,F src/keiba_place_lab/trio_residual_v2.py scripts/research_trio_v2_walkforward.py tests/test_trio_residual_v2.py
+          pytest -q tests/test_trio_residual_v2.py tests/test_trio_bridge_v1.py tests/test_tennosho_preoff_20261101.py
+      - name: Restore immutable original 2010-2024 all-starter panel
+        uses: actions/download-artifact@v4
+        with:
+          name: stage36-historical-training-panel-v1
+          path: /tmp/stage36
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 37104212189
+      - name: Fetch exact Kaggle JRA source V1
+        run: |
+          python - <<'PY'
+          import kagglehub
+          print(kagglehub.dataset_download(
+              'noriyukifurufuru/japan-horse-racing-2010-2025/versions/1',
+              output_dir='/tmp/kaggle_for_trio_v2'
+          ))
+          PY
+      - name: Fit only 2023 outcomes; evaluate 2024; shadow 2026, NEVER change F3
+        run: |
+          set -euo pipefail
+          RESULT=$(find /tmp/kaggle_for_trio_v2 -name keiba_results.csv -print -quit)
+          RACES=$(find /tmp/kaggle_for_trio_v2 -name keiba_races.csv -print -quit)
+          test -n "$RESULT" && test -n "$RACES"
+          python -u scripts/research_trio_v2_walkforward.py \
+            --historical /tmp/stage36/data/historical_processed/stage36_freeze_v1 \
+            --results "$RESULT" --races "$RACES" \
+            --f3-oof analysis/input_learning_v1/A_outer_oof_predictions.csv \
+            --preview analysis/tennosho_preoff_20261101/previews/f3_preview_20261031T173406.csv \
+            --prior analysis/tennosho_preoff_20261101/prior_f3_features.csv \
+            --frozen-manifest models/tennosho_f3_20261101/manifest.json \
+            --out analysis/trio_v2_20261031
+      - name: Commit new evidence only; ignore original model/official lock
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/trio_v2_20261031/
+          git commit -m 'research: v2 trio 2023 train 2024 untouched evaluation and forward shadow'
+          for n in 1 2 3 4 5; do
+            git fetch origin research/trio-v2-conditional-20261031
+            git rebase origin/research/trio-v2-conditional-20261031
+            if git push origin HEAD:research/trio-v2-conditional-20261031; then exit 0; fi
+          done
+          exit 1
