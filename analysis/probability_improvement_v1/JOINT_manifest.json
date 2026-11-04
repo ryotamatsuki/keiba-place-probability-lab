@@ -1,0 +1,38 @@
+{
+  "status": "RESEARCH_FINAL_ODDS_ONLY",
+  "cohort": "turf1200 Phase-A 2024 complete odds",
+  "candidate_selection": "one-SE vs point-Brier-best over registered candidates",
+  "winner": "A1_market_only",
+  "incumbent_retained": true,
+  "point_brier_best": "A1_C1_w005",
+  "market_baseline": "A1_market_only",
+  "rows": 3119,
+  "races": 245,
+  "row_fingerprint": "5e8bacbaba3781966e6d964901ab92d6b7166c8dfbafa31c2220cddb0b97ca67",
+  "with_scope_v3_c": true,
+  "candidate_names": [
+    "A1_market_only",
+    "A0_raw",
+    "A2_corrected",
+    "B0_blend005",
+    "B0_blend010",
+    "B1_logit_stack_V2",
+    "B2_offset",
+    "C0_nonmarket",
+    "C1_nonmarket",
+    "C2_nonmarket",
+    "A1_C0_w005",
+    "A1_C1_w005",
+    "A1_C2_w005",
+    "A2_C0_w005"
+  ],
+  "input_sha256": {
+    "B_shadow_v2_oof_predictions.csv": "db189cf104bc7db0184c5d463f7203fa01cab2cf2d0594a2640bfb98f3f186db",
+    "B2_oof_predictions.csv": "2f21433eef6cdd1fc66a94ed92299166b1f38f9906a2ec54dddb41a450432220",
+    "AC_oof_predictions.csv": "d8f54ec7f810047f17e8189f3d6668001d3b4bc84758a58ec9a48a5fd7dbadc3",
+    "A_oof_predictions.csv": "4444de80461f8e8b9edf81c9ee8213755ecf15ac04a07c56c85d1941740c0ea3",
+    "C_oof_predictions.csv": "b52b0b9eefe490a118bf08d2c0ff9d5e72ceb1c8c6b8b32a49548dacd2a7113c"
+  },
+  "no_live_adoption": true,
+  "forward_protocol": ">=1000 races; >=60 dates; >=90 elapsed days"
+}
